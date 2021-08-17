@@ -24,7 +24,6 @@ php artisan passport:install --uuids
 找到Password grant client created successfully.
 复制 Client ID值到 env文件AUTH_CLIENT
 复制 Client secret值到 env文件 AUTH_SECRET
-
 - 3,修改 env文件   
 - 4,运行 php artisan db:seed 生成基础数据
 
