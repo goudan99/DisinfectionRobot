@@ -35,8 +35,8 @@ php artisan passport:install --uuids
 - 4,运行 php artisan db:seed 生成基础数据
 
 ### 初始化帐号
-前端地址  [manager](heekit-mall/manager)
-初始化账号：admin/admin888
+- 前端地址  [manager](heekit-mall/manager)
+- 初始化账号：admin/admin888
 
 ## 功能说明
 - 1,登录退出
