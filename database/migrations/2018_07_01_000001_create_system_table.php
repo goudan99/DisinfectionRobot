@@ -14,6 +14,23 @@ class CreateSystemTable extends Migration
     public function up()
     {
 		
+       Schema::create('configs', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('group_label', 24)->default('')->comment('分组标签名,显示');
+            $table->string('group_name', 24)->default('')->comment('分组名,计算机识别');
+            $table->string('name', 24)->default('')->comment('名称');
+            $table->string('key', 188)->default('')->comment('键')->unique();
+            $table->longText('value')->nullable()->comment('值');
+            $table->string('field_type', 24)->nullable()->default('字段类型');
+            $table->integer('sort')->default(0)->comment('升序');
+            $table->longText('default_value')->nullable()->default(null)->comment('默认值');
+            $table->text('option_value')->nullable()->default(null)->comment('可选值');
+            $table->tinyInteger('is_private')->default(0)->comment('是否私密信息');
+            $table->tinyInteger('is_public')->default(0)->comment('是否公开');
+            $table->string('help')->nullable()->default('')->comment('帮助信息');
+            $table->timestamps();
+        });
+		
 		//站内通知(暂定)
         Schema::create('notice', function (Blueprint $table) {
 			$table->increments('id')->comment('通知id');
@@ -53,6 +70,7 @@ class CreateSystemTable extends Migration
      */
     public function down()
     {
+		Schema::dropIfExists('configs');
 		Schema::dropIfExists('notice');
 		Schema::dropIfExists('logger_api');
 		Schema::dropIfExists('logger_user');

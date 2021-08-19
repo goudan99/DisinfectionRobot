@@ -55,9 +55,9 @@ class User implements Repository
 	/*删除用户*/
 	public function remove($id,$notify)
 	{
-		$user=userModel::where("id",$id)->first()
+		$user=userModel::where("id",$id)->first();
 		
-		if(!$user){throw true;}
+		if(!$user){return true;}
 		
 		if($user->is_system==1){
 			throw new AuthException("系统用户不允许删除");

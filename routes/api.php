@@ -66,10 +66,17 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'setting','middleware' => ['aut
 	Route::get('/menus/{id?}/action','MenuController@action');
 	Route::post('/menus/{id?}/action','MenuController@storeAction');
 	Route::delete('/menus/{id?}/action','MenuController@delAction');
+	Route::get('/config','SettingController@config');
+	Route::post('/config','SettingController@store');
+	Route::post('/config/upload','SettingController@upload');
 });
 
 /*系统-消息,所有权限列表,日志归为系统类*/
 Route::group(['namespace' =>"Admin", 'prefix' => 'system','middleware' => ['auth:api']], function () {
 	Route::get('/access','AccessController@home');
-	Route::post('/logger/error','LoggerController@store');//上传前端错误
+	Route::get('/logger/api','LoggerController@api');//上传前端错误
+	Route::post('/logger/api','LoggerController@store');//上传前端错误
+	Route::get('/logger/code','LoggerController@code');//上传前端错误
+	Route::get('/logger/code/{id?}','LoggerController@codeShow');//上传前端错误
+	Route::delete('/logger/code/{id?}','LoggerController@codeRemove');//上传前端错误
 });

@@ -72,7 +72,7 @@ class AuthController extends AccessTokenController
         try {
             return $callback();
         } catch (OAuthServerException $e) {
-			$data['code']=Code::FAIL;
+			$data['code']=Code::VALIDATE;
 			$data['data']=[];
 			$data['error']="帐号密或密码错误";
 			$data['msg']="帐号密或密码错误";

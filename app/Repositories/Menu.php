@@ -45,7 +45,7 @@ class Menu implements Repository
 	{
 		$menu=MenuModel::where("id",$data)->first();
 		
-		if(!$menu){throw true;}
+		if(!$menu){return true;}
 		
 		if($menu->is_system==1)
 		{

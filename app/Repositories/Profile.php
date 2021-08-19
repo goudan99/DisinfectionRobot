@@ -58,7 +58,7 @@ class Profile implements Repository
 		return false;
 	  }
 	  
-	  $path=$request->file->store('user/avatar',config("shop")["avatar"]);
+	  $path=$request->file->store('avatar',config("shop")["avatar"]);
 	  
 	  $url= url(Storage::disk(config("shop")["avatar"])->url($path));
 	  
