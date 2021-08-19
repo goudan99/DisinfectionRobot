@@ -35,7 +35,7 @@ php artisan passport:install --uuids
 - 4,运行 php artisan db:seed 生成基础数据
 
 ### 初始化帐号
-前端地址  [phpcode](https://gitee.com/heekit-mall/manager)
+前端地址  [manager](gitee.com/heekit-mall/manager)
 初始化账号：admin/admin888
 
 ## 功能说明
