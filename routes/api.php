@@ -74,6 +74,9 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'setting','middleware' => ['aut
 /*系统-消息,所有权限列表,日志归为系统类*/
 Route::group(['namespace' =>"Admin", 'prefix' => 'system','middleware' => ['auth:api']], function () {
 	Route::get('/access','AccessController@home');
+	Route::post('/access','AccessController@store');
+	Route::delete('/access/{id?}','AccessController@remove');
+	Route::get('/uris','AccessController@uri');
 	Route::get('/logger/api','LoggerController@api');//上传前端错误
 	Route::post('/logger/api','LoggerController@store');//上传前端错误
 	Route::get('/logger/code','LoggerController@code');//上传前端错误

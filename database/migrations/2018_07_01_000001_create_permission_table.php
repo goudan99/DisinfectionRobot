@@ -63,13 +63,10 @@ class CreatePermissionTable extends Migration
             $table->increments('id')->comment('id值');
             $table->integer('parent_id')->comment('上级id');	
 			$table->string('name',100)->nullable()->comment('权限名称');
-			$table->tinyInteger('type')->nullable()->comment('类型,1为资源,2为操作');
-			$table->string('relace_id')->nullable()->comment('类型,1为资源,2为操作');
             $table->string('code',100)->nullable()->comment('权限标识');
-            $table->string('desc',100)->nullable()->comment('权限描述');
 			$table->string('path')->nullable()->comment('权限对应操作路径');
-			$table->tinyInteger('status')->default(1)->nullable()->comment('状态:0-无效 1-有效');
-			$table->tinyInteger('is_system')->default(1)->nullable()->comment('是否为系统内置');
+			$table->string('method')->nullable()->comment('路径处理方法');
+            $table->string('desc',100)->nullable()->comment('权限描述');
             $table->timestamps();			
         });
 		
