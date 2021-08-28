@@ -5,6 +5,7 @@ use App\Model\Config as ConfigModel;
 use App\Events\ConfigStored;
 use App\Events\UploadStored;
 use Storage;
+use Exception;
 
 class Config implements Repository
 {
@@ -61,6 +62,22 @@ class Config implements Repository
 	  
       return ["group"=>$group,"data"=>$data];
 	}
+	
+	public static function make(){
+		
+	  try{
+		return $config=ConfigModel::orderBy('sort')->get()
+		->groupBy("group_name")
+		->map(function ($item, $key) {
+			return $item->flatMap(function ($v) {
+			  return [$v["key"]=>$v["value"]];
+			});
+		})->toArray();
+	  }catch(Exception $e){
+		return [];
+	  }
+	}
+	
 	/*删除用户*/
 	public function remove($id,$notify){}
 }

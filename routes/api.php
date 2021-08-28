@@ -42,7 +42,7 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'analysis','middleware' => ['au
 });
 
 /*权限管理模块*/
-Route::group(['namespace' =>"Admin", 'prefix' => 'member','middleware' => ['auth:api']], function () {
+Route::group(['namespace' =>"Admin", 'prefix' => 'member','middleware' => ['auth:api','permit:api']], function () {
 	Route::get('/user','UserController@home');
 	Route::get('/user/{id}','UserController@show');
 	Route::post('/user','UserController@store');
@@ -57,7 +57,7 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'member','middleware' => ['auth
 });
 
 /*配置模块-菜单配置,config配置*/
-Route::group(['namespace' =>"Admin", 'prefix' => 'setting','middleware' => ['auth:api']], function () {
+Route::group(['namespace' =>"Admin", 'prefix' => 'setting','middleware' => ['auth:api','permit:api']], function () {
 	Route::get('/menus','MenuController@home');
 	Route::get('/menus/{id?}','MenuController@show');
 	Route::post('/menus','MenuController@store');
@@ -72,7 +72,7 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'setting','middleware' => ['aut
 });
 
 /*系统-消息,所有权限列表,日志归为系统类*/
-Route::group(['namespace' =>"Admin", 'prefix' => 'system','middleware' => ['auth:api']], function () {
+Route::group(['namespace' =>"Admin", 'prefix' => 'system','middleware' => ['auth:api','permit:api']], function () {
 	Route::get('/access','AccessController@home');
 	Route::post('/access','AccessController@store');
 	Route::delete('/access/{id?}','AccessController@remove');
