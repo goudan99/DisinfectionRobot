@@ -28,15 +28,17 @@ class AccessController extends Controller
     public function uri(Request $request)
     {
         $routes = collect(app('router')->getRoutes())->map(function ($route) {
-			return [
-				'host'   => $route->domain(),
-				'method' => implode('|', $route->methods()),
-				'path'    => $route->uri(),
-				'code'   => $route->getName(),
-				'action' => ltrim($route->getActionName(), '\\'),
-				'middleware' => $this->getMiddleware($route),
-			];
-        })->all();
+			if(in_array("permit:api",$route->gatherMiddleware())){
+				return [
+					'host'   => $route->domain(),
+					'method' => implode('|', $route->methods()),
+					'path'    => $route->uri(),
+					'code'   => $route->getName(),
+					'action' => ltrim($route->getActionName(), '\\'),
+					'middleware' => $route->gatherMiddleware(),
+				];
+			}
+        })->whereNotNull()->all();
 		
 		return $this->success($this->getRepositories()->uri($routes));
     }
