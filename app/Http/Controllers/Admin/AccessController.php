@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Model\Access;
 use Illuminate\Routing\Router;
-use App\Repositories\AccessReposity;
+use App\Repositories\Access as AccessReposity;
 use App\Http\Requests\AccessRequest;
 
 class AccessController extends Controller
