@@ -234,7 +234,7 @@ class DatabaseSeeder extends Seeder
 			'parent_id' => '4',			
 			'name' => '访问权限',
             'prefix' => '/', 
-            'path' => 'setting/access',
+            'path' => 'setting/access/index',
             'icon' => '',   
             'target' => '_self', 
             'is_system' => '1'

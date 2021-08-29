@@ -32,17 +32,12 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'profile','middleware' => ['aut
 	Route::put('/notice/{id?}','ProfileController@read');//标志已读
 	Route::patch('/notice/{id?}','ProfileController@restore');//恢复删除
 	Route::delete('/notice/{id?}','ProfileController@remove');//删除
-
-});
-
-/*数据统计分析*/
-Route::group(['namespace' =>"Admin", 'prefix' => 'analysis','middleware' => ['auth:api']], function () {
-	Route::get('/notice/unread','AnalysisController@unread');
+	Route::get('/notice/unread','ProfileController@remove');//没有读的条数
 
 });
 
 /*权限管理模块*/
-Route::group(['namespace' =>"Admin", 'prefix' => 'member','middleware' => ['auth:api']], function () {
+Route::group(['namespace' =>"Admin", 'prefix' => 'member','middleware' => ['auth:api','permit:api']], function () {
 	Route::get('/user','UserController@home');
 	Route::get('/user/{id}','UserController@show');
 	Route::post('/user','UserController@store');
@@ -57,7 +52,7 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'member','middleware' => ['auth
 });
 
 /*配置模块-菜单配置,config配置*/
-Route::group(['namespace' =>"Admin", 'prefix' => 'setting','middleware' => ['auth:api']], function () {
+Route::group(['namespace' =>"Admin", 'prefix' => 'setting','middleware' => ['auth:api','permit:api']], function () {
 	Route::get('/menus','MenuController@home');
 	Route::get('/menus/{id?}','MenuController@show');
 	Route::post('/menus','MenuController@store');
@@ -72,8 +67,11 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'setting','middleware' => ['aut
 });
 
 /*系统-消息,所有权限列表,日志归为系统类*/
-Route::group(['namespace' =>"Admin", 'prefix' => 'system','middleware' => ['auth:api']], function () {
+Route::group(['namespace' =>"Admin", 'prefix' => 'system','middleware' => ['auth:api','permit:api']], function () {
 	Route::get('/access','AccessController@home');
+	Route::post('/access','AccessController@store');
+	Route::delete('/access/{id?}','AccessController@remove');
+	Route::get('/uris','AccessController@uri');
 	Route::get('/logger/api','LoggerController@api');//上传前端错误
 	Route::post('/logger/api','LoggerController@store');//上传前端错误
 	Route::get('/logger/code','LoggerController@code');//上传前端错误

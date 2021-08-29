@@ -9,14 +9,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class User extends Authenticatable
 {
 	use Notifiable,HasApiTokens,HasFactory;
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */	 
-
-	
-	//protected $keyType = 'string';
 	  
 	protected $fillable = ['name','password','nickname','role_id','role_name','avatar','phone','email','desc','passed'];
 	
@@ -41,5 +33,16 @@ class User extends Authenticatable
 		}else{
 			return ;
 		}      
+    }
+	
+	public function check($path,$method)
+    {
+	  if($this->id==1){
+		return true; 
+	  }
+	  if($this->role->access->where('path',$path)->where('method',implode('|',$method))->first()){
+		return true;   
+	  }
+      return false; 
     }
 }
