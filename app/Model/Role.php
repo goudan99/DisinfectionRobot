@@ -22,14 +22,25 @@ class Role extends Model
 	
     public function menus()
     {
-		$arr=$this->access->map(function($items, $key){return $items->menus->toArray();})->collapse()->unique('id');
-		$menu=Menu::where('prefix','http://')->orWhere('prefix','https://')->get();
-		$arr=$menu->concat($arr->toArray());
+		//获取菜单不需要权限控制的菜单
+		$menu=Menu::has('access', '=', 0)->get();
+		
+		//与有权限菜单合并
+		$arr=$menu->concat(
+			//取得对权限对应的菜单
+			$this->access->map(function($items, $key){
+				return $items->menus->toArray();
+			})->collapse()->unique('id')->toArray()
+		);
+		//获取可用菜单父类菜单
 		$menu=Menu::where('id',0);
 		foreach(explode(',',$arr->unique('parent_id')->implode('parent_id',',')) as $item){
 			$menu->orWhere('id',$item);
 		}
-		$arr=$menu->get()->concat($arr->toArray());
+		if($menu->get()){
+		  $arr=$menu->get()->concat($arr->toArray());
+		}
+
 		return $arr;
     }
 }

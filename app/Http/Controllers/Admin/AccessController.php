@@ -38,8 +38,8 @@ class AccessController extends Controller
 					'middleware' => $route->gatherMiddleware(),
 				];
 			}
-        })->whereNotNull()->all();
-		
+        })->whereNotNull()->values()->all();
+
 		return $this->success($this->getRepositories()->uri($routes));
     }
     public function store(AccessRequest $request)

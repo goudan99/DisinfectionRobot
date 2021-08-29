@@ -36,7 +36,7 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'profile','middleware' => ['aut
 });
 
 /*数据统计分析*/
-Route::group(['namespace' =>"Admin", 'prefix' => 'analysis','middleware' => ['auth:api']], function () {
+Route::group(['namespace' =>"Admin", 'prefix' => 'analysis','middleware' => ['auth:api','permit:api']], function () {
 	Route::get('/notice/unread','AnalysisController@unread');
 
 });
