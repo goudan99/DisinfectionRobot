@@ -32,12 +32,7 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'profile','middleware' => ['aut
 	Route::put('/notice/{id?}','ProfileController@read');//标志已读
 	Route::patch('/notice/{id?}','ProfileController@restore');//恢复删除
 	Route::delete('/notice/{id?}','ProfileController@remove');//删除
-
-});
-
-/*数据统计分析*/
-Route::group(['namespace' =>"Admin", 'prefix' => 'analysis','middleware' => ['auth:api','permit:api']], function () {
-	Route::get('/notice/unread','AnalysisController@unread');
+	Route::get('/notice/unread','ProfileController@remove');//没有读的条数
 
 });
 
