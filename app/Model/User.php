@@ -5,12 +5,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Authenticatable
 {
 	use Notifiable,HasApiTokens,HasFactory;
 	  
-	protected $fillable = ['name','password','nickname','role_id','role_name','avatar','phone','email','desc','passed'];
+	protected $fillable = ['name','password','nickname','avatar','phone','email','desc','passed'];
 	
     protected $hidden = ['password', 'remember_token'];
 	 
@@ -19,9 +20,9 @@ class User extends Authenticatable
         return $this->orWhere('name', $login)->first();
     }
 	
-	public function role()
+	public function roles()
     {
-         return $this->belongsTo('App\Model\Role');
+         return $this->belongsToMany('App\Model\Role');
     }
 	
 	public function menus()
@@ -44,5 +45,15 @@ class User extends Authenticatable
 		return true;   
 	  }
       return false; 
+    }
+	
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+	
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }

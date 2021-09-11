@@ -27,7 +27,11 @@ class RoleController extends Controller
     {
 		$limit=$request->limit?$request->limit:10;
 		
-		return $this->success(new RoleCollection(Role::paginate($limit)));
+		$role = Role::orderBy('id','desc');
+		
+	    $request->get('key') ? $role=$role->where('name','like','%'.trim($request->get('key')).'%'):'';
+		
+		return $this->success(new RoleCollection($role->paginate($limit)));
     }
 
     /**
@@ -57,7 +61,7 @@ class RoleController extends Controller
      */
     public function remove(Request $request)
     {
-	   if(!$this->getRepositories()->remove($request->id,['form'=>['user'=>$request->user]])){
+	   if(!$this->getRepositories()->remove($request->all(),['form'=>['user'=>$request->user]])){
 		   return ['code'=>101,'timestamp'=>time(),"data"=>[],'msg'=>'处理失败'];
 	   }
 	   

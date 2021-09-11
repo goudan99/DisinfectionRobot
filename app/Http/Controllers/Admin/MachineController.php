@@ -3,19 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
-use App\Model\User;
+use App\Model\Machine;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserCollection;
 use App\Http\Requests\UserRequest;
-use App\Repositories\User as objUser;
+use App\Repositories\Machine as machineRepository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
-class UserController extends Controller
+class MachineController extends Controller
 {
-    public function __construct(objUser $categoryRepositories)
+    public function __construct(machineRepository $repository)
     {
-        parent::__construct($categoryRepositories);	
+        parent::__construct($repository);	
     }
     /**
      * 显示所有后台用户
@@ -26,15 +26,11 @@ class UserController extends Controller
     {
 		$limit=$request->limit?$request->limit:10;
 		
-		$user = User::orderBy('id','desc');
+		$machine = Machine::orderBy('id','desc');
 		
-	    $request->get('key') ? $user=$user->where('name','like','%'.trim($request->get('key')).'%'):'';
-
-	    if($request->get('status')!=='-1'){
-			$user=$user->where('passed',$request->get('status'));
-		}
+	    $request->get('key') ? $machine=$machine->where('name','like','%'.trim($request->get('key')).'%'):'';
 		
-		return $this->success(new UserCollection($user->paginate($limit)));
+		return $this->success($machine->paginate($limit));
     }
 
     /**
@@ -42,7 +38,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(UserRequest $request)
+    public function store(Request $request)
     {
 	   if(!$this->getRepositories()->store($request->all(),['form'=>['user'=>$request->user]])){
 			return $this->error('用户存在');

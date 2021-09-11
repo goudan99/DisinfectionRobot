@@ -17,7 +17,8 @@
         "laravel/passport": "^10.1",
         "laravel/tinker": "^2.5",
         "maatwebsite/excel": "^3.1",
-        "overtrue/laravel-wechat": "^5.1"
+        "overtrue/laravel-wechat": "^5.1",
+        "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

@@ -1,90 +1,147 @@
-# 项目介绍 
-## 开发目的
-市面上虽然有很多开源的商城的系统，但进行二次开发不够友善。主要表现在以下二点。
-- 1,对接其他系统，如公司现有的仓库系统，HR系统，客服系统等。
-- 2,增加其他其他营销手段，如红包，打折，抢购，渠道推广等
-## 开发目标
-主要做一个比较通用简单通用的商城系统,利于具体需求商城的增加及改进
+# 扫地机器人接口文档
+## api接口说明
+ 本接口文档api文档返回格式请求成功统一为
+### 成功格式为
+|名称|类型|说明|
+|-|-|-|
+|code| int | 状态码，0为成功|
+|data| json| 返回内容 |
+|msg | string | 返回说明 |
+样例
+```
+{
+    "code": 0,
+    "msg": "请求成功",
+    "data": [],
+    "timestamp": 1631254154
+}
+```
+### 失败格式为
+|名称|类型|说明|
+|-|-|-|
+|code| int | 状态码，0为成功|
+|data| json| 返回内容,为空 |
+|msg | string | 返回说明 |
+|error | josn | 返回内容 |
+样例
+```
+{
+    "code": 422,
+    "msg": "数据验证不正确",
+    "error": {
+        "phone": [
+            "国内的手机号码长度为11位"
+        ]
+    },
+    "data": ""
+}
+```
+### 状态说明：
+|code|说明|
+|-|-|-|
+|0 | 成功|
+|100 | 失败 |
+|501  | 服务器繁忙 |
+|500| 服务务器错误 |
+|401| 请求资源不存在 |
+|403| 请求下级依赖资源不存在 |
+|409| 已经存在该资源了 |
+|422| 字段验证失败 |
+|401| 没有授权 |
+|405| 权限不足，没有权限操作此资源 |
 
-## 系统加构
-### 使用的技术栈
-1、php7.2以上，php8暂有些功能不支持
-2、mysql5.7及其以上
-3、laravel8
+## 授权
+授权流程
+用用户名帐号密码登录拿到token值，
 
-<<<<<<< HEAD
-###软件架构图
-稍后再上
+### 用户帐号名密码登录
+接口地址：/auth/login/token
+返回格式:josn
+请求方式：post
+请求头：
 
+| 参数 | 类型| 方式 | 是否必填 | 说明 |
+|-|-|-|-|-|
+|username| string| josn | 是 | 登录帐号 |
+|password| string| josn | 是 | 登录密码 |
 
-=======
-### 架构特色
-- 1、易懂
--- 1、少,少量自己标准，尽可能使用通用标准
--- 2、微,一个文件，只适度几个功能
--- 3、小,在符合标准前提下，尽量做到框架简易程度
-- 2、易扩展：
--- 1、尽可能采用先开发后配置
--- 2、采用管道及配置处理方法，除基础功能以外能，能轻松扩充，修改,删除功能
-- 3、高维护:
--- 1、结构、功能、接口等标准化
--- 2、尽量做到处任意错误能捕捉到
->>>>>>> remotes/origin/feature
+返回格式:
+|名称|类型|说明|
+|-|-|-|
+|code| int | 状态码，0为成功|
+|data| json| 返回内容 |
+|msg | string | 返回说明 |
+data说明
+| 字段 | 类型 | 说明 |
+|-|-|-|
+| token_type | string | token类型|
+| expires_in | intint | token到期时间|
+| access_token | string | token值|
+| refresh_token | string | 刷新token到期时间的值|
+请求样例：
+```
+{
+    "username": "admin",
+    "password": "admin888"
+}
+```
+返回样例：
+```
+{
+    "code": 0,
+    "data": {
+        "token_type": "Bearer",
+        "expires_in": 31536000,
+        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI5NDNjNzk2Mi1kYmYyLTQ3ZTQtYTA3OC1mNDcwMTY3NGRiNDYiLCJqdGkiOiIwZDU4ODE5MjA0ZjEzOWViOWQxNmJhNTUyZThiNGIyNzU1MjllOGNhZGE1NDc2YjI0YTI0ZmQxM2FjMDEwZDYxNzdiNDRjNTMyOGM4YzU2NSIsImlhdCI6MTYzMTI0NTgzMywibmJmIjoxNjMxMjQ1ODMzLCJleHAiOjE2NjI3ODE4MzMsInN1YiI6IjEiLCJzY29wZXMiOltdfQ.LYE80c7IQe9qqLc5Kb0qPdoCouHDC13zWgqBNRjsD133UyB_hSJLPftzb2RP4HEzwcvdFs1WmurWIk5iWSxFkwDqdZSNeIPxXp6qMubN1zVwD-X-B2-dh0Hu7tS9LcAraOhZDz0_Wqf8YoOn4NyMp_ds2gvaADP9Xkpxexeg3eoV78lJb4Sx89L00aEiAxn2HattueA_fatVKxztueU_iH8u-25sB-vJFKdmoXIV-VF9EH4inxDh6hPvFBPT_iH6YFzBFHBSln7bu7JBudXamFT4fg0d5dubDVs78ZX4uSD0CPEyda7CY39UDFkICT8ltKCcF_zHsCc0FcSjU2G2KomB9eHo7Ga3L99M4I0KqrXnFKAHq44G0vOP1k4PYlxsISqOPeqILYck30iszttRbxpBSu4YIf0-i2nO07vsjrVW-LXKXQPqeUQTebgnTgPi0nZz7Svh7BWrBhFP3iaERQKUbAnLOSuy-zLPf3j10L-Ap9PGBJMny6w6T-7Okld7WTYjpv5R3TT6i7PnyatBQosLbxkSXuiOpilsMNOaWa0Yv73c31TLHwX1u70rPXPq5p9VRHnZJPzxveWdBP5atBNELpiTXiZwup8eThj64O80QbN86SAuCJF9Sl6Yhim6BMQIwVDUnaWxKFhgTuChgK5KqkoYPymnQZj5heGl1mM",
+        "refresh_token": "def50200c3bb9358a8dcf05b0abef2860c1457d304bbac4339b08dfed3c17873224c9d40882b6f476d05634c63a5ae73ad11f3327beb414fd258870fb2af55f91a6c1cdddc6f37bffd68bc91bce4fbcb04817ea9a361799fff7d27ab2764ceb8b72690187f4227f85cc312ab4efedfa8281516682e8bf71bae0e56e43790bd67b5f133d6433c8c2579e2573d2304b88edf6287825781d5b9ad111eaf02cba5bd6786e5401fbffc638e2f6b37180741586a13301ad5a93a978e03bab400d174f5188db7031c88b8cef3a21afd264130d21f6fcca71a154854a864ce4a49a5d651b1b8696ed060a3538d44ac265290b97f12e3d61b693e25436e99731b55e0beba187c61dfdd08c7b3b2ac242c478fffae4a2ede2f99e3e721cfa42f28b9a3bc4bf1ccd2ddc75e13d7aac834f6b94c71dc71b63fbaf71e9ad5a83c52efb3c8be12a48a0a6c4dcb8a5540d3f9653c1721b58df2f6af97332f68a8216fd17444c44afb7fc596cf8b01aa72eb51b4dcb768df1e757aa762b503d7b90cbfe7f46db610c0a20451"
+    },
+    "error": "",
+    "msg": "success",
+    "timestamp": 1631245833
+}
+```
 
-## 部署说明
-- 1,运行 composer install下载插件
-- 2,在控制台运行 
-php artisan passport:install --uuids 
-找到Password grant client created successfully.
-复制 Client ID值到 env文件 AUTH_CLIENT
-复制 Client secret值到 env文件 AUTH_SECRET
-- 3,修改 env文件   
-- 4,运行 php artisan db:seed 生成基础数据
+### 找密码
+接口地址：/auth/login/password
+返回格式:josn
+请求方式：post
+请求头：
 
-### 初始化帐号
-<<<<<<< HEAD
-初始化账号：admin/admin888
+| 参数 | 类型| 方式 | 是否必填 | 说明 |
+|-|-|-|-|-|
+|phone| string| josn | 是 | 手机号，要更改帐号的手机号 |
+|code| string| josn | 是 | 手机验证码 |
+|password| string| josn | 是 | 新密码 |
+|password_confirmation| string| josn | 是 | 确认新密码 |
 
-## 功能说明
-本系统只做一些普通通用的功能，其他功能需要自己进行二次开发，
-
-### 权限管理
-- 1,用户管理
-- 2,角色管理
-- 3,权限限管理
-- 4,授权管理
-
-### 个人信息
-- 1,个人信息设置
-- 2,个人通信息
-
-### 系统配置
-- 1,菜单管理
-- 2,菜单权限
-
-
-=======
-- 前端地址  [manager](https://gitee.com/heekit-mall/manager)
-- 初始化账号：admin/admin888
-
-## 功能说明
-- 1,登录退出
-- 2,创建、修改、删除管理员，及设置所属角色
-- 3,创建、修改、删除角色，及增加修改删除角色权限
-- 4,创建、修改、删除菜单，及增加修改删除菜单权限
-- 5,前端日志保存,查看,删除
-- 6,后端日志查看,删除
-- 7,查看系统所有权限
-- 8,保存及读取系统配置
-- 9,修改个人信息，修改个人密码。修改个头像
-- 10,查看个人通知，已读个人通知，删除及恢复个人通知
-- 11,获取个人通知未读条数
->>>>>>> remotes/origin/feature
-
-## 更新说明
-
-## 引用到的插件
-1.  Laravel  [https://laravel.com/docs/8.x](https://laravel.com/docs/8.x)
-2.  Laravel passport  [https://laravel.com/docs/8.x/passport](https://laravel.com/docs/8.x/passport)
-3.  Laravel Excel  [https://laravel-excel.com/](https://laravel-excel.com/)
-4.  eayswechat  [https://www.easywechat.com/](https://www.easywechat.com/)
+返回data说明
+| 字段 | 类型 | 说明 |
+|-|-|-|
+| token_type | string | token类型|
+| expires_in | intint | token到期时间|
+| access_token | string | token值|
+| refresh_token | string | 刷新token到期时间的值|
+请求样例：
+```
+{
+    "phone":"15113339677",
+    "code":"1848306182",
+    "password":"123123",
+    "password_confirmation":"123123"
+}
+```
+返回样例：
+```
+{
+    "code": 0,
+    "data": {
+        "token_type": "Bearer",
+        "expires_in": 31536000,
+        "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI5NDNjNzk2Mi1kYmYyLTQ3ZTQtYTA3OC1mNDcwMTY3NGRiNDYiLCJqdGkiOiIwZDU4ODE5MjA0ZjEzOWViOWQxNmJhNTUyZThiNGIyNzU1MjllOGNhZGE1NDc2YjI0YTI0ZmQxM2FjMDEwZDYxNzdiNDRjNTMyOGM4YzU2NSIsImlhdCI6MTYzMTI0NTgzMywibmJmIjoxNjMxMjQ1ODMzLCJleHAiOjE2NjI3ODE4MzMsInN1YiI6IjEiLCJzY29wZXMiOltdfQ.LYE80c7IQe9qqLc5Kb0qPdoCouHDC13zWgqBNRjsD133UyB_hSJLPftzb2RP4HEzwcvdFs1WmurWIk5iWSxFkwDqdZSNeIPxXp6qMubN1zVwD-X-B2-dh0Hu7tS9LcAraOhZDz0_Wqf8YoOn4NyMp_ds2gvaADP9Xkpxexeg3eoV78lJb4Sx89L00aEiAxn2HattueA_fatVKxztueU_iH8u-25sB-vJFKdmoXIV-VF9EH4inxDh6hPvFBPT_iH6YFzBFHBSln7bu7JBudXamFT4fg0d5dubDVs78ZX4uSD0CPEyda7CY39UDFkICT8ltKCcF_zHsCc0FcSjU2G2KomB9eHo7Ga3L99M4I0KqrXnFKAHq44G0vOP1k4PYlxsISqOPeqILYck30iszttRbxpBSu4YIf0-i2nO07vsjrVW-LXKXQPqeUQTebgnTgPi0nZz7Svh7BWrBhFP3iaERQKUbAnLOSuy-zLPf3j10L-Ap9PGBJMny6w6T-7Okld7WTYjpv5R3TT6i7PnyatBQosLbxkSXuiOpilsMNOaWa0Yv73c31TLHwX1u70rPXPq5p9VRHnZJPzxveWdBP5atBNELpiTXiZwup8eThj64O80QbN86SAuCJF9Sl6Yhim6BMQIwVDUnaWxKFhgTuChgK5KqkoYPymnQZj5heGl1mM",
+        "refresh_token": "def50200c3bb9358a8dcf05b0abef2860c1457d304bbac4339b08dfed3c17873224c9d40882b6f476d05634c63a5ae73ad11f3327beb414fd258870fb2af55f91a6c1cdddc6f37bffd68bc91bce4fbcb04817ea9a361799fff7d27ab2764ceb8b72690187f4227f85cc312ab4efedfa8281516682e8bf71bae0e56e43790bd67b5f133d6433c8c2579e2573d2304b88edf6287825781d5b9ad111eaf02cba5bd6786e5401fbffc638e2f6b37180741586a13301ad5a93a978e03bab400d174f5188db7031c88b8cef3a21afd264130d21f6fcca71a154854a864ce4a49a5d651b1b8696ed060a3538d44ac265290b97f12e3d61b693e25436e99731b55e0beba187c61dfdd08c7b3b2ac242c478fffae4a2ede2f99e3e721cfa42f28b9a3bc4bf1ccd2ddc75e13d7aac834f6b94c71dc71b63fbaf71e9ad5a83c52efb3c8be12a48a0a6c4dcb8a5540d3f9653c1721b58df2f6af97332f68a8216fd17444c44afb7fc596cf8b01aa72eb51b4dcb768df1e757aa762b503d7b90cbfe7f46db610c0a20451"
+    },
+    "error": "",
+    "msg": "success",
+    "timestamp": 1631245833
+}
+```

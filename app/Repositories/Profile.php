@@ -51,6 +51,20 @@ class Profile implements Repository
 	  return true ;
 	}
 	
+	/*修改手机*/
+	public function phone($data,$notify){
+
+	  $data["phone"]?$this->user->phone=$data["phone"]:'';
+	  
+      $this->user->save();
+
+	  $notify["method"]="phone";
+
+	  event(new UserStored($this->user,$notify));
+
+	  return true ;
+	}
+	
 	/*上传头象*/
 	public function avatar($request,$notify){
 

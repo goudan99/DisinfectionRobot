@@ -23,16 +23,13 @@ class UserRequest extends Request
      */
     public function rules()
     {
-        //store
-		
-        if($this->segment(4)==="add"){
+        if(!$this->id){
 			
             $rules = [            
 				'name'                  => 'required|min:4|max:20|unique:users,name',
                 'password'              => 'required|min:6|max:16|regex:/^[a-zA-Z0-9~@#%_]{6,16}$/i',  //登录密码只能英文字母(a-zA-Z)、阿拉伯数字(0-9)、特殊符号(~@#%)
                 // 'password_confirmation' => 'required|same:password',
-				'email' 				=> 'required|email',				
-                'role_id'               => 'required|exists:roles,id',
+				'code' 					=> 'required',				
                 'passed'                => 'required|boolean',
 				'nickname'              => 'min:1|max:10', 
                 'phone'                 => 'size:11|unique:users,phone',
@@ -41,9 +38,7 @@ class UserRequest extends Request
             $rules = [
                 'name'                 => 'required|min:4|max:20',
                 'password'             => 'nullable|min:6|max:16|regex:/^[a-zA-Z0-9~@#%_]{6,16}$/i',  //登录密码只能英文字母(a-zA-Z)、阿拉伯数字(0-9)、特殊符号(~@#%)
-                // 'password_confirmation'=> 'same:password',
-				'email' 				=> 'email',				
-                'role_id'               => 'required|exists:roles,id',
+                // 'password_confirmation'=> 'same:password',			
 				'passed'               => 'required|boolean',
                 'nickname'             => 'min:1|max:10',
                 'phone'                => 'size:11',

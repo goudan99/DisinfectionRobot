@@ -3,6 +3,8 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Model\LoggerApi;
+use App\Model\LoggerUser;
+use App\Model\LoggerJob;
 use App\Repositories\LogReposity;
 use Arcanedev\LogViewer\Contracts\LogViewer;
 use Arcanedev\LogViewer\Tables\StatsTable;
@@ -28,6 +30,54 @@ class LoggerController extends Controller
 		return $this->success(LoggerApi::get());
     }
 	
+    /**
+     * 前端api接口错误请求保存
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function job(Request $request)
+    {
+		
+		$limit=$request->limit?$request->limit:10;
+		
+		$log = LoggerJob::orderBy('id','desc');
+		
+	    $request->get('key') ? $log=$log->where('job_name','like','%'.trim($request->get('key')).'%'):'';
+		
+	    $request->get('begin_at')&&$request->get('end_at') ? $log=$log->where(function($query)use ($request){
+          $query->where('created_at','>' ,$request->get('begin_at'))->where('created_at', '<', $request->get('end_at'));
+        }):'';
+		
+	    if($request->get('status')!=='-1'){
+			$log=$log->where('status',$request->get('status'));
+		}
+		
+		return $this->success($log->paginate($limit));
+    }
+	
+    /**
+     * 前端api接口错误请求保存.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function user(Request $request)
+    {
+		$limit=$request->limit?$request->limit:10;
+		
+		$log = LoggerUser::orderBy('id','desc');
+		
+	    $request->get('key') ? $log=$log->where('job_name','like','%'.trim($request->get('key')).'%'):'';
+		
+	    $request->get('begin_at')&&$request->get('end_at') ? $log=$log->where(function($query)use ($request){
+          $query->where('created_at','>' ,$request->get('begin_at'))->where('created_at', '<', $request->get('end_at'));
+        }):'';
+		
+	    if($request->get('status')!=='-1'){
+			$log=$log->where('status',$request->get('status'));
+		}
+		
+		return $this->success($log->paginate($limit));
+    }
     /**
      * 前端api接口错误请求保存.
      *

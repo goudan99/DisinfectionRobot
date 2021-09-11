@@ -9,17 +9,20 @@ use App\Exceptions\AttachException;
 use App\Exceptions\UniqueException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\AuthException;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class User implements Repository
 {
 	/*保存用户*/
 	public function store($data,$notify){
 		
-		if(!$role=roleModel::where('id',$data['role_id'])->first()){
+		
+		$data["roles"]= new Collection($data['roles']);
+		
+		if(!$roles=roleModel::whereIn('id',$data['roles'])->get('id')){
 			throw new AttachException("角色不存在");
 		}
-
-		$data['role_name']=$role->name;
 		
 		$data['password']?$data['password']=Hash::make($data['password']):'';
 
@@ -28,9 +31,20 @@ class User implements Repository
 			if(!$user=userModel::where("id",$data['id'])->first()){
 				throw new NotFoundException("用户不存在");
 			}
-
+			
+			unset($data['code']);//永远不有修改激活码
+			if(isset($data['password'])){
+				if(!$data['password']){
+					unset($data['password']);
+				}
+			}
+			
 			$user->update($data);
 			
+			if(!$user->is_system==1){
+				$user->roles()->sync($data['roles']);
+			}
+
 			$notify["method"]="edit";
 			
 			event(new UserStored($user,$notify));
@@ -45,6 +59,10 @@ class User implements Repository
 			
 		$user=userModel::create($data);
 			
+	     if(!$user->is_system==1){
+		  $user->roles()->sync($data['roles']);
+		}
+			
 		$notify["method"]="add";
 		
 		event(new UserStored($user,$notify));
@@ -53,20 +71,19 @@ class User implements Repository
 	}
 	
 	/*删除用户*/
-	public function remove($id,$notify)
+	public function remove($data,$notify)
 	{
-		$user=userModel::where("id",$id)->first();
+		$users=userModel::whereIn("id",$data)->where('is_system','<>',1)->get();
 		
-		if(!$user){return true;}
-		
-		if($user->is_system==1){
+		//if(!$user){return true;}
+		foreach($users as $user){
+		  if($user->is_system==1){
 			throw new AuthException("系统用户不允许删除");
+		  }	
+		  $user->delete();
 		}
-		
-		$user->delete();
+		event(new UserRemoved($users,$notify));
 		  
-		event(new UserRemoved($user,$notify));
-		  
-		return $user;
+		return $users;
 	}
 }

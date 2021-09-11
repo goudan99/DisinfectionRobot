@@ -13,6 +13,9 @@ use Exception;
 use Throwable;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Symfony\Component\Debug\Exception\FatalThrowableError;
+use App\Repositories\Mobile;
+use App\Repositories\Auth;
+use App\Http\Requests\PasswordRequest;
 
 class AuthController extends AccessTokenController
 {
@@ -87,5 +90,66 @@ class AuthController extends AccessTokenController
 
             return new Response($this->configuration()->get('app.debug') ? $e->getMessage() : 'Error.', 500);
         }
+    }
+	
+	
+    /**
+     * Log the user out of the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function code(Request $request)
+    { 
+
+		$mobile=new Mobile();
+		
+		$type=$request->get("type");
+
+		$phone=$request->get("phone");
+		
+		$code= $mobile->code($phone, '', $type);
+		
+		$request->session()->put('mobile_code_'.$phone.'_'.$type, $code);
+		
+        return [
+          'code' => Code::SUCCESS,
+          'msg' => "验证码发送成功，请注意查收".$code,
+          'data' => [],
+          'timestamp' => time()
+        ];
+    }
+	
+    /**
+     * Log the user out of the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function password(PasswordRequest $request)
+    { 
+		$data =$request->all();
+		
+		$auth=new Auth();
+		
+		if($data["code"]!=$request->session()->get('mobile_code_'.$data["phone"].'_'.Mobile::FIND)){
+          return [
+            'code' =>  Code::VALIDATE,
+            'msg' => "验证码不正确",
+            'data' => [],
+            'timestamp' => time()
+          ];
+		}
+		
+		$auth->change($data);
+		
+		$request->session()->put('mobile_code_'.$data["phone"].'_'.Mobile::FIND,'');//修改完以后清掉这个session值
+		
+        return [
+          'code' => Code::SUCCESS,
+          'msg' => "修改成功",
+          'data' => [],
+          'timestamp' => time()
+        ];
     }
 }

@@ -31,7 +31,7 @@ class Controller extends BaseController
     protected function error($msg = '',$data=[],$code=Code::FAIL)
     {
         return [
-          'code' => Code::FAIL,
+          'code' => $code,
           'msg' => $msg,
           'data' => $data,
           'timestamp' => time()

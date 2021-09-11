@@ -59,21 +59,24 @@ class Role implements Repository
 	}
 	
 	/*删除角色*/
-	public function remove($id,$notify)
+	public function remove($data,$notify)
 	{
-		$role=RoleModel::where("id",$id)->first();
+		$roles=RoleModel::whereIn("id",$data)->where('is_system','<>',1)->get();
 		
-		if(!$role){return true;}
+		if(!$roles){return true;}
 		
-		if($role->is_system==1){
-          throw new AuthException("系统角色不允许删除");
+		foreach($roles as $role){
+			
+		  if($role->is_system==1){
+            throw new AuthException("系统角色不允许删除");
+		  }
+		
+		  $role->delete();
 		}
 		
-		$role->delete();
-		  
 		$notify["method"]="remove";
 		  
-		event(new RoleRemoved($role,$notify));
+		event(new RoleRemoved($roles,$notify));
 		  
 		return true;
 	}

@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserRequest;
 use App\Repositories\Profile;
 use App\Model\Notice;
+use App\Constant\Code;
+use App\Repositories\Mobile;
+use App\Http\Requests\RestPasswordRequest;
+use App\Http\Requests\RestPhoneRequest;
 
 class ProfileController extends Controller
 {
@@ -56,12 +60,76 @@ class ProfileController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function password(Request $request)
+    public function password(RestPasswordRequest $request)
     {
-	
-	    $this->getRepositories()->password($request->all(),['form'=>['user'=>$request->user]]);
+
+		$data=$request->all();
+		
+		if($data["code"]!=$request->session()->get('mobile_code_'.Mobile::CHANGE)){
+			
+			return $this->error('验证码不正确',[], Code::VALIDATE);
+		}
+		
+	    $this->getRepositories()->password($data,['form'=>['user'=>$request->user]]);
+		
+		$request->session()->put('mobile_code_'.Mobile::CHANGE,'');//修改完以后清掉这个session值
 		
 		return $this->success('修改成功');
+    }
+	
+    /**
+     * 修改手机
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function phone(RestPhoneRequest $request)
+    {
+
+		$data=$request->all();
+
+		if($data["oldcode"]!=$request->session()->get('mobile_code_'.Mobile::CHANGEPHONE)){
+			
+			return $this->error('验证码不正确'.$request->session()->get('mobile_code_'.Mobile::CHANGEPHONE),[], Code::VALIDATE);
+		}
+		
+		if($data["code"]!=$request->session()->get('mobile_code_'.$data["phone"].'_'.Mobile::VALIDATEPHONE)){
+			
+			return $this->error('新手机验证码不正确',[], Code::VALIDATE);
+		}
+		
+	    $this->getRepositories()->phone($data,['form'=>['user'=>$request->user]]);
+		
+		$request->session()->put('mobile_code_'.Mobile::CHANGEPHONE,'');//修改完以后清掉这个session值
+		
+		$request->session()->put('mobile_code_'.$data["phone"].'_'.Mobile::VALIDATEPHONE,'');//修改完以后清掉这个session值
+		
+		return $this->success('修改成功');
+    }
+	
+    /**
+     * 发送手机验证码,发送成功
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function code(Request $request)
+    {
+		$mobile=new Mobile();
+
+		$type=$request->get("type");
+
+		$phone = $request->user()->phone;
+		
+		$code= $mobile->code($phone, '', $type);
+		
+		$request->session()->put('mobile_code_'.$type, $code);
+		
+        return [
+          'code' => Code::SUCCESS,
+          'msg' => "验证码发送成功，请注意查收".$code,
+          'data' => [],
+          'timestamp' => time()
+        ];
+		
     }
     /**
      * 获取用户菜单

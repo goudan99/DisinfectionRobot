@@ -16,16 +16,25 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/',function(){ return abort(404); });
 
-Route::group(['namespace' =>"Admin", 'prefix' => 'login'], function ($router){
-	Route::post('token', 	'AuthController@login')->name('login');
-	Route::any('logout', 	'AuthController@logout')->name('logout');
+Route::group(['namespace' =>"Admin", 'prefix' => 'auth'], function ($router){
+	
+	Route::post('/login/token', 	'AuthController@login')->name('login');
+	
+	Route::any('/login/logout', 	'AuthController@logout')->name('logout');
+	
+	Route::post('/find/password',	'AuthController@password');
+	
+	Route::any('/find/code',		'AuthController@code');
 });
 
 Route::group(['namespace' =>"Admin", 'prefix' => 'profile','middleware' => ['auth:api']], function () {
 	Route::get('/user','ProfileController@user');
+	Route::post('/user/code','ProfileController@code');
+	Route::get('/user/{id?}','ProfileController@show');
 	Route::post('/user','ProfileController@store');
 	Route::post('/avatar','ProfileController@avatar');
 	Route::post('/password','ProfileController@password');
+	Route::post('/phone','ProfileController@phone');
 	Route::get('/menu','ProfileController@menu');
 	Route::get('/notice','ProfileController@notice');
 	Route::get('/notice/{id?}','ProfileController@show');
@@ -51,6 +60,15 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'member','middleware' => ['auth
 	Route::delete('/role','RoleController@remove');
 });
 
+
+/* 机器管理 */
+Route::group(['namespace' =>"Admin", 'prefix' => 'machine','middleware' => ['auth:api','permit:api']], function () {
+	Route::get('/machine','MachineController@home');
+	Route::get('/machine/{id?}','MachineController@show');
+	Route::post('/machine','MachineController@store');
+	Route::delete('/machine','MachineController@remove');
+});
+
 /*配置模块-菜单配置,config配置*/
 Route::group(['namespace' =>"Admin", 'prefix' => 'setting','middleware' => ['auth:api','permit:api']], function () {
 	Route::get('/menus','MenuController@home');
@@ -72,9 +90,13 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'system','middleware' => ['auth
 	Route::post('/access','AccessController@store');
 	Route::delete('/access/{id?}','AccessController@remove');
 	Route::get('/uris','AccessController@uri');
-	Route::get('/logger/api','LoggerController@api');//上传前端错误
-	Route::post('/logger/api','LoggerController@store');//上传前端错误
-	Route::get('/logger/code','LoggerController@code');//上传前端错误
-	Route::get('/logger/code/{id?}','LoggerController@codeShow');//上传前端错误
-	Route::delete('/logger/code/{id?}','LoggerController@codeRemove');//上传前端错误
+	Route::get('/logger/api','LoggerController@api');   				//显示前端错误
+	Route::get('/logger/code','LoggerController@code');					//获取后端报错
+	Route::get('/logger/code/{id?}','LoggerController@codeShow');		//显示后端错误
+	Route::delete('/logger/code/{id?}','LoggerController@codeRemove');	//删除错误日志
+	Route::get('/logger/job','LoggerController@job');   				//任务日志
+	Route::get('/logger/user','LoggerController@user');   				//用户操作日志
+});
+Route::group(['namespace' =>"Admin", 'prefix' => 'system','middleware' => []], function () {
+	Route::post('/logger/api','LoggerController@store');				//上传前端错误
 });
