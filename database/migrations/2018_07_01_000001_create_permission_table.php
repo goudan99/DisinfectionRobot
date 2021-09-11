@@ -20,7 +20,7 @@ class CreatePermissionTable extends Migration
 			$table->string('password')->comment('密码凭证：站内的保存密码、站外的不保存或保存token）');
 			$table->string('nickname')->default('')->nullable()->comment('昵称帐号');
 			$table->string('phone')->default('')->nullable()->comment('用户手机');
-			$table->string('email')->default('')->nullable()->comment('用户邮箱');
+			$table->string('code')->default('')->nullable()->comment('激活码');
 			$table->string('role_id')->default('')->nullable()->comment('角色id');
 			$table->string('role_name')->default('')->nullable()->comment('角色名');
 			$table->string('avatar')->default('')->nullable()->comment('用户头像');	
@@ -40,6 +40,13 @@ class CreatePermissionTable extends Migration
 			$table->tinyInteger('status')->nullable()->default(1)->comment('状态:0-无效 1-有效');
 			$table->tinyInteger('is_system')->default(0)->comment('保留数据0-否 1-是 不允许删除');
             $table->timestamps();			
+        });
+		
+		/*角色权限*/
+        Schema::create('role_user', function (Blueprint $table) {
+			$table->integer('role_id')->comment('角色id');
+			$table->integer('user_id')->comment('权限id');
+			$table->primary(['role_id', 'user_id']);			
         });
 		
 		//菜单
