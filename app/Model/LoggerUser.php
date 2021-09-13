@@ -10,5 +10,5 @@ class LoggerUser extends Model
 	
     protected $table = 'logger_user';
 	
-	protected $fillable = ['code','msg','type','url'];
+	protected $fillable = ['user_id','user_name','name','content','data'];
 }

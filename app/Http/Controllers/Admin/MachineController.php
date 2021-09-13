@@ -40,7 +40,7 @@ class MachineController extends Controller
      */
     public function store(Request $request)
     {
-	   if(!$this->getRepositories()->store($request->all(),['form'=>['user'=>$request->user]])){
+	   if(!$this->getRepositories()->store($request->all(),['form'=>['user'=>$request->user("api")]])){
 			return $this->error('用户存在');
 	   }
 
@@ -70,7 +70,7 @@ class MachineController extends Controller
 		if($data->contains($request->user('api')->id)){
 			return $this->error('删除失败,你不能删除自己');
 		}
-	    if($this->getRepositories()->remove($data,['form'=>['user'=>$request->user]])){
+	    if($this->getRepositories()->remove($data,['form'=>['user'=>$request->user("api")]])){
           return $this->success([],"删除成功");
 		}else{
           return $this->error('删除失败,该用户不存在或是系统用户');

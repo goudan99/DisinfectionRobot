@@ -33,10 +33,8 @@ class User implements Repository
 			}
 			
 			unset($data['code']);//永远不有修改激活码
-			if(isset($data['password'])){
-				if(!$data['password']){
-					unset($data['password']);
-				}
+	        if(!$data['password']){
+			  unset($data['password']);
 			}
 			
 			$user->update($data);
