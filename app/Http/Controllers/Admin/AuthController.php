@@ -2,96 +2,135 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Constant\Code;
 use Illuminate\Http\Request;
-use Laravel\Passport\Http\Controllers\AccessTokenController;
-use Nyholm\Psr7\Response as Psr7Response;
-use Psr\Http\Message\ServerRequestInterface;
 use Illuminate\Http\Response;
-use Exception;
-use Throwable;
-use League\OAuth2\Server\Exception\OAuthServerException;
-use Symfony\Component\Debug\Exception\FatalThrowableError;
 use App\Repositories\Mobile;
 use App\Repositories\Auth;
+use App\Model\Account;
 use App\Http\Requests\PasswordRequest;
+use App\Http\Requests\LoginPhoneRequest;
+use App\Http\Requests\RegisterRequest;
+use EasyWeChat\Factory;
 
-class AuthController extends AccessTokenController
+class AuthController extends Controller
 {
 	
-    public function logout(ServerRequestInterface $req)
-    { 
-        return [
-          'code' => Code::SUCCESS,
-          'msg' => "success",
-          'data' => [],
-          'timestamp' => time()
-        ];
-	}
+    public function __construct(Auth $repo)
+    {
+        parent::__construct($repo);	
+    }
+	
     /**
      * Log the user out of the application.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function login(ServerRequestInterface $req)
+    public function login(Request $req)
     { 
-		$param = (array) $req->getParsedBody();	
-		$param['grant_type']="password";
-		$param['client_id']=config("shop")["auth"]["client"];
-		$param['client_secret']=config("shop")["auth"]["secret"];
-		$request=$req->withParsedBody($param);
-		$requestParameters1 = (array) $request->getParsedBody();
-
-        return $this->withErrorHandling(function () use ($request) {
-            return $this->convertResponse(
-                $this->server->respondToAccessTokenRequest($request, new Psr7Response)
-            );
-        });
-    }	
-	
-    /**
-     * Convert a PSR7 response to a Illuminate Response.
-     *
-     * @param \Psr\Http\Message\ResponseInterface $psrResponse
-     * @return \Illuminate\Http\Response
-     */
-    public function convertResponse($psrResponse)
-    {
-		$data['code']=Code::SUCCESS;
-		$data['data']=json_decode($psrResponse->getBody());;
-		$data['error']="";
-		$data['msg']="success";
-		$data['timestamp']=time();
-        return new Response(
-            json_encode($data),
-            $psrResponse->getStatusCode(),
-            $psrResponse->getHeaders()
-        );
-    }
-    protected function withErrorHandling($callback)
-    {
-        try {
-            return $callback();
-        } catch (OAuthServerException $e) {
-			$data['code']=Code::VALIDATE;
-			$data['data']=[];
-			$data['error']="帐号密或密码错误";
-			$data['msg']="帐号密或密码错误";
-			$data['timestamp']=time();
-			return $data;
-        } catch (Exception $e) {
-            $this->exceptionHandler()->report($e);
-
-            return new Response($this->configuration()->get('app.debug') ? $e->getMessage() : 'Error.', 500);
-        } catch (Throwable $e) {
-            $this->exceptionHandler()->report(new FatalThrowableError($e));
-
-            return new Response($this->configuration()->get('app.debug') ? $e->getMessage() : 'Error.', 500);
+        $credentials = request(['username', 'password']);
+		
+		 $credentials = ["name"=>$req->username, 'password'=>$req->password];
+		 
+        if (! $token = auth()->attempt($credentials)) {
+            return $this->error("帐号或密码错误");
         }
+
+        $data = [
+          'access_token' => $token,
+          'token_type' => 'bearer',
+          'expires_in' => auth()->factory()->getTTL() * 60
+		];
+		  
+        return $this->success($data);
+    }
+
+    public function program(Request $request)
+    { 
+		$code = request("code");
+		
+		$config = config("shop")["miniProgram"];
+		
+		$app = Factory::miniProgram($config);
+		
+		$openid = "ofeYf1JTKjv6eutx_2lM8McRq3sw";
+		
+		$wedata = [];
+		
+		if(config("app")["env"]!="local"){
+			
+			$wedata = $app->auth->session($code);
+			
+			if(isset($wedata["errcode"])){
+				
+				return $this->error("code无效，重新获取",[["code"=>$wedata["errmsg"]]],Code::VALIDATE);
+				
+			}
+			
+			$openid = $wedata["openid"];
+		}
+
+		if(!$user = Account::where("name",$config["app_id"])->where("password",$openid)->where("type",2)->first()){
+			return $this->error("没有关联帐号，需要关键帐号");
+		}
+		
+		$token = auth()->login($user);
+		
+        $data = [
+          'access_token' => $token,
+          'token_type' => 'bearer',
+		  'session_key' => isset($wedata["session_key"])?$wedata["session_key"]:'',
+          'expires_in' => auth()->factory()->getTTL() * 60
+		];
+		  
+        return $this->success($data);
+		
+    }
+	/*
+	  手机验证码登录
+	*/
+    public function phone(LoginPhoneRequest $request)
+    { 
+		$data = $request->all();
+		
+		if($data["code"]!=$request->session()->get('mobile_code_'.$data["phone"].'_'.Mobile::LOGIN)){
+		  return $this->error("验证码不正确");
+		}
+		
+		if(!$user = Account::where("name",$data["phone"])->where("type",1)->first()){
+			return $this->error("验证码错误");
+		}
+		
+		$token = auth()->login($user);
+		
+		$request->session()->put('mobile_code_'.$data["phone"].'_'.Mobile::LOGIN,'');//修改完以后清掉这个session值
+		
+        $data = [
+          'access_token' => $token,
+          'token_type' => 'bearer',
+		  'session_key' => isset($wedata["session_key"])?$wedata["session_key"]:'',
+          'expires_in' => auth()->factory()->getTTL() * 60
+		];
+		  
+        return $this->success($data);
     }
 	
+    public function register(RegisterRequest $request)
+    {
+		$data = $request->all();
+		
+	    if(!$this->getRepositories()->register($request->all(),['form'=>['user'=>'']])){
+			 return $this->error("手机号存在");
+	    }
+
+		return $this->success([],"注册成功");
+	}
+
+    public function logout(ServerRequestInterface $req)
+    { 
+        return $this->success([],"成功退出");
+	}
 	
     /**
      * Log the user out of the application.
@@ -112,12 +151,7 @@ class AuthController extends AccessTokenController
 		
 		$request->session()->put('mobile_code_'.$phone.'_'.$type, $code);
 		
-        return [
-          'code' => Code::SUCCESS,
-          'msg' => "验证码发送成功，请注意查收".$code,
-          'data' => [],
-          'timestamp' => time()
-        ];
+		return $this->success([],"验证码发送成功，请注意查收");
     }
 	
     /**
@@ -133,23 +167,13 @@ class AuthController extends AccessTokenController
 		$auth=new Auth();
 		
 		if($data["code"]!=$request->session()->get('mobile_code_'.$data["phone"].'_'.Mobile::FIND)){
-          return [
-            'code' =>  Code::VALIDATE,
-            'msg' => "验证码不正确",
-            'data' => [],
-            'timestamp' => time()
-          ];
+			return $this->error("验证码不正确");
 		}
 		
 		$auth->change($data);
 		
 		$request->session()->put('mobile_code_'.$data["phone"].'_'.Mobile::FIND,'');//修改完以后清掉这个session值
 		
-        return [
-          'code' => Code::SUCCESS,
-          'msg' => "修改成功",
-          'data' => [],
-          'timestamp' => time()
-        ];
+        return $this->success([],"密码重置成功");
     }
 }

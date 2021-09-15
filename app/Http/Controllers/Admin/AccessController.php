@@ -44,11 +44,11 @@ class AccessController extends Controller
     }
     public function store(AccessRequest $request)
     {
-		return $this->success($this->getRepositories()->store($request->all(),['form'=>['user'=>$request->user("api")]]));
+		return $this->success($this->getRepositories()->store($request->all(),['form'=>['user'=>$request->user()->user]]));
 	}
 	
     public function remove(Request $request,$id)
     {
-		return $this->success($this->getRepositories()->remove($id,['form'=>['user'=>$request->user("api")]]));
+		return $this->success($this->getRepositories()->remove($id,['form'=>['user'=>$request->user()->user]]));
 	}
 }

@@ -29,7 +29,7 @@ class SettingController extends Controller
      */
     public function upload(Request $request)
     {
-		$avatar=$this->getRepositories()->upload($request,['form'=>['user'=>$request->user("api")]]);
+		$avatar=$this->getRepositories()->upload($request,['form'=>['user'=>$request->user()->user]]);
 		
 		return $this->success($avatar,"操作成功");
     }
@@ -41,7 +41,7 @@ class SettingController extends Controller
      */
     public function store(Request $request)
     {
-	   $this->getRepositories()->store($request->all(),['form'=>['user'=>$request->user("api")]]);
+	   $this->getRepositories()->store($request->all(),['form'=>['user'=>$request->user()->user]]);
 
 	   return $this->success([],"保存完成");
     }

@@ -85,7 +85,7 @@ class LoggerController extends Controller
      */
     public function store(Request $request)
     {
-		$this->getRepositories()->apiStore($request->all(),['form'=>['user'=>$request->user("api")]]);
+		$this->getRepositories()->apiStore($request->all(),['form'=>['user'=>$request->user()->user]]);
 		
 		return $this->success();
     }
@@ -162,7 +162,7 @@ class LoggerController extends Controller
      */
     public function codeRemove(Request $request, $date)
     {
-		$this->getRepositories()->codeRemove($date,['form'=>['user'=>$request->user("api")]]);
+		$this->getRepositories()->codeRemove($date,['form'=>['user'=>$request->user()->user]]);
 		
 		return $this->success();
     }

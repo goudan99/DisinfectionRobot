@@ -2,22 +2,18 @@
 namespace App\Model;
 
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Passport\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Tymon\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends Authenticatable
+class User extends Model
 {
-	use Notifiable,HasApiTokens,HasFactory;
+	use Notifiable,HasFactory;
 	  
-	protected $fillable = ['name','password','nickname','avatar','phone','email','desc','passed'];
+	protected $fillable = ['nickname','avatar','phone','email','desc','passed'];
 	
-    protected $hidden = ['password', 'remember_token'];
-	 
-    public function findForPassport($login)
+	public function accouts()
     {
-        return $this->orWhere('name', $login)->first();
+         return $this->hasMany('App\Model\Account');
     }
 	
 	public function roles()
@@ -47,13 +43,4 @@ class User extends Authenticatable
       return false; 
     }
 	
-    public function getJWTIdentifier()
-    {
-        return $this->getKey();
-    }
-	
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
 }

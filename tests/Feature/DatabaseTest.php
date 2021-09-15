@@ -6,7 +6,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use App\Model\User;
 use App\Model\Role;
-use Laravel\Passport\Passport;
 
 class DatabaseTest extends TestCase
 {

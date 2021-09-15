@@ -55,10 +55,10 @@ class AuthEventListener
      */
 	public function onLoginSuccess($event)
 	{
-		$event->user->user->last_at=date('Y-m-d H:i:s', time());
+		//$event->user->user->last_at=date('Y-m-d H:i:s', time());
 		
-		$event->user->user->login_times=$event->user->login_times+1;
+		//$event->user->user->login_times=$event->user->login_times+1;
 		
-		$event->user->user->save();
+		//$event->user->user->save();
 	}
 }

@@ -16,7 +16,7 @@ class ProfileController extends Controller
 {
     public function __construct(Profile $profileRepositories,Request $request)
     {
-		$profileRepositories->setUser($request->user('api'));
+		$profileRepositories->setUser($request->user()->user);
 		
         parent::__construct($profileRepositories);	
     }
@@ -27,7 +27,7 @@ class ProfileController extends Controller
      */
     public function user(Request $request)
     {
-		return $this->success($request->user('api'),"获取成功");
+		return $this->success($request->user()->user,"获取成功");
     }
     /**
      * 修改个人信息
@@ -36,9 +36,9 @@ class ProfileController extends Controller
      */
     public function store(Request $request)
     {
-	    $this->getRepositories()->store($request->all(),['form'=>['user'=>$request->user("api")]]);
+	    $this->getRepositories()->store($request->all(),['form'=>['user'=>$request->user()->user]]);
 		
-        return $this->success($request->user('api'),"操作成功");
+        return $this->success($request->user()->user,"操作成功");
     }
     /**
      * 显示登录用户的信息
@@ -51,7 +51,7 @@ class ProfileController extends Controller
 			return $this->error('头像不存在');;
         }
 		
-		$avatar=$this->getRepositories()->avatar($request,['form'=>['user'=>$request->user("api")]]);
+		$avatar=$this->getRepositories()->avatar($request,['form'=>['user'=>$request->user()->user]]);
 		
 		return $this->success($avatar,"操作成功");
     }
@@ -70,7 +70,7 @@ class ProfileController extends Controller
 			return $this->error('验证码不正确',[], Code::VALIDATE);
 		}
 		
-	    $this->getRepositories()->password($data,['form'=>['user'=>$request->user("api")]]);
+	    $this->getRepositories()->password($data,['form'=>['user'=>$request->user()->user]]);
 		
 		$request->session()->put('mobile_code_'.Mobile::CHANGE,'');//修改完以后清掉这个session值
 		
@@ -97,7 +97,7 @@ class ProfileController extends Controller
 			return $this->error('新手机验证码不正确',[], Code::VALIDATE);
 		}
 		
-	    $this->getRepositories()->phone($data,['form'=>['user'=>$request->user("api")]]);
+	    $this->getRepositories()->phone($data,['form'=>['user'=>$request->user()->user]]);
 		
 		$request->session()->put('mobile_code_'.Mobile::CHANGEPHONE,'');//修改完以后清掉这个session值
 		
@@ -117,7 +117,7 @@ class ProfileController extends Controller
 
 		$type=$request->get("type");
 
-		$phone = $request->user("api")->phone;
+		$phone = $request->user()->user->phone;
 		
 		$code= $mobile->code($phone, '', $type);
 		
@@ -138,7 +138,7 @@ class ProfileController extends Controller
      */
     public function menu(Request $request)
     {
-		return $this->success($request->user('api')->menus(),"获取成功");
+		return $this->success($request->user()->user->menus(),"获取成功");
     }
     /**
      * 获取用户通知
@@ -148,9 +148,9 @@ class ProfileController extends Controller
     public function notice(Request $request)
     {
 		return $this->success([
-		  "unread"=>Notice::where("user_id",$request->user("api")->id)->where("is_read",0)->get(),
-		  "readed"=>Notice::where("user_id",$request->user("api")->id)->where("is_read",1)->get(),
-		  "trash"=>Notice::onlyTrashed()->where("user_id",$request->user("api")->id)->get()
+		  "unread"=>Notice::where("user_id",$request->user()->user->id)->where("is_read",0)->get(),
+		  "readed"=>Notice::where("user_id",$request->user()->user->id)->where("is_read",1)->get(),
+		  "trash"=>Notice::onlyTrashed()->where("user_id",$request->user()->user->id)->get()
 		]);
     }
     /**
@@ -160,7 +160,7 @@ class ProfileController extends Controller
      */
     public function read(Request $request,$id)
     {
-		$this->getRepositories()->read($id,['form'=>['user'=>$request->user("api")]]);
+		$this->getRepositories()->read($id,['form'=>['user'=>$request->user()->user]]);
 		 
 		return $this->success("操作成功");
     }
@@ -172,7 +172,7 @@ class ProfileController extends Controller
      */
     public function remove(Request $request,$id)
     {
-		$this->getRepositories()->remove($id,['form'=>['user'=>$request->user("api")]]);
+		$this->getRepositories()->remove($id,['form'=>['user'=>$request->user()->user]]);
 		 
 		return $this->success("删除成功");
     }
@@ -183,7 +183,7 @@ class ProfileController extends Controller
      */
     public function restore(Request $request,$id)
     {
-		$this->getRepositories()->restore($id,['form'=>['user'=>$request->user("api")]]);
+		$this->getRepositories()->restore($id,['form'=>['user'=>$request->user()->user]]);
 		 
 		return $this->success("操作成功");
     }
@@ -205,6 +205,6 @@ class ProfileController extends Controller
      */
     public function unread(Request $request)
     {
-		return $this->success(Notice::where("user_id",$request->user("api")->id)->where("is_read",0)->count());
+		return $this->success(Notice::where("user_id",$request->user()->user->id)->where("is_read",0)->count());
     }
 }

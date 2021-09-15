@@ -4,8 +4,8 @@ return [
   'avatar' => "public",//头像位置
   'system' => "public",//头像位置
   //用于登录api的oauth
-  'auth' => [
-    'client' => env('AUTH_CLIENT', "942cab94-3842-4d97-8d66-e329a691fa12"),
-    'secret' => env('AUTH_SECRET', "5xbPe1EFwpX9MZajo5i9V066mHC5qXvfp0ri4PBP"),
+  'miniProgram' => [
+    'app_id' => "wx8ccff2986bb253a7",
+    'secret' => "67c6d597b1d7877363b827c80484fcd6",
   ],
 ];

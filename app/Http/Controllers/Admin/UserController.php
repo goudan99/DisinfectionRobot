@@ -44,7 +44,7 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-	   if(!$this->getRepositories()->store($request->all(),['form'=>['user'=>$request->user("api")]])){
+	   if(!$this->getRepositories()->store($request->all(),['form'=>['user'=>$request->user()->user]])){
 			return $this->error('用户存在');
 	   }
 
@@ -74,7 +74,7 @@ class UserController extends Controller
 		if($data->contains($request->user('api')->id)){
 			return $this->error('删除失败,你不能删除自己');
 		}
-	    if($this->getRepositories()->remove($data,['form'=>['user'=>$request->user("api")]])){
+	    if($this->getRepositories()->remove($data,['form'=>['user'=>$request->user()->user]])){
           return $this->success([],"删除成功");
 		}else{
           return $this->error('删除失败,该用户不存在或是系统用户');

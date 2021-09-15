@@ -9,6 +9,7 @@ class Mobile
 {
     public const REGISITER = 0; 	 //用户注册
     public const FIND = 1;      	 //找密码
+    public const LOGIN = 5;      	 //找密码
     public const CHANGE = 2;    	 //更改密码
     public const CHANGEPHONE = 3;  	 //更改手机身份认证
     public const VALIDATEPHONE = 4;  //更改手机确认新手机

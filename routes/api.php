@@ -16,15 +16,20 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/',function(){ return abort(404); });
 
+/*不需要权限可以获取或操作的数据*/
+Route::group(['namespace' =>"Admin", 'prefix' => 'system','middleware' => []], function () {
+	Route::post('/logger/api','LoggerController@store');				//上传前端错误
+	Route::post('/mobile/code','AuthController@code');					//手机验证码
+});
+
+
 Route::group(['namespace' =>"Admin", 'prefix' => 'auth'], function ($router){
-	
-	Route::post('/login/token', 	'AuthController@login')->name('login');
-	
-	Route::any('/login/logout', 	'AuthController@logout')->name('logout');
-	
-	Route::post('/find/password',	'AuthController@password');
-	
-	Route::any('/find/code',		'AuthController@code');
+	Route::post('/login/token', 	 'AuthController@login')->name('login');			// 帐号密码登录
+	Route::post('/login/program', 	 'AuthController@program')->name('login_program');	// 小程序登录，看似登录实则绑定
+	Route::post('/login/phone', 	 'AuthController@phone')->name('login_phone');		// 手机验证码登录
+	Route::any('/login/logout', 	 'AuthController@logout')->name('logout');			// 退出
+	Route::post('/find/password',	 'AuthController@password');						// 忘记密码
+	Route::any('/register',		 	 'AuthController@register');						// 注册,必须是在小程序里注册
 });
 
 Route::group(['namespace' =>"Admin", 'prefix' => 'profile','middleware' => ['auth:api']], function () {
@@ -35,14 +40,13 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'profile','middleware' => ['aut
 	Route::post('/avatar','ProfileController@avatar');
 	Route::post('/password','ProfileController@password');
 	Route::post('/phone','ProfileController@phone');
-	Route::get('/menu','ProfileController@menu');
-	Route::get('/notice','ProfileController@notice');
-	Route::get('/notice/{id?}','ProfileController@show');
-	Route::put('/notice/{id?}','ProfileController@read');//标志已读
-	Route::patch('/notice/{id?}','ProfileController@restore');//恢复删除
-	Route::delete('/notice/{id?}','ProfileController@remove');//删除
-	Route::get('/notice/unread','ProfileController@remove');//没有读的条数
-
+	Route::get('/menu','ProfileController@menu');			
+	Route::get('/notice','ProfileController@notice');				// 通知
+	Route::get('/notice/{id?}','ProfileController@show');			// 通知
+	Route::put('/notice/{id?}','ProfileController@read');			//标志已读
+	Route::patch('/notice/{id?}','ProfileController@restore');		//恢复删除
+	Route::delete('/notice/{id?}','ProfileController@remove');		//删除
+	Route::get('/notice/unread','ProfileController@remove');		//没有读的条数
 });
 
 /*权限管理模块*/
@@ -96,7 +100,4 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'system','middleware' => ['auth
 	Route::delete('/logger/code/{id?}','LoggerController@codeRemove');	//删除错误日志
 	Route::get('/logger/job','LoggerController@job');   				//任务日志
 	Route::get('/logger/user','LoggerController@user');   				//用户操作日志
-});
-Route::group(['namespace' =>"Admin", 'prefix' => 'system','middleware' => []], function () {
-	Route::post('/logger/api','LoggerController@store');				//上传前端错误
 });

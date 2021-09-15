@@ -4,11 +4,13 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\AuthenticationException;
 use Throwable;
 use App\Exceptions\AttachException;
 use App\Exceptions\AuthException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\UniqueException;
+use Illuminate\Support\Arr;
 
 class Handler extends ExceptionHandler
 {
@@ -46,13 +48,46 @@ class Handler extends ExceptionHandler
         });
     }
 	
+	/*重新格式化成定义的格式*/
     protected function invalidJson($request, ValidationException $exception)
     {
         return response()->json([
 			'code'=>$exception->status,
-            'msg' => '数据验证不正确',
-            'error' => $exception->errors(),
-			'data'=>''
+            'msg' => $exception->getMessage(),
+            'data' => $exception->errors(),
+			'timestamp' => time()
         ], 200);
+    }
+
+	//401显示
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        return $request->expectsJson() ? 
+				response()->json([
+					'code' => 401,
+					'msg'  => $exception->getMessage(),
+					'data' => [],
+					'timestamp' => time()
+				], 200): 
+				redirect()->guest($exception->redirectTo() ?? route('login'));
+    }
+	
+	/*重新格式化成定义的格式*/
+    protected function convertExceptionToArray(Throwable $e)
+    {
+        return config('app.debug') ? [
+            'message' => $e->getMessage(),
+            'exception' => get_class($e),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'trace' => collect($e->getTrace())->map(function ($trace) {
+                return Arr::except($trace, ['args']);
+            })->all(),
+        ] : [
+			'code'=>  $this->isHttpException($e)? $e->getStatusCode() : 500,
+            'msg' =>  $this->isHttpException($e) ? $e->getMessage() : 'Server Error',
+            'data' => [],
+			'timestamp' => time()
+        ];
     }
 }

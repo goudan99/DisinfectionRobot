@@ -33,7 +33,7 @@ class MenuController extends Controller
     {
 		$data=$request->all();
 		
-		if(!$this->getRepositories()->store($data,['form'=>['user'=>$request->user("api")]])){
+		if(!$this->getRepositories()->store($data,['form'=>['user'=>$request->user()->user]])){
 		   return $this->error('菜单不存在');
 		}
 		return $this->success([],'创建成功');
@@ -46,7 +46,7 @@ class MenuController extends Controller
      */
     public function remove(Request $request)
     {
-		if(!$num=$this->getRepositories()->remove($request->id,['form'=>['user'=>$request->user("api")]])){
+		if(!$num=$this->getRepositories()->remove($request->id,['form'=>['user'=>$request->user()->user]])){
 		   return $this->error('删除失败,此菜单不存在或是系统菜单');
 		}
 		return $this->success([],'删除成功');
@@ -67,7 +67,7 @@ class MenuController extends Controller
      */
     public function delAction(Request $request,$id)
     {
-		$this->getRepositories()->detach(["id"=>$id,"access_id"=>$request->access_id],['form'=>['user'=>$request->user("api")]]);
+		$this->getRepositories()->detach(["id"=>$id,"access_id"=>$request->access_id],['form'=>['user'=>$request->user()->user]]);
 		
 		return $this->success([],'解除操作成功');
     }
@@ -78,7 +78,7 @@ class MenuController extends Controller
      */
     public function storeAction(Request $request,$id)
     {
-		$this->getRepositories()->attach(["id"=>$id,"access_id"=>$request->access_id],['form'=>['user'=>$request->user("api")]]);
+		$this->getRepositories()->attach(["id"=>$id,"access_id"=>$request->access_id],['form'=>['user'=>$request->user()->user]]);
 		return $this->success([],'绑定操作成功');
 		return $data;
     }
