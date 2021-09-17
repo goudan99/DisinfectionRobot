@@ -12,12 +12,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('users')->insert([[
-            'name' => 'admin',  
-			'password' => Hash::make('admin888'),			
-            'nickname' => '管理员',   
-            'role_id' => -1,  
-            'role_name' => '系统用户',  			
+        DB::table('users')->insert([[		
+            'nickname' => '管理员',     			
             'phone' => '15113339677',
             'avatar' => '/img/nopic.jpg',
             'last_at' => '2019-05-20',
@@ -27,151 +23,118 @@ class DatabaseSeeder extends Seeder
             'desc' => '系统用户',
 			'is_system' => '1'
         ]]);
+        DB::table('accounts')->insert([[
+            'name' => 'admin',  
+			'password' => Hash::make('admin888'),			
+            'user_id' => 1,
+            'passed' => 1,
+			'type' => 0
+        ],[
+            'name' => '15113339677',  
+			'password' => '',			
+            'user_id' => 1,
+            'passed' => 1,
+			'type' => 1
+        ],[
+            'name' => 'wx8ccff2986bb253a7',  
+			'password' => '0',			
+            'user_id' => 1,
+            'passed' => 1,
+			'type' => 2
+        ]]);
 		
 		/*权限模块*/
         DB::table('accesses')->insert([[
 			'id' => '1',
 			'parent_id' => '0',
             'name' => '用户管理', 
-            'type' => '1',
-            'relace_id' => '0',   
             'code' => 'safe', 
             'desc' => '',
-            'path' => '/member/user',
-            'status' => '1',
-            'is_system' => '1'
+            'path' => '/member/user'
         ],[
 			'id' => '2',
 			'parent_id' => '1',
             'name' => '添加用户', 
-            'type' => '2',
-            'relace_id' => '0',   
             'code' => 'user', 
             'desc' => '',
             'path' => '/member/user',
-            'status' => '1',
-            'is_system' => '1'
         ],[
 			'id' => '3',
 			'parent_id' => '1',
             'name' => '修改用户', 
-            'type' => '2',
-            'relace_id' => '0',   
             'code' => 'role', 
             'desc' => '',
-            'path' => '/member/user',
-            'status' => '1',
-            'is_system' => '1'
+            'path' => '/member/user'
         ],[
 			'id' => '4',
 			'parent_id' => '1',
             'name' => '删除用户', 
-            'type' => '2',
-            'relace_id' => '0',   
             'code' => 'role', 
             'desc' => '',
-            'path' => '/member/user',
-            'status' => '2',
-            'is_system' => '1'
+            'path' => '/member/user'
         ],[
 			'id' => '5',
 			'parent_id' => '0',
             'name' => '角色管理', 
-            'type' => '1',
-            'relace_id' => '0',   
             'code' => '', 
             'desc' => '',
-            'path' => '/member/role',
-            'status' => '1',
-            'is_system' => '1'
+            'path' => '/member/role'
         ],[
 			'id' => '6',
 			'parent_id' => '5',
             'name' => '添加角色', 
-            'type' => '2',
-            'relace_id' => '0',   
             'code' => '', 
             'desc' => '',
-            'path' => '/member/role',
-            'status' => '1',
-            'is_system' => '1'
+            'path' => '/member/role'
         ],[
 			'id' => '7',
 			'parent_id' => '5',
             'name' => '修改角色', 
-            'type' => '2',
-            'relace_id' => '0',   
             'code' => 'role', 
             'desc' => '',
-            'path' => '/member/role',
-            'status' => '1',
-            'is_system' => '1'
+            'path' => '/member/role'
         ],[
 			'id' => '8',
 			'parent_id' => '5',
             'name' => '删除角色', 
-            'type' => '2',
-            'relace_id' => '0',   
             'code' => 'role', 
             'desc' => '',
-            'path' => '/member/user',
-            'status' => '2',
-            'is_system' => '1'
+            'path' => '/member/user'
         ],[
 			'id' => '9',
 			'parent_id' => '0',
             'name' => '菜单管理', 
-            'type' => '1',
-            'relace_id' => '0',   
             'code' => '', 
             'desc' => '',
-            'path' => '/member/role',
-            'status' => '1',
-            'is_system' => '1'
+            'path' => '/member/role'
         ],[
 			'id' => '10',
 			'parent_id' => '9',
             'name' => '添加菜单', 
-            'type' => '2',
-            'relace_id' => '0',   
             'code' => '', 
             'desc' => '',
-            'path' => '/member/role',
-            'status' => '1',
-            'is_system' => '1'
+            'path' => '/member/role'
         ],[
 			'id' => '11',
 			'parent_id' => '9',
             'name' => '修改菜单', 
-            'type' => '2',
-            'relace_id' => '0',   
             'code' => 'role', 
             'desc' => '',
-            'path' => '/member/role',
-            'status' => '1',
-            'is_system' => '1'
+            'path' => '/member/role'
         ],[
 			'id' => '12',
 			'parent_id' => '9',
             'name' => '删除菜单', 
-            'type' => '2',
-            'relace_id' => '0',   
             'code' => 'role', 
             'desc' => '',
-            'path' => '/member/user',
-            'status' => '2',
-            'is_system' => '1'
+            'path' => '/member/user'
         ],[
 			'id' => '13',
 			'parent_id' => '0',
-            'name' => '权限查看', 
-            'type' => '1',
-            'relace_id' => '0',   
+            'name' => '权限查看',
             'code' => 'role', 
             'desc' => '',
-            'path' => '/system/access',
-            'status' => '2',
-            'is_system' => '1'
+            'path' => '/system/access'
         ]]);
 		
 		/*菜单管理*/
@@ -245,8 +208,8 @@ class DatabaseSeeder extends Seeder
         DB::table('configs')->insert([[		
             'name' => '网站名', 
             'key' => 'app.name', 
-            'value' => 'heekit商城', 
-            'default_value' => 'heekit商城', 
+            'value' => '扫地机器人', 
+            'default_value' => '扫地机器人', 
             'option_value' => '', 
             'help' => '请输入站点名', 
             'field_type' => 'text',
@@ -272,7 +235,7 @@ class DatabaseSeeder extends Seeder
             'name' => '网站地址', 
             'key' => 'app.url', 
             'value' => '', 
-            'default_value' => 'http://www.heekit.com', 
+            'default_value' => '#', 
             'option_value' => '', 
             'help' => '', 
             'field_type' => 'text',
