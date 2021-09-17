@@ -63,19 +63,24 @@ class Config implements Repository
       return ["group"=>$group,"data"=>$data];
 	}
 	
-	public static function make(){
-		
-	  try{
-		return $config=ConfigModel::orderBy('sort')->get()
-		->groupBy("group_name")
-		->map(function ($item, $key) {
-			return $item->flatMap(function ($v) {
-			  return [$v["key"]=>$v["value"]];
-			});
-		})->toArray();
-	  }catch(Exception $e){
-		return [];
-	  }
+	public static function make($is_public=false){
+	
+		$config=ConfigModel::orderBy('sort');
+	  
+		if($is_public){
+			$config=$config->where('is_public',1);
+		}
+		$config=$config->get();
+		try{
+			return $config->groupBy("group_name")
+			->map(function ($item, $key) {
+				return $item->flatMap(function ($v) {
+					return [$v["key"]=>$v["value"]];
+				});
+			})->toArray();
+		}catch(Exception $e){
+			return [];
+		}
 	}
 	
 	/*删除用户*/

@@ -18,11 +18,16 @@ class Auth implements Repository
 	//发送验证码
 	public function change($data,$notify=[]){
 		
-		$user=Account::where('phone',$data['phone'])->first();
-		
-		$user->password=Hash::make($data["password"]);
-		
-		$user->save();
+		DB::transaction(function () use ($data){
+			if($user=Account::where('name',$data['phone'])->first()){
+				$user->password=Hash::make($data["password"]);
+				$user->save();
+			}
+			if($user=Account::where('user_id',$user->user_id)->where('type',0)->first()){
+				$user->password=Hash::make($data["password"]);
+				$user->save();
+			}
+		});
 		
 		return true;
 		
@@ -36,7 +41,11 @@ class Auth implements Repository
 		}
 		
 		DB::transaction(function () use ($data){
-			$user =User::create(['phone'=>$data['phone']]);
+			$user =User::create([
+				'phone'=>$data['phone'],
+				'code'=>$data['invite_code'],
+				'openid'=>$data['openid'],
+			]);
 			Account::create(['name'=>$data['phone'],'type'=>1,'user_id'=>$user->id]);
 		});
 		
