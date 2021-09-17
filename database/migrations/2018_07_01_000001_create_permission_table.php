@@ -13,16 +13,24 @@ class CreatePermissionTable extends Migration
      */
     public function up()
     {
+		//帐号
+        Schema::create('accounts', function (Blueprint $table) {
+            $table->increments('id',100)->comment('用户id唯一值');
+			$table->integer('user_id')->nullable()->default(0)->comment('关联用户');
+            $table->string('name',100)->unique()->comment('登录帐号');
+			$table->string('password')->nullable()->comment('密码凭证：站内的保存密码、站外的不保存或保存token）');
+			$table->integer('type')->nullable()->default(0)->comment('类型0,帐号密码，1手机验证码，2小程序，3，公众号');
+			$table->tinyInteger('passed')->nullable()->default(1)->comment('帐号状态,0不可用，1已启用');
+            $table->timestamps();
+        });	
+		
 		//用户
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id',100)->comment('用户id唯一值');
-            $table->string('name',100)->unique()->comment('登录帐号');
-			$table->string('password')->comment('密码凭证：站内的保存密码、站外的不保存或保存token）');
 			$table->string('nickname')->default('')->nullable()->comment('昵称帐号');
 			$table->string('phone')->default('')->nullable()->comment('用户手机');
 			$table->string('code')->default('')->nullable()->comment('激活码');
-			$table->string('role_id')->default('')->nullable()->comment('角色id');
-			$table->string('role_name')->default('')->nullable()->comment('角色名');
+			$table->string('openid')->default('')->nullable()->comment('小程序openid');
 			$table->string('avatar')->default('')->nullable()->comment('用户头像');	
 			$table->timestamp('last_at')->nullable()->comment('上次登录时间');
 			$table->string('last_ip')->default('')->nullable()->comment('上次登录ip');
@@ -102,6 +110,7 @@ class CreatePermissionTable extends Migration
 		Schema::dropIfExists('accounts');
         Schema::dropIfExists('users');		
 		Schema::dropIfExists('roles');
+		Schema::dropIfExists('role_user');
 		Schema::dropIfExists('menus');
 		Schema::dropIfExists('accesses');
 		Schema::dropIfExists('access_role');	

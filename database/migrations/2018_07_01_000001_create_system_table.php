@@ -57,6 +57,7 @@ class CreateSystemTable extends Migration
         Schema::create('logger_user', function (Blueprint $table) {
 			$table->increments('id')->comment('通知id');
 			$table->integer('user_id')->nullable()->comment('所属用户,为0时可能是系统');
+			$table->string('user_name')->nullable()->comment('所属用户,为0时可能是系统');
 			$table->string('name',100)->nullable()->comment('操作对象');
 			$table->string('content',100)->nullable()->comment('操作详情');
 			$table->timestamps();
