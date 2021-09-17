@@ -43,6 +43,7 @@ class Auth implements Repository
 		DB::transaction(function () use ($data){
 			$user =User::create([
 				'phone'=>$data['phone'],
+				'nickname'=>$data['nickname'],
 				'code'=>$data['invite_code'],
 				'openid'=>$data['openid'],
 			]);
