@@ -10,7 +10,7 @@ class Account extends Authenticatable  implements JWTSubject
 {
 	use Notifiable,HasFactory;
 	  
-	protected $fillable = ['user_id','name','password','passed'];
+	protected $fillable = ['user_id','name','password','passed','type'];
 	
 	public function user()
     {
