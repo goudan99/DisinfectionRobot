@@ -41,7 +41,7 @@ class RoleController extends Controller
      */
     public function store(RoleRequest $request)
     {
-	   if(!$this->getRepositories()->store($request->all(),['form'=>['user'=>$request->user("api")]])){
+	   if(!$this->getRepositories()->store($request->all(),['form'=>['user'=>$this->user]])){
 		   return $this->error('处理失败');
 	   }
 
@@ -61,7 +61,7 @@ class RoleController extends Controller
      */
     public function remove(Request $request)
     {
-	   if(!$this->getRepositories()->remove($request->all(),['form'=>['user'=>$request->user("api")]])){
+	   if(!$this->getRepositories()->remove($request->all(),['form'=>['user'=>$this->user]])){
 		   return ['code'=>101,'timestamp'=>time(),"data"=>[],'msg'=>'处理失败'];
 	   }
 	   

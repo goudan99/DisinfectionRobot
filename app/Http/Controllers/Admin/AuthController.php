@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Constant\Code;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Cache\RateLimiter;
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use App\Repositories\Mobile;
 use App\Repositories\Auth;
 use App\Model\Account;
@@ -27,16 +31,32 @@ class AuthController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function login(Request $req)
+    public function login(Request $request)
     { 
         $credentials = request(['username', 'password']);
 		
-		 $credentials = ["name"=>$req->username, 'password'=>$req->password];
-		 
-        if (! $token = auth()->attempt($credentials)) {
-            return $this->error("帐号或密码错误");
+		$credentials = ["name"=>$request->username, 'password'=>$request->password];
+		
+		$this->validateLogin($request);
+		
+        if (method_exists($this, 'hasTooManyLoginAttempts') && $this->hasTooManyLoginAttempts($request)) {
+            $this->fireLockoutEvent($request);
+            return $this->sendLockoutResponse($request);
         }
-
+		
+        if (!$token = auth()->attempt($credentials)) {
+			
+			$this->incrementLoginAttempts($request);
+			
+            throw ValidationException::withMessages([
+              "password" => "帐号或密码错误",
+            ]);
+        }
+		
+		$request->session()->regenerate();
+		
+		$this->clearLoginAttempts($request);
+		
         $data = [
           'access_token' => $token,
           'token_type' => 'bearer',
@@ -45,7 +65,27 @@ class AuthController extends Controller
 		  
         return $this->success($data);
     }
-
+	
+    protected function validateLogin(Request $request)
+    {
+        $request->validate([
+            $this->username() => 'required|string',
+            'password' => 'required|min:6|max:16|regex:/^[a-zA-Z0-9~@#%_]{6,16}$/i',
+        ],[
+			$this->username().".required"=>"帐号必填",
+			$this->username().".string"=>"帐号必须字符串",
+			"password.required"=>"密码必填",
+			"password.min"=>"密码最短为6位",
+			"password.max"=>"密码不要超过16位",
+			"password.regex"=>"密码包含非法字符，只能为英文字母(a-zA-Z)、阿拉伯数字(0-9)与特殊符号(~@#%_)组合",
+		]);
+    }
+	
+    public function username()
+    {
+        return 'username';
+    }
+	
     public function program(Request $request)
     { 
 		$code = request("code");
@@ -58,19 +98,18 @@ class AuthController extends Controller
 		
 		$wedata = [];
 		
-		if(config("app")["env"]!="local"){
-			
+		if(!(config("app")["env"]=="local"||config("app")["env"]=="testing")){
 			$wedata = $app->auth->session($code);
-			
 			if(isset($wedata["errcode"])){
-				
 				return $this->error("code无效，重新获取",[["code"=>$wedata["errmsg"]]],Code::VALIDATE);
-				
 			}
-			
 			$openid = $wedata["openid"];
 		}
 
+        if(config("app")["env"]=="testing"&&$code!="111"){
+			return $this->error("code无效，重新获取",["code"=>"无效的ode码"],Code::VALIDATE);
+	    }
+		
 		if(!$user = Account::where("name",$config["app_id"])->where("password",$openid)->where("type",2)->first()){
 			return $this->error("没有关联帐号，需要关键帐号");
 		}
@@ -95,11 +134,15 @@ class AuthController extends Controller
 		$data = $request->all();
 		
 		if($data["code"]!=$request->session()->get('mobile_code_'.$data["phone"].'_'.Mobile::LOGIN)){
-		  return $this->error("验证码不正确");
+            throw ValidationException::withMessages([
+              "code" => "验证码不正确",
+            ]);
 		}
 		
 		if(!$user = Account::where("name",$data["phone"])->where("type",1)->first()){
-			return $this->error("验证码错误");
+            throw ValidationException::withMessages([
+              "code" => "验证码不正确",
+            ]);
 		}
 		
 		$token = auth()->login($user);
@@ -109,7 +152,6 @@ class AuthController extends Controller
         $data = [
           'access_token' => $token,
           'token_type' => 'bearer',
-		  'session_key' => isset($wedata["session_key"])?$wedata["session_key"]:'',
           'expires_in' => auth()->factory()->getTTL() * 60
 		];
 		  
@@ -120,39 +162,22 @@ class AuthController extends Controller
     {
 		$data = $request->all();
 		
-	    if(!$this->getRepositories()->register($request->all(),['form'=>['user'=>'']])){
-			 return $this->error("手机号存在");
+		$data['openid']='123';
+		
+	    if(!$this->getRepositories()->register($data,['form'=>['user'=>'']])){
+            throw ValidationException::withMessages([
+              "phone" => "手机号已存在"
+            ]);
 	    }
 
 		return $this->success([],"注册成功");
 	}
 
-    public function logout(ServerRequestInterface $req)
+    public function logout(Request $req)
     { 
         return $this->success([],"成功退出");
 	}
 	
-    /**
-     * Log the user out of the application.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function code(Request $request)
-    { 
-
-		$mobile=new Mobile();
-		
-		$type=$request->get("type");
-
-		$phone=$request->get("phone");
-		
-		$code= $mobile->code($phone, '', $type);
-		
-		$request->session()->put('mobile_code_'.$phone.'_'.$type, $code);
-		
-		return $this->success([],"验证码发送成功，请注意查收");
-    }
 	
     /**
      * Log the user out of the application.
@@ -167,7 +192,9 @@ class AuthController extends Controller
 		$auth=new Auth();
 		
 		if($data["code"]!=$request->session()->get('mobile_code_'.$data["phone"].'_'.Mobile::FIND)){
-			return $this->error("验证码不正确");
+            throw ValidationException::withMessages([
+              "code" => "验证码不正确",
+            ]);
 		}
 		
 		$auth->change($data);
@@ -175,5 +202,113 @@ class AuthController extends Controller
 		$request->session()->put('mobile_code_'.$data["phone"].'_'.Mobile::FIND,'');//修改完以后清掉这个session值
 		
         return $this->success([],"密码重置成功");
+    }
+	
+    /**
+     * Determine if the user has too many failed login attempts.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return bool
+     */
+    protected function hasTooManyLoginAttempts(Request $request)
+    {
+        return $this->limiter()->tooManyAttempts(
+            $this->throttleKey($request), $this->maxAttempts()
+        );
+    }
+
+    /**
+     * Increment the login attempts for the user.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     */
+    protected function incrementLoginAttempts(Request $request)
+    {
+        $this->limiter()->hit(
+            $this->throttleKey($request), $this->decayMinutes() * 60
+        );
+    }
+
+    /**
+     * Redirect the user after determining they are locked out.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    protected function sendLockoutResponse(Request $request)
+    {
+        $seconds = $this->limiter()->availableIn(
+            $this->throttleKey($request)
+        );
+
+        throw ValidationException::withMessages([
+            $this->username() => "请 $seconds 秒后再试",
+        ])->status(Response::HTTP_TOO_MANY_REQUESTS);
+    }
+
+    /**
+     * Clear the login locks for the given user credentials.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     */
+    protected function clearLoginAttempts(Request $request)
+    {
+        $this->limiter()->clear($this->throttleKey($request));
+    }
+
+    /**
+     * Fire an event when a lockout occurs.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return void
+     */
+    protected function fireLockoutEvent(Request $request)
+    {
+        event(new Lockout($request));
+    }
+
+    /**
+     * Get the throttle key for the given request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return string
+     */
+    protected function throttleKey(Request $request)
+    {
+        return Str::lower($request->input($this->username())).'|'.$request->ip();
+    }
+
+    /**
+     * Get the rate limiter instance.
+     *
+     * @return \Illuminate\Cache\RateLimiter
+     */
+    protected function limiter()
+    {
+        return app(RateLimiter::class);
+    }
+
+    /**
+     * Get the maximum number of attempts to allow.
+     *
+     * @return int
+     */
+    public function maxAttempts()
+    {
+        return property_exists($this, 'maxAttempts') ? $this->maxAttempts : 5;
+    }
+
+    /**
+     * Get the number of minutes to throttle for.
+     *
+     * @return int
+     */
+    public function decayMinutes()
+    {
+        return property_exists($this, 'decayMinutes') ? $this->decayMinutes : 1;
     }
 }
