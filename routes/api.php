@@ -17,11 +17,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/',function(){ return abort(404); });
 
 /*不需要权限可以获取或操作的数据*/
-Route::group(['namespace' =>"Admin", 'prefix' => 'system','middleware' => []], function () {
-	Route::post('/logger/api','LoggerController@store');				//上传前端错误
-	Route::post('/mobile/code','AuthController@code');					//手机验证码
+Route::group(['namespace' =>"Admin", 'prefix' => 'public','middleware' => []], function () {
+	Route::post('/logger/api',	'LoggerController@api');				// 上传前端错误
+	Route::any('/mobile/code',	'PublicController@code');				// 手机验证码
+	Route::any('/config',		'PublicController@config');				// 全局站点配置，公开部分
 });
-
 
 Route::group(['namespace' =>"Admin", 'prefix' => 'auth'], function ($router){
 	Route::post('/login/token', 	 'AuthController@login')->name('login');			// 帐号密码登录
@@ -34,7 +34,6 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'auth'], function ($router){
 
 Route::group(['namespace' =>"Admin", 'prefix' => 'profile','middleware' => ['auth:api']], function () {
 	Route::get('/user','ProfileController@user');
-	Route::post('/user/code','ProfileController@code');
 	Route::get('/user/{id?}','ProfileController@show');
 	Route::post('/user','ProfileController@store');
 	Route::post('/avatar','ProfileController@avatar');
@@ -66,11 +65,23 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'member','middleware' => ['auth
 
 
 /* 机器管理 */
-Route::group(['namespace' =>"Admin", 'prefix' => 'machine','middleware' => ['auth:api','permit:api']], function () {
+Route::group(['namespace' =>"Admin", 'prefix' => 'robot','middleware' => ['auth:api','permit:api']], function () {
 	Route::get('/machine','MachineController@home');
 	Route::get('/machine/{id?}','MachineController@show');
 	Route::post('/machine','MachineController@store');
 	Route::delete('/machine','MachineController@remove');
+	
+	Route::get('/map',		'MapController@home');
+	Route::get('/map/{id?}','MapController@show');
+	Route::post('/map',		'MapController@store');
+	Route::put('/map',		'MapController@store');
+	Route::delete('/map',	'MapController@remove');
+	
+	Route::get('/job',		'JobController@home');
+	Route::get('/job/{id?}','JobController@show');
+	Route::post('/job',		'JobController@store');
+	Route::put('/job',		'JobController@store');
+	Route::delete('/job',	'JobController@remove');
 });
 
 /*配置模块-菜单配置,config配置*/

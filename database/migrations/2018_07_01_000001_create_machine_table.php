@@ -21,7 +21,6 @@ class CreateMachineTable extends Migration
 			$table->integer('status')->nullable()->comment('当前状态');
             $table->timestamps();
         });
-		
 		//任务
         Schema::create('jobs', function (Blueprint $table) {
 			$table->increments('id')->comment('通知id');
@@ -42,29 +41,19 @@ class CreateMachineTable extends Migration
 			$table->softDeletes();
 			$table->timestamps();
         });
-		
-		
 		//地图信息
-        Schema::create('map_profile', function (Blueprint $table) {
+        Schema::create('maps', function (Blueprint $table) {
 			$table->increments('id')->comment('通知id');
-			$table->integer('name')->nullable()->comment('地图名');
+			$table->string('name')->nullable()->comment('地图名');
+			$table->text('area')->nullable()->comment('区域');
+			$table->string('image')->nullable()->comment('地图图片');
 			$table->integer('user_id')->nullable()->comment('创建者');
 			$table->string('user_name')->nullable()->comment('创建者姓名');
 			$table->integer('machine_id')->nullable()->comment('设备id');
 			$table->string('machine_name')->nullable()->comment('设备名');
 			$table->string('image_size',255)->nullable()->comment('图片大小');
 			$table->string('file_size',255)->nullable()->comment('图片大小');
-			$table->integer('status')->nullable()->comment('状态,0待生成图，1可用，2待创建区域，3待完成');
-			
-			$table->timestamps();
-        });
-		
-		//地图区域
-        Schema::create('map_area', function (Blueprint $table) {
-			$table->increments('id')->comment('通知id');
-			$table->integer('map_id')->nullable()->comment('操作用户');
-			$table->string('map_name')->nullable()->comment('用户名');
-			$table->text('data')->nullable()->comment('区域数据');
+			$table->integer('status')->nullable()->default(0)->comment('状态,0待生成图，1可用，2待创建区域，3待完成');
 			$table->timestamps();
         });
     }
@@ -78,7 +67,6 @@ class CreateMachineTable extends Migration
     {
 		Schema::dropIfExists('machines');
 		Schema::dropIfExists('jobs');
-		Schema::dropIfExists('map_profile');
-		Schema::dropIfExists('map_area');
+		Schema::dropIfExists('maps');
     }
 }
