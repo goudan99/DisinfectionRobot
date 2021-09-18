@@ -14,7 +14,15 @@ use Illuminate\Support\Str;
 
 class User implements Repository
 {
-	/*保存用户*/
+	/**
+	 *
+	 * 保存用户,把修改或添加用户传递下一层是那些用户进行了添国或修改过
+	 * 传递数据若带有用户id则是修改用户信息
+	 *
+	 * @param array $data 用户信息
+	 * @param array $notify  附近加信息，from 主要是来源于谁,为空时时系统内部发生的
+	 * @return boolen
+	 */
 	public function store($data,$notify){
 		
 		
@@ -68,20 +76,20 @@ class User implements Repository
 		return true ;
 	}
 	
-	/*删除用户*/
+	/**
+	 * 删除用户,此功能删除用户，系统用户不允许删除，把要删除的用户告诉事件删掉了那些用户
+	 * @param array $data [1,2]要删除的用户id
+	 * @param array $notify  附近加信息，from 主要是来源于谁,为空时时系统内部发生的
+	 * @return boolen
+	 */
 	public function remove($data,$notify)
 	{
-		$users=userModel::whereIn("id",$data)->where('is_system','<>',1)->get();
+		$users=userModel::whereIn("id",$data)->where('is_system','<>',1)->get();//把用户查询出来,为了要告诉下一层删除了那一些用户
 		
-		//if(!$user){return true;}
-		foreach($users as $user){
-		  if($user->is_system==1){
-			throw new AuthException("系统用户不允许删除");
-		  }	
-		  $user->delete();
-		}
+		userModel::whereIn("id",$data)->where('is_system','<>',1)->delete();
+		
 		event(new UserRemoved($users,$notify));
 		  
-		return $users;
+		return true;
 	}
 }
