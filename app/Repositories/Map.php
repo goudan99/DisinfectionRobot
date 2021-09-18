@@ -9,11 +9,23 @@ use App\Exceptions\AttachException;
 use App\Exceptions\UniqueException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\AuthException;
+use App\Model\Machine;
+use App\Model\User;
 
 class Map implements Repository
 {
 	/*保存机器*/
 	public function store($data,$notify){
+		
+        if($data["user_id"]){
+			if($user=User::where('id',$data["user_id"])->first()){
+				$data['user_name']=$user->phone;
+			}
+		}
+		
+        if($data["machine_id"]){
+			if($machine=Machine::where('id',$data["machine_id"])->first()){$data['machine_name']=$machine->sn;}
+		}
 		
 		if(isset($data['id'])&&$data['id']){
 			
@@ -25,7 +37,7 @@ class Map implements Repository
 			event(new MapStored($user,$notify));
 			return true ;
 		}
-			
+
 		$user=MapModel::create($data);
 			
 		$notify["method"]="add";

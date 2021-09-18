@@ -18,7 +18,7 @@ class JobController extends Controller
     }
 	
     /**
-     * 显示所有地图
+     * 显示所有任务
      *
      * @return \Illuminate\Http\Response
      */
@@ -32,7 +32,7 @@ class JobController extends Controller
     }
 	
     /**
-     * 地图详情
+     * 任务详情
      *
      * @return \Illuminate\Http\Response
      */
@@ -46,12 +46,18 @@ class JobController extends Controller
     }
 	
     /**
-     * 保存地图
+     * 保存任务
      *
      * @return \Illuminate\Http\Response
      */
     public function store(JobRequest $request)
     {
+	  if($this->user){
+		$request->merge([
+		  "user_id"=>$this->user->id
+		]);
+	  }
+
 	   if(!$this->getRepositories()->store($request->all(),['form'=>['user'=>$this->user]])){
 			return $this->error('未知错误');
 	   }

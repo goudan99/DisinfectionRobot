@@ -21,6 +21,7 @@ class CreateMachineTable extends Migration
 			$table->integer('status')->nullable()->comment('当前状态');
             $table->timestamps();
         });
+		
 		//任务
         Schema::create('jobs', function (Blueprint $table) {
 			$table->increments('id')->comment('通知id');
@@ -34,13 +35,14 @@ class CreateMachineTable extends Migration
 			$table->text('map_area')->nullable()->comment('区域');
 			$table->integer('rate_type')->nullable()->comment('执行频率');
 			$table->text('work')->nullable()->comment('是否扫地');
-			$table->text('is_clean')->nullable()->comment('是否扫地');
-			$table->text('is_test')->nullable()->comment('是否巡检');
+			$table->text('is_clean')->nullable()->default(0)->comment('是否扫地');
+			$table->text('is_test')->nullable()->default(0)->comment('是否巡检');
 			$table->timestamp('start_at')->nullable()->comment('是否巡检');
 			$table->timestamp('end_at')->nullable()->comment('是否巡检');
 			$table->softDeletes();
 			$table->timestamps();
         });
+		
 		//地图信息
         Schema::create('maps', function (Blueprint $table) {
 			$table->increments('id')->comment('通知id');

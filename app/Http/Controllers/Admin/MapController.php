@@ -8,7 +8,6 @@ use App\Model\Map;
 use App\Repositories\Map as MapReposity;
 use App\Http\Resources\MapCollection;
 use App\Http\Resources\MapResource;
-use App\Http\Resources\MapCollection;
 use App\Http\Requests\MapRequest;
 
 class MapController extends Controller
@@ -53,6 +52,9 @@ class MapController extends Controller
      */
     public function store(MapRequest $request)
     {
+		if($this->user){
+			$request->merge(["user_id"=>$this->user->id]);
+		}
 	   if(!$this->getRepositories()->store($request->all(),['form'=>['user'=>$this->user]])){
 			return $this->error('未知错误');
 	   }
