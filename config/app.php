@@ -180,6 +180,7 @@ return [
 		 */		
 		Overtrue\LaravelWeChat\ServiceProvider::class,
 		Maatwebsite\Excel\ExcelServiceProvider::class,
+		SwooleTW\Http\LaravelServiceProvider :: class,
     ],
 
     /*
