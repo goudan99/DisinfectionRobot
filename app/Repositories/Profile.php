@@ -24,9 +24,9 @@ class Profile implements Repository
 	/*保存用户*/
 	public function store($data,$notify){
 		
-	  $data["nickname"]?$this->user->nickname=$data["nickname"]:'';
+	  isset($data["nickname"])?$this->user->nickname=$data["nickname"]:'';
 		
-	  $data["avatar"]?$this->user->avatar=$data["avatar"]:'';
+	  isset($data["avatar"])?$this->user->avatar=$data["avatar"]:'';
 		
       $this->user->save();
 
@@ -116,7 +116,6 @@ class Profile implements Repository
 	/*恢复删除*/
 	public function restore($id,$notify)
 	{
-		print($id);
 		if(!$notice=Notice::withTrashed()->where("id",$id)->where("user_id",$this->user->id)->first()){
 			throw new NotFoundException("通知不存在");
 		}

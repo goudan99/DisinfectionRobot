@@ -122,11 +122,7 @@ class ProfileController extends Controller
      */
     public function notice(Request $request)
     {
-		return $this->success([
-		  "unread"=>Notice::where("user_id",$this->user->id)->where("is_read",0)->get(),
-		  "readed"=>Notice::where("user_id",$this->user->id)->where("is_read",1)->get(),
-		  "trash"=>Notice::onlyTrashed()->where("user_id",$this->user->id)->get()
-		]);
+		return $this->success(Notice::withTrashed()->where("user_id",$this->user->id)->orderBy('id','desc')->get());
     }
     /**
      * 设置通知已读

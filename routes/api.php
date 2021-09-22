@@ -34,7 +34,6 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'auth'], function ($router){
 
 Route::group(['namespace' =>"Admin", 'prefix' => 'profile','middleware' => ['auth:api']], function () {
 	Route::get('/user','ProfileController@user');
-	Route::get('/user/{id?}','ProfileController@show');
 	Route::post('/user','ProfileController@store');
 	Route::post('/avatar','ProfileController@avatar');
 	Route::post('/password','ProfileController@password');

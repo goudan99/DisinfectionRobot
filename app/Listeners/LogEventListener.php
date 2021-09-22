@@ -32,7 +32,7 @@ class LogEventListener
      */
     public function subscribe($events)
     {
-		$events->listen(AccessRemoved::class,LogEventListener::class.'@onDataRemove');
+		//$events->listen(AccessRemoved::class,LogEventListener::class.'@onDataRemove');
 		$events->listen(AccessStored::class,LogEventListener::class.'@onStroeSuccess');
 		$events->listen(ConfigStored::class,LogEventListener::class.'@onStroeSuccess');
 		$events->listen(LogRemoved::class,LogEventListener::class.'@onDataRemove');
