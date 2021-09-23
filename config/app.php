@@ -179,6 +179,7 @@ return [
 		 * 第三方包
 		 */		
 		Overtrue\LaravelWeChat\ServiceProvider::class,
+		SwooleTW\Http\LaravelServiceProvider :: class
     ],
 
     /*
