@@ -179,8 +179,6 @@ return [
 		 * 第三方包
 		 */		
 		Overtrue\LaravelWeChat\ServiceProvider::class,
-		Maatwebsite\Excel\ExcelServiceProvider::class,
-		SwooleTW\Http\LaravelServiceProvider :: class,
     ],
 
     /*
@@ -233,8 +231,6 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 		'EasyWeChat' => Overtrue\LaravelWeChat\Facade::class,
-		'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-
     ],
 
 ];
