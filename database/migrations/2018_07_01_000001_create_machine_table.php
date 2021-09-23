@@ -35,8 +35,8 @@ class CreateMachineTable extends Migration
 			$table->text('map_area')->nullable()->comment('区域');
 			$table->integer('rate_type')->nullable()->comment('执行频率');
 			$table->text('work')->nullable()->comment('是否扫地');
-			$table->text('is_clean')->nullable()->default(0)->comment('是否扫地');
-			$table->text('is_test')->nullable()->default(0)->comment('是否巡检');
+			$table->tinyInteger('is_clean')->nullable()->default(0)->comment('是否扫地');
+			$table->tinyInteger('is_test')->nullable()->default(0)->comment('是否巡检');
 			$table->timestamp('start_at')->nullable()->comment('是否巡检');
 			$table->timestamp('end_at')->nullable()->comment('是否巡检');
 			$table->softDeletes();
