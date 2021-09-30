@@ -16,8 +16,9 @@
         "laravel/framework": "^8.12",
         "laravel/tinker": "^2.5",
         "overtrue/laravel-wechat": "^5.2",
-        "swooletw/laravel-swoole": "^2.9",
         "php-amqplib/php-amqplib": "^3.0",
+        "php-mqtt/client": "^0.3.0",
+        "swooletw/laravel-swoole": "^2.9",
         "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {

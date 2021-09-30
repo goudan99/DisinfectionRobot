@@ -26,13 +26,13 @@ class UserRequest extends Request
         if(!$this->id){
 			
             $rules = [            
-				'name'                  => 'required|min:4|max:20|unique:users,name',
+				'name'                  => 'required|min:4|max:20|unique:accounts,name',
                 'password'              => 'required|min:6|max:16|regex:/^[a-zA-Z0-9~@#%_]{6,16}$/i',  //登录密码只能英文字母(a-zA-Z)、阿拉伯数字(0-9)、特殊符号(~@#%)
                 // 'password_confirmation' => 'required|same:password',
 				'code' 					=> 'required',				
                 'passed'                => 'required|boolean',
 				'nickname'              => 'min:1|max:10', 
-                'phone'                 => 'size:11|unique:users,phone',
+                'phone'                 => 'size:11|unique:accounts,name',
             ];
         }else{//store
             $rules = [

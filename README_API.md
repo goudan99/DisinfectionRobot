@@ -49,7 +49,80 @@
 |401| 没有授权 |
 |405| 权限不足，没有权限操作此资源 |
 |419| token丢失 |
+
+### 授权说明：
+请注意写有面要授权的接品，需要带上token格式如果放在header格式如上
+|名称|类型|说明|
+|-|-|-|
+|Authorization| sring | Bearer $token|
+```
+{
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODEvYXBpL2F1dGgvbG9naW4vdG9rZW4iLCJpYXQiOjE2MzI4MjI3OTMsImV4cCI6MTYzMjgyNjM5MywibmJmIjoxNjMyODIyNzkzLCJqdGkiOiJ5c3VGaVFGZjJOQXJGQjM5Iiwic3ViIjoxLCJwcnYiOiJlMzkxMzU1ZTRmZGUxY2YyMWVkNzFiODM1ZTJmMzA1Y2M2N2Q3Y2M2IiwiMCI6IiJ9.1SJcsKW-JAoa1wtYAR5ol0DYkYbABsKiqSs3MpsGkvA
+}
+```
+如果放在请求头上则直接,?token=$token,如
+```
+http://www.robot.com/?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgwODEvYXBpL2F1dGgvbG9naW4vdG9rZW4iLCJpYXQiOjE2MzI4MjI3OTMsImV4cCI6MTYzMjgyNjM5MywibmJmIjoxNjMyODIyNzkzLCJqdGkiOiJ5c3VGaVFGZjJOQXJGQjM5Iiwic3ViIjoxLCJwcnYiOiJlMzkxMzU1ZTRmZGUxY2YyMWVkNzFiODM1ZTJmMzA1Y2M2N2Q3Y2M2IiwiMCI6IiJ9.1SJcsKW-JAoa1wtYAR5ol0DYkYbABsKiqSs3MpsGkvA
+
+```
 ## 公共接口
+
+### 前端报错提交
+接口地址：/public/mobile/code
+返回格式:josn
+是否需要授权：否
+请求方式：post
+请求头：
+| 参数 | 类型| 方式 | 是否必填 | 说明 |
+|-|-|-|-|-|
+|code| string| josn | 是 | 响应码 |
+|msg| string| josn | 是 | 响应内容 |
+|type| string| josn | 是 | 类型 |
+|url| string| josn | 是 | 链接 |
+
+请求样例：
+```
+{
+    "phone":"15113339677",
+    "code":"404",
+    "msg":"内容找不到",
+    "method":"post",
+    "url":"http://wwww.heekit.com/api/myabcde"
+}
+```
+返回样例：
+```
+ "提交成功"
+```
+
+### 验证码
+接口地址：/public/mobile/code
+返回格式:josn
+是否需要授权：否
+请求方式：post
+请求头：
+| 参数 | 类型| 方式 | 是否必填 | 说明 |
+|-|-|-|-|-|
+|phone| string| josn | 是 | 手机号 |
+|type| string| josn | 是 | 类型0用户注册，1找密码，2更改密码，3更改手机确认验证码，4更改确认新手机 |
+
+请求样例：
+```
+{
+    "phone":"15113339677",
+    "code":"0"
+}
+```
+返回样例：
+```
+"验证码已发送"
+```
+### 公开的配置文件
+接口地址：/public/config
+返回格式:josn
+是否需要授权：否
+请求方式：get
+开发过程中协调公开部分配置
 
 ## 授权
 授权流程
@@ -57,6 +130,7 @@
 ### 用户注册
 接口地址：/auth/find/password
 返回格式:josn
+是否需要授权：否
 请求方式：post
 请求头：
 
@@ -96,6 +170,7 @@
 ### 用户帐号名密码登录
 接口地址：/auth/login/token
 返回格式:josn
+是否需要授权：否
 请求方式：post
 请求头：
 
@@ -133,6 +208,7 @@
 ### 手机验证码登录
 接口地址：/auth/login/phone
 返回格式:josn
+是否需要授权：否
 请求方式：post
 请求头：
 
@@ -170,6 +246,7 @@ data说明
 ### 小程序登录
 接口地址：/auth/login/program
 返回格式:josn
+是否需要授权：否
 请求方式：post
 请求头：
 
@@ -207,6 +284,7 @@ data说明
 ### 找密码
 接口地址：/auth/find/password
 返回格式:josn
+是否需要授权：否
 请求方式：post
 请求头：
 
@@ -242,8 +320,135 @@ data说明
     "timestamp": 1631245833
 }
 ```
+## 权限管理
 
+### 所有成员
+接口地址：/member/user
+返回格式:josn
+是否需要授权：是
+请求方式：get
+请求body头：
 
-      const field = this.$refs['phoneForm'].fields.filter(field => field.prop === 'phone')[0]
-	  field.validateMessage = 'aaaaaaaaaaaaa'
-	  field.validateState = 'error'
+| 参数 | 类型| 方式 | 是否必填 | 说明 |
+|-|-|-|-|-|
+|page| string| josn | 是 | 当前页 |
+|limit| string| josn | 是 | 一页有几条 |
+|key| string| josn | 是 | 搜索关键字 |
+|status| string| josn | 是 | 状态-1为所有，0未审核，1审核 |
+
+返回data说明
+| 字段 | 类型 | 说明 |
+|-|-|-|
+| data | array | 数组|
+| total | int | 总条数|
+| page | int | 当前页|
+| limit | int | 一页有几条|
+请求样例：
+```
+member/user?page=1&limit=10&key=&status=0
+```
+返回样例：
+```
+"data": [
+	{
+		"id": 2,
+		"name": null,
+		"nickname": "",
+		"phone": "18318174637",
+		"avatar": "",
+		"roles": [],
+		"last_at": null,
+		"last_ip": "",
+		"login_times": 0,
+		"passed": 1,
+		"desc": "",
+		"is_system": 0,
+		"created_at": "2021-09-23T06:39:12.000000Z",
+		"updated_at": "2021-09-23T06:39:12.000000Z"
+	},
+	{
+		"id": 1,
+		"name": null,
+		"nickname": "管理员",
+		"phone": "15113339677",
+		"avatar": "http://localhost:8081/upload/avatar/7i5y1R3jiVtNR3LpbJbSBN64v24exabhGcBo7KnO.jpg",
+		"roles": [],
+		"last_at": "2019-05-20 00:00:00",
+		"last_ip": "127.0.0.1",
+		"login_times": 0,
+		"passed": 1,
+		"desc": "系统用户",
+		"is_system": 1,
+		"created_at": null,
+		"updated_at": "2021-09-23T07:21:17.000000Z"
+	}
+],
+"total": 2,
+"page": 1,
+"limit": "10"
+```
+### 所有成员
+接口地址：/member/user
+返回格式:josn
+是否需要授权：是
+请求方式：get
+请求body头：
+
+| 参数 | 类型| 方式 | 是否必填 | 说明 |
+|-|-|-|-|-|
+|page| string| josn | 是 | 当前页 |
+|limit| string| josn | 是 | 一页有几条 |
+|key| string| josn | 是 | 搜索关键字 |
+|status| string| josn | 是 | 状态-1为所有，0未审核，1审核 |
+
+返回data说明
+| 字段 | 类型 | 说明 |
+|-|-|-|
+| data | array | 数组|
+| total | int | 总条数|
+| page | int | 当前页|
+| limit | int | 一页有几条|
+请求样例：
+```
+member/user?page=1&limit=10&key=&status=0
+```
+返回样例：
+```
+"data": [
+	{
+		"id": 2,
+		"name": null,
+		"nickname": "",
+		"phone": "18318174637",
+		"avatar": "",
+		"roles": [],
+		"last_at": null,
+		"last_ip": "",
+		"login_times": 0,
+		"passed": 1,
+		"desc": "",
+		"is_system": 0,
+		"created_at": "2021-09-23T06:39:12.000000Z",
+		"updated_at": "2021-09-23T06:39:12.000000Z"
+	},
+	{
+		"id": 1,
+		"name": null,
+		"nickname": "管理员",
+		"phone": "15113339677",
+		"avatar": "http://localhost:8081/upload/avatar/7i5y1R3jiVtNR3LpbJbSBN64v24exabhGcBo7KnO.jpg",
+		"roles": [],
+		"last_at": "2019-05-20 00:00:00",
+		"last_ip": "127.0.0.1",
+		"login_times": 0,
+		"passed": 1,
+		"desc": "系统用户",
+		"is_system": 1,
+		"created_at": null,
+		"updated_at": "2021-09-23T07:21:17.000000Z"
+	}
+],
+"total": 2,
+"page": 1,
+"limit": "10"
+```

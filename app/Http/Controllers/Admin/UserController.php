@@ -25,12 +25,13 @@ class UserController extends Controller
     public function home(Request $request)
     {
 		$limit=$request->limit?$request->limit:10;
+		$limit=$limit>0?$limit:10;
 		
 		$user = User::orderBy('id','desc');
 		
-	    $request->get('key') ? $user=$user->where('name','like','%'.trim($request->get('key')).'%'):'';
+	    $request->get('key') ? $user=$user->where('nickname','like','%'.trim($request->get('key')).'%'):'';
 
-	    if($request->get('status')!=='-1'){
+	    if($request->get('status')&&$request->get('status')!=='-1'){
 			$user=$user->where('passed',$request->get('status'));
 		}
 		

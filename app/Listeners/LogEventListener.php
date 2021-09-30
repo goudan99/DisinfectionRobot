@@ -44,7 +44,7 @@ class LogEventListener
 		$events->listen(RoleRemoved::class,LogEventListener::class.'@onDataRemove');
 		$events->listen(RoleStored::class,LogEventListener::class.'@onStroeSuccess');
 		$events->listen(UserRemoved::class,LogEventListener::class.'@onDataRemove');
-		$events->listen(UserStored::class,LogEventListener::class.'@onStroeSuccess');
+		//$events->listen(UserStored::class,LogEventListener::class.'@onStroeSuccess');
 		//$events->listen(UploadStored::class,LogEventListener::class.'@onStroeSuccess');
     }
 	

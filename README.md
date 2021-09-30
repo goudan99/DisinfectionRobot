@@ -22,13 +22,14 @@ mysqlnd
 
 ## 部署说明
 - 1,运行 composer install下载插件
-- 3,修改 env文件   
+- 2,修改 env文件   
+- 3,运行 php artisan migration下载插件
 - 4,运行 php artisan db:seed 生成基础数据
 ### 初始化帐号
 初始化账号：admin/admin888
 
 ## 功能说明
-本系统只做一些普通通用的功能，其他功能需要自己进行二次开发，
+
 
 ### 权限管理
 - 1,用户管理
@@ -53,3 +54,5 @@ mysqlnd
 2.  tymon/jwt-auth  [https://github.com/tymondesigns/jwt-auth)
 3.  Laravel-Swoole  [https://github.com/swooletw/laravel-swoole)
 4.  eayswechat  [https://www.easywechat.com/](https://www.easywechat.com/)
+5.  php-amqplib  [https://github.com/php-amqplib/php-amqplib/)
+6.  php-mqtt [https://github.com/php-mqtt/client](https://github.com/php-mqtt/client)

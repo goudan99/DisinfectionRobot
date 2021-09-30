@@ -48,18 +48,14 @@ class Http extends HttpServerCommand
      */
     protected function start()
     {
-		echo '正在启动';
         if ($this->isRunning()) {
             $this->error('Failed! swoole_http_server process is already running.');
-
             return;
         }
-
         $host = Arr::get($this->config, 'server.host');
         $port = Arr::get($this->config, 'server.port');
         $hotReloadEnabled = Arr::get($this->config, 'hot_reload.enabled');
         $accessLogEnabled = Arr::get($this->config, 'server.access_log');
-
         $this->info('Starting swoole http server...');
         $this->info("Swoole http server started: <http://{$host}:{$port}>");
         if ($this->isDaemon()) {
@@ -77,10 +73,10 @@ class Http extends HttpServerCommand
         }
 
         if ($hotReloadEnabled) {
-			echo 'hotReloadEnabled';
             $manager->addProcess($this->getHotReloadProcess($server));
         }
 		
+		//启动客户端
         $manager->addProcess(new Process(function () {
 				$this->rabbitMqServer();
 			})
@@ -89,6 +85,32 @@ class Http extends HttpServerCommand
         $manager->run();
 		
     }
+	
+	function mqttServer($workerId = 0)
+	{
+		$server   = 'robot_rabbitmq';
+		$port     = 1883;
+		$clientId = 'hello';
+		$username = 'guest';
+		$password = 'guest';
+
+		$connectionSettings  = new \PhpMqtt\Client\ConnectionSettings();
+
+		$mqtt = new \PhpMqtt\Client\MqttClient($server, $port, $clientId);
+		
+		$mqtt->connect($username, $password, $connectionSettings, true);
+		
+		$mqtt->publish('mqtt-subscription-helloqos0', 'Hello World!', 0);
+		
+		$mqtt->subscribe('mqtt-subscription-helloqos0',  function (string $topic, string $message, bool $retained) {
+              echo $message;
+         });
+		 
+		$mqtt->loop(true);
+		
+		$mqtt->disconnect();
+		
+	}
 	
 	function rabbitMqServer($workerId = 0)
 	{
@@ -101,7 +123,7 @@ class Http extends HttpServerCommand
 		try{
 			//建立连接
 			$conn = new AMQPStreamConnection('robot_rabbitmq',5672,'guest','guest','/');
-			
+
 			$channel = $conn->channel();
 			
 			$channel->queue_declare($queue, false, true, false, false);
@@ -111,23 +133,16 @@ class Http extends HttpServerCommand
 			$channel->queue_bind($queue, $exchange);
 			
 			$channel->basic_consume($queue, $consumerTag, false, false, false, false, function($message){
-				
 				foreach (app(Server::class)->connections as $fd) {
 					//推送到websocket,//fd 是客户端号
-					$this->info(count(app(Server::class)->connections));
 					if (app(Server::class)->isEstablished($fd)) {
 					  app(Server::class)->push($fd, "消息内容".$message->body);
 					  app(Server::class)->push($fd, "fd:".$fd);
 					}
-					
 				}
-				$this->info( "\n--------\n");
-				$this->info( $message->body);
-				$this->info( "\n--------\n");
-
+				
 				$message->ack();
-
-				// Send a message with the string "quit" to cancel the consumer.
+				
 				if ($message->body === 'quit') {
 					$message->getChannel()->basic_cancel($message->getConsumerTag());
 				}

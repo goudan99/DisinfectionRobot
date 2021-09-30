@@ -1,6 +1,7 @@
 <?php
 namespace App\Repositories;
 use Illuminate\Support\Facades\Hash;
+use App\Model\Account as accountModel;
 use App\Model\User as userModel;
 use App\Model\Role as roleModel;
 use App\Events\UserStored;
@@ -11,6 +12,8 @@ use App\Exceptions\NotFoundException;
 use App\Exceptions\AuthException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
+use DB;
 
 class User implements Repository
 {
@@ -29,49 +32,113 @@ class User implements Repository
 		$data["roles"]= new Collection($data['roles']);
 		
 		if(!$roles=roleModel::whereIn('id',$data['roles'])->get('id')){
-			throw new AttachException("角色不存在");
+            throw ValidationException::withMessages([
+              "roles" => "角色不存在",
+            ]);
 		}
 		
 		$data['password']?$data['password']=Hash::make($data['password']):'';
 
 		if(isset($data['id'])&&$data['id']){
 			
-			if(!$user=userModel::where("id",$data['id'])->first()){
-				throw new NotFoundException("用户不存在");
-			}
-			
-			unset($data['code']);//永远不有修改激活码
-	        if(!$data['password']){
-			  unset($data['password']);
-			}
-			
-			$user->update($data);
-			
-			if(!$user->is_system==1){
-				$user->roles()->sync($data['roles']);
-			}
 
-			$notify["method"]="edit";
+			DB::transaction(function () use ($data,$notify){
+				
+				if(!$user=userModel::where("id",$data['id'])->first()){
+					throw new NotFoundException("用户不存在");
+				}
+				
+				unset($data['code']);//永远不有修改激活码
+				
+				if(!$data['password']){
+				  unset($data['password']);
+				}
 			
-			event(new UserStored($user,$notify));
-		
+				$user->update($data);
+				
+				if(!$user->is_system==1){
+					$user->roles()->sync($data['roles']);
+				}
+				//name不为空时改帐号或创建一个帐号，
+				if($data['name']&&$account=accountModel::where('user_id',$data['id'])->where('type',0)->first()){
+					$account->name=$data['name'];
+					$account->update();
+				}else{
+					$acc=accountModel::where('user_id',$data['id'])->where('password','<>','')->first();
+					isset($data['name'])&&$data['name']?accountModel::create([
+						'name'=>$data['name'],
+						'user_id'=>$data['id'],
+						'type'=>0,
+						'password'=>$acc?$acc->password?$acc->password:'':''
+					]):'';
+				}
+				//phone不为空时改帐号或创建一个帐号，
+				if($data['phone']&&$account=accountModel::where('user_id',$data['id'])->where('type',1)->first()){
+					$account->name=$data['phone'];
+					$account->update();
+				}else{
+					$acc=accountModel::where('user_id',$data['id'])->where('password','<>','')->first();
+					isset($data['phone'])&&$data['phone']?accountModel::create([
+						'name'=>$data['phone'],
+						'user_id'=>$data['id'],
+						'type'=>1,
+						'password'=>$acc?$acc->password?$acc->password:'':''
+					]):'';
+				}
+				
+				if(!$data['password']){
+					accountModel::where('user_id',$data['id'])->update(["password"=>$data['password']]);
+				}
+				
+				$notify["method"]="edit";
+				
+				event(new UserStored($user,$notify));
+				
+			});
+			
 			return true ;
 		
 		}
 			
-		if(userModel::where("name",$data['name'])->first()){
-			throw new UniqueException("已存在同名用户");
+		if(accountModel::where("name",$data['name'])->first()){
+            throw ValidationException::withMessages(["name" => "已存在同名用户"]);
 		}
-			
-		$user=userModel::create($data);
-			
-	     if(!$user->is_system==1){
-		  $user->roles()->sync($data['roles']);
-		}
-			
-		$notify["method"]="add";
 		
-		event(new UserStored($user,$notify));
+		if(accountModel::where("name",$data['phone'])->first()){
+            throw ValidationException::withMessages(["phone" => "已存在同的手机"]);
+		}
+		
+		if(!$data['password']){
+            throw ValidationException::withMessages(["password" => "密码不能空"]);
+		}
+		
+		DB::transaction(function () use ($data,$notify){
+			
+			$user=userModel::create($data);
+
+			$account=accountModel::create([
+				"name"=>$data['name'],
+				"password"=>$data['password'],
+				"user_id"=>$user->id,
+				"type"=>0
+			]);
+			
+			if($data['phone']){
+				$account=accountModel::create([
+					"name"=>$data['phone'],
+					"password"=>$data['password'],
+					"user_id"=>$user->id,
+					"type"=>1
+				]);
+			}
+			if(!$user->is_system==1){
+			  $user->roles()->sync($data['roles']);
+			}
+			
+			$notify["method"]="add";
+
+			event(new UserStored($user,$notify));
+		});
 		
 		return true ;
 	}
