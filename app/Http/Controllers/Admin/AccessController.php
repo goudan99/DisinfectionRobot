@@ -32,10 +32,7 @@ class AccessController extends Controller
 				return [
 					'host'   => $route->domain(),
 					'method' => implode('|', $route->methods()),
-					'path'    => $route->uri(),
-					'code'   => $route->getName(),
-					'action' => ltrim($route->getActionName(), '\\'),
-					'middleware' => $route->gatherMiddleware(),
+					'path'    => $route->uri()
 				];
 			}
         })->whereNotNull()->values()->all();

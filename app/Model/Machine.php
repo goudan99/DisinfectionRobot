@@ -7,5 +7,5 @@ class Machine extends Model
 {
 	use HasFactory;
 	
-	protected $fillable = ['sn','status'];
+	protected $fillable = ['sn','name','status'];
 }

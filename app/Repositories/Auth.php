@@ -23,9 +23,11 @@ class Auth implements Repository
 				$user->password=Hash::make($data["password"]);
 				$user->save();
 			}
-			if($user=Account::where('user_id',$user->user_id)->where('type',0)->first()){
-				$user->password=Hash::make($data["password"]);
-				$user->save();
+			if($user&&$account=Account::where('user_id',$user->user_id)->where('type',0)->first()){
+				$account->password=Hash::make($data["password"]);
+				$account->save();
+			}else{
+				return false;
 			}
 		});
 		
@@ -37,7 +39,9 @@ class Auth implements Repository
 	public function register($data,$notify=[]){
 
 		if($account=Account::where('name',$data['phone'])->first()){
-			return false;
+            throw ValidationException::withMessages([
+              "phone" => "手机号已存在"
+            ]);
 		}
 		
 		DB::transaction(function () use ($data){

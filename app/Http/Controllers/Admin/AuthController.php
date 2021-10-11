@@ -133,7 +133,7 @@ class AuthController extends Controller
     { 
 		$data = $request->all();
 		
-		if($data["code"]!=$request->session()->get('mobile_code_'.$data["phone"].'_'.Mobile::LOGIN)){
+		if($data["code"]!=phonecode($data["phone"],Mobile::LOGIN)){
             throw ValidationException::withMessages([
               "code" => "验证码不正确",
             ]);
@@ -147,7 +147,7 @@ class AuthController extends Controller
 		
 		$token = auth()->login($user);
 		
-		$request->session()->put('mobile_code_'.$data["phone"].'_'.Mobile::LOGIN,'');//修改完以后清掉这个session值
+		phonecode($data["phone"],Mobile::LOGIN,'');//修改完以后清掉这个session值
 		
         $data = [
           'access_token' => $token,
@@ -158,18 +158,26 @@ class AuthController extends Controller
         return $this->success($data);
     }
 	
+	/**
+	  注册必须是
+	**/
     public function register(RegisterRequest $request)
     {
 		$data = $request->all();
 		
 		$data['openid']='123';
 		
-	    if(!$this->getRepositories()->register($data,['form'=>['user'=>'']])){
+		/*验证验证码*/
+		if($data["phone_code"]!=phonecode($data["phone"],Mobile::REGISTER)){
             throw ValidationException::withMessages([
-              "phone" => "手机号已存在"
+              "phone_code" => "验证码不正确",
             ]);
-	    }
-
+		}
+		
+	    $this->getRepositories()->register($data,['form'=>['user'=>'']]);
+		
+		phonecode($data["phone"],Mobile::REGISTER,'');
+		
 		return $this->success([],"注册成功");
 	}
 
@@ -191,7 +199,7 @@ class AuthController extends Controller
 		
 		$auth=new Auth();
 		
-		if($data["code"]!=$request->session()->get('mobile_code_'.$data["phone"].'_'.Mobile::FIND)){
+		if($data["code"]!=phonecode($data["phone"],Mobile::FIND)){
             throw ValidationException::withMessages([
               "code" => "验证码不正确",
             ]);
@@ -199,7 +207,7 @@ class AuthController extends Controller
 		
 		$auth->change($data);
 		
-		$request->session()->put('mobile_code_'.$data["phone"].'_'.Mobile::FIND,'');//修改完以后清掉这个session值
+		phonecode($data["phone"],Mobile::FIND,'');//修改完以后清掉这个session值
 		
         return $this->success([],"密码重置成功");
     }

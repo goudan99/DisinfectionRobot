@@ -30,9 +30,9 @@ class Permit
 		
         foreach ($guards as $guard) {
 			
-            $user= $this->auth->guard($guard)->user()->user;
-			
-			$isPermit=$isPermit&&$user->check($request->route()->uri(),$request->route()->methods());
+            if($user= $this->auth->guard($guard)->user()->user){
+			  $isPermit=$isPermit&&$user->check($request->route()->uri(),$request->route()->methods());
+			}
         }
 		
 		if(!$isPermit){

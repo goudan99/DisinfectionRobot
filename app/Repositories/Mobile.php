@@ -7,7 +7,7 @@ use App\Exceptions\ValidationException;
 
 class Mobile
 {
-    public const REGISITER = 0; 	 //用户注册
+    public const REGISTER = 0; 	 //用户注册
     public const FIND = 1;      	 //找密码
     public const LOGIN = 5;      	 //登录
     public const CHANGE = 2;    	 //更改密码

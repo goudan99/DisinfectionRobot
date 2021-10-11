@@ -40,9 +40,7 @@ class MachineController extends Controller
      */
     public function store(Request $request)
     {
-	   if(!$this->getRepositories()->store($request->all(),['form'=>['user'=>$this->user]])){
-			return $this->error('用户存在');
-	   }
+	   $this->getRepositories()->store($request->all(),['form'=>['user'=>$this->user]]);
 
 	   return $this->success([],"操作成功");
     }
@@ -53,7 +51,7 @@ class MachineController extends Controller
      */
     public function show(Request $request,$id)
     {
-		return $this->success(new UserResource(User::where("id",$id)->first()),"获取成功");
+		return $this->success([],"获取成功");
 	}
 	
     /**
@@ -64,16 +62,9 @@ class MachineController extends Controller
     public function remove(Request $request)
     {
 		$data = $request->all();
-		
-		$data= new Collection($data);
 
-		if($data->contains($request->user('api')->id)){
-			return $this->error('删除失败,你不能删除自己');
-		}
-	    if($this->getRepositories()->remove($data,['form'=>['user'=>$this->user]])){
-          return $this->success([],"删除成功");
-		}else{
-          return $this->error('删除失败,该用户不存在或是系统用户');
-		}
+	    $this->getRepositories()->remove($data,['form'=>['user'=>$this->user]]);
+		
+        return $this->success([],"删除成功");
     }
 }

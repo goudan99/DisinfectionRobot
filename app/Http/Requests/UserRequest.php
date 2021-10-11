@@ -36,7 +36,7 @@ class UserRequest extends Request
             ];
         }else{//store
             $rules = [
-                'name'                 => 'required|min:4|max:20',
+                'name'                 => 'min:4|max:20',
                 'password'             => 'nullable|min:6|max:16|regex:/^[a-zA-Z0-9~@#%_]{6,16}$/i',  //登录密码只能英文字母(a-zA-Z)、阿拉伯数字(0-9)、特殊符号(~@#%)
                 // 'password_confirmation'=> 'same:password',			
 				'passed'               => 'required|boolean',

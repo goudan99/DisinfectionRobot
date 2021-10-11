@@ -62,12 +62,12 @@ class ProfileController extends Controller
      */
     public function password(RestPasswordRequest $request)
     {
-
 		$data=$request->all();
 		
-		if($data["code"]!=$request->session()->get('mobile_code_'.Mobile::CHANGE)){
-			
-			return $this->error('验证码不正确',[], Code::VALIDATE);
+		if($data["code"]!=phonecode($this->user->phone,Mobile::CHANGE)){
+            throw ValidationException::withMessages([
+              "code" => "验证码不正确",
+            ]);
 		}
 		
 	    $this->getRepositories()->password($data,['form'=>['user'=>$this->user]]);

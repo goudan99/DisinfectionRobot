@@ -72,9 +72,6 @@ class LoggerController extends Controller
           $query->where('created_at','>' ,$request->get('begin_at'))->where('created_at', '<', $request->get('end_at'));
         }):'';
 		
-	    if($request->get('status')!=='-1'){
-			$log=$log->where('status',$request->get('status'));
-		}
 		
 		return $this->success($log->paginate($limit));
     }

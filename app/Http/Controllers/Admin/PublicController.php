@@ -7,6 +7,8 @@ use App\Repositories\Config;
 use App\Repositories\UnReposity;
 use App\Repositories\Mobile;
 use Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class PublicController extends Controller
 {
@@ -36,7 +38,14 @@ class PublicController extends Controller
 		if(Mobile::CHANGEPHONE==$type&&$this->user&&$this->user){
 			$phone = $this->user->phone;
 		}
-
+		if($type==2){
+			
+			if(!$user = Auth::user("api")){
+				return $this->error('需要登录',[], 401);
+			}
+			
+			$phone=$user->user->phone;
+		}
 		Validator::make(['phone'=>$phone,'type'=>$type], [
           'phone' => 'required|size:11',
           'type' => 'required',
@@ -48,7 +57,8 @@ class PublicController extends Controller
 		
 		$code= $mobile->code($phone, '', $type);
 		
-		$request->session()->put('mobile_code_'.$phone.'_'.$type, $code);
+		phonecode($phone,$type, $code);
+		
 		if(config("app")["env"]=="testing"){
 			return $this->success($code,"验证码发送成功，请注意查收");
 		}

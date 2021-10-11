@@ -44,7 +44,6 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'profile','middleware' => ['aut
 	Route::put('/notice/{id?}','ProfileController@read');			//标志已读
 	Route::patch('/notice/{id?}','ProfileController@restore');		//恢复删除
 	Route::delete('/notice/{id?}','ProfileController@remove');		//删除
-	Route::get('/notice/unread','ProfileController@remove');		//没有读的条数
 });
 
 /*权限管理模块*/

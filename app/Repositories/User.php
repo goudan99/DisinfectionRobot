@@ -50,17 +50,15 @@ class User implements Repository
 				
 				unset($data['code']);//永远不有修改激活码
 				
-				if(!$data['password']){
-				  unset($data['password']);
-				}
+				if(!$data['password']){unset($data['password']);}
 			
 				$user->update($data);
 				
 				if(!$user->is_system==1){
 					$user->roles()->sync($data['roles']);
-				}
+				}	
 				//name不为空时改帐号或创建一个帐号，
-				if($data['name']&&$account=accountModel::where('user_id',$data['id'])->where('type',0)->first()){
+				if(isset($data['name'])&&$account=accountModel::where('user_id',$data['id'])->where('type',0)->first()){
 					$account->name=$data['name'];
 					$account->update();
 				}else{
@@ -73,7 +71,7 @@ class User implements Repository
 					]):'';
 				}
 				//phone不为空时改帐号或创建一个帐号，
-				if($data['phone']&&$account=accountModel::where('user_id',$data['id'])->where('type',1)->first()){
+				if(isset($data['phone'])&&$account=accountModel::where('user_id',$data['id'])->where('type',1)->first()){
 					$account->name=$data['phone'];
 					$account->update();
 				}else{
@@ -153,8 +151,9 @@ class User implements Repository
 	{
 		$users=userModel::whereIn("id",$data)->where('is_system','<>',1)->get();//把用户查询出来,为了要告诉下一层删除了那一些用户
 		
-		userModel::whereIn("id",$data)->where('is_system','<>',1)->delete();
-		
+		if(userModel::whereIn("id",$data)->where('is_system','<>',1)->delete()){
+		  accountModel::whereIn("user_id",$data)->delete();
+		}
 		event(new UserRemoved($users,$notify));
 		  
 		return true;
