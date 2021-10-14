@@ -1070,7 +1070,7 @@ robot/machine?page=1&limit=10&key=&status=0
 ### 添加/修改机器
 接口地址：/robot/machine
 返回格式:josn
-是否需要授权：否
+是否需要授权：是
 请求方式：post
 请求头：
 
@@ -1102,7 +1102,7 @@ robot/machine?page=1&limit=10&key=&status=0
 ### 删除机器
 接口地址：/robot/machine
 返回格式:josn
-是否需要授权：否
+是否需要授权：是
 请求方式：delete
 请求头：
 
@@ -1210,7 +1210,7 @@ robot/map?page=1&limit=10&key=&status=0
 ### 添加/修改地图
 接口地址：/robot/map
 返回格式:josn
-是否需要授权：否
+是否需要授权：是
 请求方式：post
 请求头：
 
@@ -1243,7 +1243,7 @@ robot/map?page=1&limit=10&key=&status=0
 ### 删除地图
 接口地址：/robot/map
 返回格式:josn
-是否需要授权：否
+是否需要授权：是
 请求方式：delete
 请求头：
 
@@ -1279,7 +1279,9 @@ robot/map?page=1&limit=10&key=&status=0
 |limit| string| request | 否 | 一页条数 |
 |key| string| request | 否 | 搜索关键字 |
 |status| boolen| request | 否 | 地图状态 |
-
+|machine_id| int| request | 否 | 地图状态 |
+|datetime| datetime| request | 否 | 地图状态 |
+|function| int| request | 否 | 功能 |
 返回data说明
 | 字段 | 类型 | 说明 |
 |-|-|-|
@@ -1292,12 +1294,28 @@ robot/map?page=1&limit=10&key=&status=0
 | 字段 | 类型 | 说明 |
 |-|-|-|
 | id | string | 用户id|
-| name | string | 机器名|
-| sn | string | 机器序列号|
-| status | string | 机器状态|
+| name | string | 任务名称|
+| user_id | string | 创建者id|
+| user_name | string | 创建名称|
+| machine_id | string | 机器id|
+| machine_name | string | 机器名|
+| map_id | string | 地图id|
+| map_name | string | 地图名称|
+| map_area | string | 执行区域|
+| rate_type | string | 执行频率|
+| work | string | 执行任务|
+| is_clean | string | 是否扫地|
+| is_test | string | 是否巡检|
+| start_at | string | 开始时间|
+| end_at | string | 结束时间|
+| status | string | 任务状态|
+| deleted_at | string | 删除时间|
+| created_at | string | 创建时间|
+| updated_at | string | 更新时间|
+
 请求样例：
 ```
-robot/map?page=1&limit=10&key=&status=0
+robot/job?page=1&limit=10&key=&status=0
 ```
 返回样例：
 ```
@@ -1305,52 +1323,39 @@ robot/map?page=1&limit=10&key=&status=0
     "code": 0,
     "msg": "",
     "data": {
-        "data": [
-            {
-                "id": 2,
-                "name": "楼房aaa",
-                "area": null,
-                "image": null,
-                "user_id": 1,
-                "user_name": "15113339677",
-                "machine_id": 1,
-                "machine_name": "3",
-                "image_size": null,
-                "file_size": null,
-                "status": 0,
-                "created_at": "2021-10-11T07:30:25.000000Z",
-                "updated_at": "2021-10-11T07:30:25.000000Z"
-            },
-            {
-                "id": 1,
-                "name": "楼房00000000",
-                "area": {
-                    "dd": "5"
-                },
-                "image": "000",
-                "user_id": 1,
-                "user_name": "15113339677",
-                "machine_id": 1,
-                "machine_name": "3",
-                "image_size": null,
-                "file_size": "00",
-                "status": 0,
-                "created_at": null,
-                "updated_at": "2021-10-11T07:31:59.000000Z"
-            }
+        "id": 1,
+        "name": "二楼扫地",
+        "user_id": 1,
+        "user_name": "15113339677",
+        "machine_id": 1,
+        "machine_name": null,
+        "map_id": 12,
+        "map_name": null,
+        "map_area": {
+            "区域名1": 20,
+            "区域名2": 20
+        },
+        "rate_type": 1,
+        "work": [
+            1,
+            2
         ],
-        "total": 2,
-        "page": 1,
-        "limit": 10
+        "is_clean": 0,
+        "is_test": 0,
+        "start_at": "2021-09-17 00:00:00",
+        "end_at": "2021-09-18 00:00:00",
+        "deleted_at": null,
+        "created_at": "2021-10-14T08:53:24.000000Z",
+        "updated_at": "2021-10-14T08:53:24.000000Z"
     },
-    "timestamp": 1633937526
+    "timestamp": 1634201609
 }
 ```
 
 ### 添加/修改任务
 接口地址：/robot/job
 返回格式:josn
-是否需要授权：否
+是否需要授权：是
 请求方式：post
 请求头：
 
