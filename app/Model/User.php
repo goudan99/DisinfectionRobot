@@ -11,7 +11,7 @@ class User extends Model
 	  
 	protected $fillable = ['nickname','avatar','phone','code','desc','passed','openid'];
 	
-	public function accouts()
+	public function accounts()
     {
          return $this->hasMany('App\Model\Account');
     }
