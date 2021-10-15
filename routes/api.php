@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::get('/',function(){ return abort(404); });
+Route::get('/',function(){ return "0000"; });
 
 /*不需要权限可以获取或操作的数据*/
 Route::group(['namespace' =>"Admin", 'prefix' => 'public','middleware' => []], function () {
