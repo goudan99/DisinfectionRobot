@@ -26,7 +26,7 @@ class JobRequest extends Request
             $rules = [            
 				'name'                  => 'required|min:2|max:20',
                 'map_id'              	=> 'required',  //地图必须选
-				'map_area' 				=> 'required',		
+				//'map_area' 				=> 'required',		
                 'machine_id'            => 'required',  //机器				
                 'start_at'              => 'required',
 				'end_at'              	=> 'required',
@@ -39,7 +39,7 @@ class JobRequest extends Request
             $rules = [
 				'name'                  => 'required|min:4|max:20',
                 'map_id'              	=> 'required',  //地图必须选
-				'map_area' 				=> 'required',		
+				//'map_area' 				=> 'required',		
                 'machine_id'            => 'required',  //机器				
                 'start_at'              => 'required',
 				'end_at'              	=> 'required',
