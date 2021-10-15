@@ -27,13 +27,10 @@ class AccessFactory extends Factory
         return [
 			'parent_id' => $this->faker->numberBetween(0,20),
             'name' => $this->faker->userName,
-			'type' => $this->faker->numberBetween(0,1),			
-			'relace_id' => $this->faker->numberBetween(0,1),
 			'code' => $this->faker->userName,
-			'path' => $this->faker->image(storage_path("uplpoad"),640,480),
-			'desc' => $this->faker->text(200),
-            'status' => $this->faker->numberBetween(0,1),            
-			'is_system' => $this->faker->numberBetween(0,1)
+			'path' => "/",
+			'method' => "POST",
+			'desc' => $this->faker->text(10)
         ];
     }
 }

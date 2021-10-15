@@ -24,17 +24,12 @@ class UserFactory extends Factory
      */
     public function definition()
     {
-        return [
-            'name' => $this->faker->userName,  
-			'password' => Hash::make($this->faker->password),			
-            'nickname' => $this->faker->name, 
-            'role_id' => Role::factory(),  
-            'role_name' => function (array $attributes) {
-				return Role::find($attributes['role_id'])->name;
-			},		
+        return [ 		
+            'nickname' => $this->faker->name, 	
             'phone' => $this->faker->phoneNumber(),
-			'email' => $this->faker->email(),
-            'avatar' => $this->faker->image(storage_path("uplpoad"),640,480) ,
+			'code' => Str::random(4),
+			'openid' => Str::random(10),
+            'avatar' => $this->faker->image(public_path("upload"),640,480) ,
             'last_at' => $this->faker->date('Y-m-d H:m:s','now'),
             'last_ip' => $this->faker->ipv4, 
             'login_times' => $this->faker->randomNumber(),
