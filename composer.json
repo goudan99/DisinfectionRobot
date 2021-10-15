@@ -19,6 +19,7 @@
         "php-amqplib/php-amqplib": "^3.0",
         "php-mqtt/client": "^0.3.0",
         "swooletw/laravel-swoole": "^2.9",
+        "tencentcloud/tencentcloud-sdk-php": "^3.0",
         "tymon/jwt-auth": "^1.0"
     },
     "require-dev": {
@@ -67,5 +68,11 @@
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
         ]
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://mirrors.aliyun.com/composer"
+        }
     }
 }
