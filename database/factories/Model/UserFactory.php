@@ -35,7 +35,7 @@ class UserFactory extends Factory
             'login_times' => $this->faker->randomNumber(),
             'passed' => $this->faker->numberBetween(0,1),
             'desc' => $this->faker->text(200),
-			'is_system' => $this->faker->numberBetween(0,1)
+			'is_system' => 0
         ];
     }
 }
