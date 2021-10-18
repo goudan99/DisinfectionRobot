@@ -72,9 +72,9 @@ class Profile implements Repository
 		return false;
 	  }
 	  
-	  $path=$request->file->store('avatar',config("shop")["avatar"]);
+	  $path=$request->file->store('avatar',config("robot")["avatar"]);
 	  
-	  $url= url(Storage::disk(config("shop")["avatar"])->url($path));
+	  $url= url(Storage::disk(config("robot")["avatar"])->url($path));
 	  
 	  event(new UploadStored(["path"=>$path,"url"=>$url],$notify));
 
@@ -91,6 +91,20 @@ class Profile implements Repository
 		event(new NoticeChanged($notice,$notify));
 		
 		$notice->delete();
+		
+		return $notice;
+	}
+	
+	/*标志已读通知*/
+	public function send($data,$notify)
+	{
+
+
+		$notice=Notice::create($data);
+	
+		$notify["method"]="send";
+		
+		//event(new NoticeChanged($notice,$notify));
 		
 		return $notice;
 	}

@@ -40,6 +40,7 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'profile','middleware' => ['aut
 	Route::post('/phone','ProfileController@phone');
 	Route::get('/menu','ProfileController@menu');			
 	Route::get('/notice','ProfileController@notice');				// 通知
+	Route::post('/notice','ProfileController@send');				// 发送通知
 	Route::get('/notice/{id?}','ProfileController@show');			// 通知
 	Route::put('/notice/{id?}','ProfileController@read');			//标志已读
 	Route::patch('/notice/{id?}','ProfileController@restore');		//恢复删除

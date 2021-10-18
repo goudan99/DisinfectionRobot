@@ -137,6 +137,22 @@ class ProfileController extends Controller
     }
 	
     /**
+     * 设置通知已读
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function send(Request $request)
+    {
+		$data=$request->all();
+		
+		$data["user_id"]=$this->user->id;
+		
+		$this->getRepositories()->send($data,['form'=>['user'=>$this->user]]);
+		 
+		return $this->success("操作成功");
+    }
+	
+    /**
      * 删除通知
      *
      * @return \Illuminate\Http\Response

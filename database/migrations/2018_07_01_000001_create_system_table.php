@@ -35,6 +35,7 @@ class CreateSystemTable extends Migration
         Schema::create('notice', function (Blueprint $table) {
 			$table->increments('id')->comment('通知id');
 			$table->integer('user_id')->nullable()->comment('所属用户');
+			$table->integer('form_id')->nullable()->comment('来源用户');
 			$table->string('title',100)->nullable()->comment('通知标题');
 			$table->text('content')->nullable()->comment('通知内容');
 			$table->tinyInteger('is_read')->default(0)->nullable()->comment('是否已读');

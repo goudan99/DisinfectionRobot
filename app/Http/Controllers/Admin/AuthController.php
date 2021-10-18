@@ -90,7 +90,7 @@ class AuthController extends Controller
     { 
 		$code = request("code");
 		
-		$config = config("shop")["miniProgram"];
+		$config = config("robot")["miniProgram"];
 		
 		$app = Factory::miniProgram($config);
 		

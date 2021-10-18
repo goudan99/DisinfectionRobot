@@ -11,5 +11,5 @@ class Notice extends Model
 	
     protected $table = 'notice';
 	
-	//protected $fillable = [];
+	protected $fillable = ['title','content','user_id'];
 }

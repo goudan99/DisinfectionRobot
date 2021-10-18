@@ -35,9 +35,9 @@ class Config implements Repository
 		return false;
 	  }
 	  
-	  $path=$request->file->store(null,config("shop")["system"]);
+	  $path=$request->file->store(null,config("robot")["system"]);
 	  
-	  $url= url(Storage::disk(config("shop")["system"])->url($path));
+	  $url= url(Storage::disk(config("robot")["system"])->url($path));
 	  
 	  event(new UploadStored(["path"=>$path,"url"=>$url],$notify));
 
