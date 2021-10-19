@@ -25,8 +25,18 @@ class JobController extends Controller
     public function home(Request $request)
     {
 		$limit=$request->limit?$request->limit:10;
+
+		$job=Job::orderby("id",'desc');
 		
-		$job=Job::orderby("id",'desc')->paginate($limit);
+		$request->get('status') ? $job=$job->where('status',trim($request->get('status'))):'';
+		
+		$request->get('machie_id') ? $job=$job->where('machie_id',trim($request->get('machie_id'))):'';
+		
+		$request->get('type_id') ? $job=$job->where('type_id',trim($request->get('type_id'))):'';
+		
+		$request->get('start_at') ? $job=$job->where('start_at',trim($request->get('start_at'))):'';
+		
+		$job=$job->paginate($limit);
 		
 		return $this->success(new JobCollection($job));
     }
@@ -58,15 +68,13 @@ class JobController extends Controller
 		]);
 	  }
 
-	   if(!$this->getRepositories()->store($request->all(),['form'=>['user'=>$this->user]])){
-			return $this->error('未知错误');
-	   }
+	   $this->getRepositories()->store($request->all(),['form'=>['user'=>$this->user]]);
 
 	   return $this->success([],"操作成功");
 	}
 	
     /**
-     * 删除地图
+     * 删除任务
      *
      * @return \Illuminate\Http\Response
      */

@@ -24,27 +24,27 @@ class JobRequest extends Request
         if(!$this->id){
 			
             $rules = [            
-				'name'                  => 'required|min:2|max:20',
+				'name'                  => 'required|min:2|max:100',
                 'map_id'              	=> 'required',  //地图必须选
 				//'map_area' 				=> 'required',		
                 'machine_id'            => 'required',  //机器				
                 'start_at'              => 'required',
-				'end_at'              	=> 'required',
+				//'end_at'              	=> 'required',
 				'rate_type'             => 'required',
-                'work'                 	=> 'required',
+                //'work'                 	=> 'required',
                 'is_clean'             	=> 'boolean',
                 'is_test'             	=> 'boolean'
             ];
         }else{//store
             $rules = [
-				'name'                  => 'required|min:4|max:20',
+				'name'                  => 'required|min:4|max:100',
                 'map_id'              	=> 'required',  //地图必须选
 				//'map_area' 				=> 'required',		
                 'machine_id'            => 'required',  //机器				
                 'start_at'              => 'required',
-				'end_at'              	=> 'required',
+				//'end_at'              	=> 'required',
 				'rate_type'             => 'required',
-                'work'                 	=> 'required',
+                //'work'                 	=> 'required',
                 'is_clean'             	=> 'boolean',
                 'is_test'             	=> 'boolean'
             ];

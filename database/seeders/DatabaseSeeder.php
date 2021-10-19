@@ -50,91 +50,104 @@ class DatabaseSeeder extends Seeder
             'name' => '用户管理', 
             'code' => 'safe', 
             'desc' => '',
-            'path' => '/member/user'
+            'path' => '/api/member/user',
+			'method'=>'GET'
         ],[
 			'id' => '2',
 			'parent_id' => '1',
             'name' => '添加用户', 
             'code' => 'user', 
             'desc' => '',
-            'path' => '/member/user',
+            'path' => '/api/member/user',
+			'method'=>'POST'
         ],[
 			'id' => '3',
 			'parent_id' => '1',
             'name' => '修改用户', 
             'code' => 'role', 
             'desc' => '',
-            'path' => '/member/user'
+            'path' => '/api/member/user',
+			'method'=>'PUT'
         ],[
 			'id' => '4',
 			'parent_id' => '1',
             'name' => '删除用户', 
             'code' => 'role', 
             'desc' => '',
-            'path' => '/member/user'
+            'path' => '/api/member/user',
+			'method'=>'DELETE'
         ],[
 			'id' => '5',
 			'parent_id' => '0',
             'name' => '角色管理', 
             'code' => '', 
             'desc' => '',
-            'path' => '/member/role'
+            'path' => '/api/member/role',
+			'method'=>'GET'
         ],[
 			'id' => '6',
 			'parent_id' => '5',
             'name' => '添加角色', 
             'code' => '', 
             'desc' => '',
-            'path' => '/member/role'
+            'path' => '/api/member/role',
+			'method'=>'POST'
         ],[
 			'id' => '7',
 			'parent_id' => '5',
             'name' => '修改角色', 
             'code' => 'role', 
             'desc' => '',
-            'path' => '/member/role'
+            'path' => '/api/member/role',
+			'method'=>'PUT'
         ],[
 			'id' => '8',
 			'parent_id' => '5',
             'name' => '删除角色', 
             'code' => 'role', 
             'desc' => '',
-            'path' => '/member/user'
+            'path' => '/api/member/role',
+			'method'=>'DELETE'
         ],[
 			'id' => '9',
 			'parent_id' => '0',
             'name' => '菜单管理', 
             'code' => '', 
             'desc' => '',
-            'path' => '/member/role'
+            'path' => '/api/setting/menus',
+			'method'=>'GET'
         ],[
 			'id' => '10',
 			'parent_id' => '9',
             'name' => '添加菜单', 
             'code' => '', 
             'desc' => '',
-            'path' => '/member/role'
+            'path' => '/api/setting/menus',
+			'method'=>'POST'
         ],[
 			'id' => '11',
 			'parent_id' => '9',
             'name' => '修改菜单', 
             'code' => 'role', 
             'desc' => '',
-            'path' => '/member/role'
+            'path' => '/api/setting/menus',
+			'method'=>'PUT'
         ],[
 			'id' => '12',
 			'parent_id' => '9',
             'name' => '删除菜单', 
             'code' => 'role', 
             'desc' => '',
-            'path' => '/member/user'
+            'path' => '/api/setting/menus',
+			'method'=>'DELETE'
         ],[
 			'id' => '13',
 			'parent_id' => '0',
             'name' => '权限查看',
             'code' => 'role', 
             'desc' => '',
-            'path' => '/system/access'
+            'path' => '/system/access',
+			'method'=>'GET'
         ]]);
 		
 		/*菜单管理*/
@@ -194,10 +207,55 @@ class DatabaseSeeder extends Seeder
             'is_system' => '1'
         ],[
 			'id' => '7',
-			'parent_id' => '4',			
+			'parent_id' => '4',
 			'name' => '访问权限',
             'prefix' => '/', 
-            'path' => 'setting/access/index',
+            'path' => 'setting/access',
+            'icon' => '',   
+            'target' => '_self', 
+            'is_system' => '1'
+        ],[
+			'id' => '8',
+			'parent_id' => '4',
+			'name' => '前端日志',
+            'prefix' => '/', 
+            'path' => 'system/logger/api',
+            'icon' => '',   
+            'target' => '_self', 
+            'is_system' => '1'
+        ],[
+			'id' => '9',
+			'parent_id' => '4',
+			'name' => '操作日志',
+            'prefix' => '/', 
+            'path' => 'system/logger/user',
+            'icon' => '',   
+            'target' => '_self', 
+            'is_system' => '1'
+        ],[
+			'id' => '10',
+			'parent_id' => '4',
+			'name' => '后端日志',
+            'prefix' => '/', 
+            'path' => 'system/logger/index',
+            'icon' => '',   
+            'target' => '_self', 
+            'is_system' => '1'
+        ],[
+			'id' => '11',
+			'parent_id' => '0',
+			'name' => '设备管理',
+            'prefix' => '/', 
+            'path' => 'machine/index',
+            'icon' => '',   
+            'target' => '_self', 
+            'is_system' => '1'
+        ],[
+			'id' => '12',
+			'parent_id' => '11',
+			'name' => '机器管理',
+            'prefix' => '/', 
+            'path' => 'machine/index',
             'icon' => '',   
             'target' => '_self', 
             'is_system' => '1'

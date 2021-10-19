@@ -134,8 +134,7 @@ class LoggerController extends Controller
         }catch (LogNotFoundException $e) {
             return $this->success(["data"=>[],"total"=>0,"page"=>1]);
         }
-		
-		foreach($log->menu() as $key=>$item){
+		foreach($log->tree() as $key=>$item){
 		  $levels[$key]=["name"=>$item["name"],"count"=>$item["count"]];
 		}
 		

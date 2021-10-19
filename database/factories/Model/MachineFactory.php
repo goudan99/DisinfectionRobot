@@ -1,19 +1,20 @@
 <?php
 
 namespace Database\Factories\Model;
-use App\Model\Account;
+
+use App\Model\Machine;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use Hash;
 
-class AccountFactory extends Factory
+class MachineFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = Account::class;
+    protected $model = Machine::class;
 
     /**
      * Define the model's default state.
@@ -22,12 +23,10 @@ class AccountFactory extends Factory
      */
     public function definition()
     {
-        return [
-            'user_id' => 0,
-            'name' => Str::random(10),
-            'password' => Hash::make($this->faker->password),
-            'type' => $this->faker->numberBetween(0,3),
-			'passed' => $this->faker->numberBetween(0,1)
+        return [ 		
+            'name' => Str::random(10),, 	
+            'sn' => Str::random(10),
+            'status' => $this->faker->numberBetween(0,1)
         ];
     }
 }

@@ -106,7 +106,7 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'system','middleware' => ['auth
 	Route::get('/uris','AccessController@uri');
 	Route::get('/logger/api','LoggerController@api');   				//显示前端错误
 	Route::get('/logger/code','LoggerController@code');					//获取后端报错
-	Route::get('/logger/code/{id?}','LoggerController@codeShow');		//显示后端错误
+	Route::get('/logger/code/{date?}','LoggerController@codeShow');		//显示后端错误
 	Route::delete('/logger/code/{id?}','LoggerController@codeRemove');	//删除错误日志
 	Route::get('/logger/job','LoggerController@job');   				//任务日志
 	Route::get('/logger/user','LoggerController@user');   				//用户操作日志

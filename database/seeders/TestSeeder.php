@@ -8,7 +8,9 @@ use App\Model\Role;
 use App\Model\Account;
 use App\Model\Access;
 use App\Model\Menu;
-
+use App\Model\Machine;
+use App\Model\Map;
+use App\Model\Job;
 class TestSeeder extends Seeder
 {
     /**
@@ -29,19 +31,37 @@ class TestSeeder extends Seeder
 		  $item->access()->attach($access->random(6)) ;
 		});
 		
-		User::factory()->has(Account::factory()->count(3))->count(50)->create()->each(function($item) use ($role){
+		$user=User::factory()->has(Account::factory()->count(3))->count(20)->create()->each(function($item) use ($role){
 			$item->roles()->attach($role->random(6)) ;
 		});
-
-
-        //
-		/*User::factory()->has(
-			Role::factory()->has(
-				Access::factory()->count(10)
-			)->count(3)
-		)->has(
-			Account::factory()->count(2)
-		)->count(50)->create();
-		*/
+		
+		$machine=Machine::factory()->count(10)->create();
+		
+		$map=Map::factory()->count(20)->create()->each(function($item) use ($machine,$user){
+			$mac=$machine->random(1)[0];
+			$item->machine_id=$mac->id;
+			$item->machine_name=$mac->name;
+			$u=$user->random(1)[0];
+			$item->user_id=$u->id;
+			$item->user_name=$u->nickname;
+			$item->save();
+		});
+		
+		$job=Job::factory()->count(20)->create()->each(function($item) use ($machine,$user,$map){
+			
+			$mac=$machine->random(1)[0];
+			$item->machine_id=$mac->id;
+			$item->machine_name=$mac->name;
+			
+			$u=$user->random(1)[0];
+			$item->user_id=$u->id;
+			$item->user_name=$u->nickname;
+			
+			$m=$map->random(1)[0];
+			$item->map_id=$m->id;
+			$item->map_name=$m->name;
+			$item->save();
+		});
+		
     }
 }

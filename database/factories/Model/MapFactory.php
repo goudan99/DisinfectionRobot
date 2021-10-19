@@ -1,19 +1,20 @@
 <?php
 
 namespace Database\Factories\Model;
-use App\Model\Account;
+
+use App\Model\Map;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use Hash;
 
-class AccountFactory extends Factory
+class MapFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = Account::class;
+    protected $model = Map::class;
 
     /**
      * Define the model's default state.
@@ -22,12 +23,13 @@ class AccountFactory extends Factory
      */
     public function definition()
     {
-        return [
-            'user_id' => 0,
+        return [ 		
             'name' => Str::random(10),
-            'password' => Hash::make($this->faker->password),
-            'type' => $this->faker->numberBetween(0,3),
-			'passed' => $this->faker->numberBetween(0,1)
+            'area' => $this->faker->phoneNumber(),
+            'image' => $this->faker->image(public_path("upload"),640,480),
+			'image_size' => $this->faker->numberBetween(0,1),
+			'file_size' => $this->faker->numberBetween(0,1),
+			'status' => $this->faker->numberBetween(0,1),
         ];
     }
 }
