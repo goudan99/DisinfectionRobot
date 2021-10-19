@@ -37,6 +37,9 @@ class User extends Model
 	  if($this->id==1){
 		return true; 
 	  }
+	  if(!$this->role){
+		 return false;
+	  }
 	  if($this->role->access->where('path',$path)->where('method',implode('|',$method))->first()){
 		return true;   
 	  }
