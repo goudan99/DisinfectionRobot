@@ -23,7 +23,7 @@ class Mobile
 		
 		sendSms($phone,$this->tempid($type),$code);
 		
-		return rand();
+		return $code;
 	}
 	
 	private function tempid($type){
