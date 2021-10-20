@@ -5,7 +5,7 @@ use TencentCloud\Common\Exception\TencentCloudSDKException;
 use TencentCloud\Common\Credential;
 use TencentCloud\Common\Profile\ClientProfile;
 use TencentCloud\Common\Profile\HttpProfile;
-
+use Illuminate\Support\Facades\Cache;
 
 if (!function_exists('platform')) {
     /**
@@ -31,11 +31,11 @@ if (!function_exists('phonecode')) {
 		
 		if($value===false){
 			
-          return request()->session()->get($prefix.$phone.$type);
+          return Cache::get($prefix.$phone.$type);
 		  
 		}
 		
-		return request()->session()->put($prefix.$phone.$type,$value);
+		return Cache::put($prefix.$phone.$type,$value,15);
     }
 }
 

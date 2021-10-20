@@ -5,8 +5,8 @@ return [
   'system' => "public",//头像位置
   //用于登录api的oauth
   'miniProgram' => [
-    'app_id' => "wx8ccff2986bb253a7",
-    'secret' => "67c6d597b1d7877363b827c80484fcd6",
+    'app_id' => "wxbccd7a10c50cc27e",
+    'secret' => "83e4bd9f7cfa7bbd613e503e27693b4d",
   ],
   'sms' => [
     'secret' => "AKIDve7JFtGNDmIYYHjupTp49xVlkTv61f29",

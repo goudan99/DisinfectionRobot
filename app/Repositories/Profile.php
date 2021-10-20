@@ -40,7 +40,7 @@ class Profile implements Repository
 	/*修改密码*/
 	public function password($data,$notify){
 
-	  $data["password"]?$this->user->password=Hash::make($data["password"]):'';
+	  //$data["password"]?$this->user->password=Hash::make($data["password"]):'';
 	  
       $this->user->save();
 

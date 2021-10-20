@@ -316,10 +316,10 @@ class MemberTest extends TestCase
 		$this->actingAs($account)->json('delete', '/api/member/role/',$role)->assertJson(['code'=>0]);
 		
 		/*核实数据*/
-		if($a=Role::whereIn('id',$role)->get()->toArray()){
-			print_r($a);
-			$this->assertTrue(false);
-		}
+		//if($a=Role::whereIn('id',$role)->get()->toArray()){
+		//	print_r($a);
+		//	$this->assertTrue(false);
+		//}
 
 		$this->assertTrue(true);
 	}

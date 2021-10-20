@@ -32,6 +32,22 @@ class User extends Model
 		}      
     }
 	
+	public function access()
+    {
+		$arr=[];
+		
+		if($this->id==1){
+			return Access::get();		
+		}elseif($this->roles){
+			foreach($this->roles as $item){
+				$arr=array_merge($arr,$item->access->toArray());
+			}
+			return $arr;	
+		}else{
+			return $arr;
+		}       
+    }
+	
 	public function check($path,$method)
     {
 	  if($this->id==1){

@@ -106,6 +106,12 @@ class ProfileController extends Controller
 		return $this->success('修改成功');
     }
 	
+    public function access(Request $request)
+    {
+
+		return $this->success($this->user->access(),"操作成功");
+    }
+	
     /**
      * 获取用户菜单
      *

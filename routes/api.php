@@ -36,6 +36,7 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'profile','middleware' => ['aut
 	Route::get('/user','ProfileController@user');
 	Route::post('/user','ProfileController@store');
 	Route::post('/avatar','ProfileController@avatar');
+	Route::get('/access','ProfileController@access');
 	Route::post('/password','ProfileController@password');
 	Route::post('/phone','ProfileController@phone');
 	Route::get('/menu','ProfileController@menu');			
@@ -68,6 +69,7 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'robot','middleware' => ['auth:
 	Route::get('/machine','MachineController@home');
 	Route::get('/machine/{id?}','MachineController@show');
 	Route::post('/machine','MachineController@store');
+	Route::put('/machine','MachineController@store');
 	Route::delete('/machine','MachineController@remove');
 	
 	Route::get('/map',		'MapController@home');

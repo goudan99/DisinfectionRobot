@@ -24,7 +24,7 @@ class MachineFactory extends Factory
     public function definition()
     {
         return [ 		
-            'name' => Str::random(10),, 	
+            'name' => Str::random(10), 	
             'sn' => Str::random(10),
             'status' => $this->faker->numberBetween(0,1)
         ];

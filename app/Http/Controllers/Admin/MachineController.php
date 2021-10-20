@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Model\Machine;
 use App\Http\Resources\UserResource;
-use App\Http\Resources\UserCollection;
+use App\Http\Resources\MachineCollection;
 use App\Http\Requests\UserRequest;
 use App\Repositories\Machine as machineRepository;
 use Illuminate\Support\Collection;
@@ -30,7 +30,7 @@ class MachineController extends Controller
 		
 	    $request->get('key') ? $machine=$machine->where('name','like','%'.trim($request->get('key')).'%'):'';
 		
-		return $this->success($machine->paginate($limit));
+		return $this->success(new MachineCollection($machine->paginate($limit)));
     }
 
     /**
