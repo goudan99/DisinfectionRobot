@@ -53,12 +53,17 @@ class User extends Model
 	  if($this->id==1){
 		return true; 
 	  }
-	  if(!$this->role){
+	  if(!$this->roles){
 		 return false;
 	  }
-	  if($this->role->access->where('path',$path)->where('method',implode('|',$method))->first()){
-		return true;   
+	  
+	foreach($this->roles as $item){
+	  if($item->access->where('path',$path)->where('method',implode('|',$method))->toArray()){
+		 return true;
 	  }
+	}
+			
+
       return false; 
     }
 	
