@@ -20,9 +20,9 @@ class Mobile
 	public function code($phone,$code="",$type=0)
 	{
 		$code =  $code?$code:(int)rand(111111, 999999);
-		if(!(config("app")["env"]=="local"||config("app")["env"]=="testing")){
+		//if(!(config("app")["env"]=="local"||config("app")["env"]=="testing")){
 			sendSms($phone,$this->tempid($type),$code);
-		}
+		//}
 		return $code;
 	}
 	
