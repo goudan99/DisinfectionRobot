@@ -133,11 +133,11 @@ class AuthController extends Controller
     { 
 		$data = $request->all();
 		
-		//if($data["code"]!=phonecode($data["phone"],Mobile::LOGIN)){
-        //    throw ValidationException::withMessages([
-        //      "code" => "验证码不正确",
-        //    ]);
-		//}
+		if($data["code"]!=phonecode($data["phone"],Mobile::LOGIN)){
+            throw ValidationException::withMessages([
+              "code" => "验证码不正确",
+            ]);
+		}
 		
 		if(!$user = Account::where("name",$data["phone"])->where("type",1)->first()){
             throw ValidationException::withMessages([
@@ -168,11 +168,11 @@ class AuthController extends Controller
 		$data['openid']='123';
 		
 		/*验证验证码*/
-		// if($data["phone_code"]!=phonecode($data["phone"],Mobile::REGISTER)){
-            // throw ValidationException::withMessages([
-              // "phone_code" => "验证码不正确",
-            // ]);
-		//}
+		if($data["phone_code"]!=phonecode($data["phone"],Mobile::REGISTER)){
+            throw ValidationException::withMessages([
+              "phone_code" => "验证码不正确",
+            ]);
+		}
 		
 	    $this->getRepositories()->register($data,['form'=>['user'=>'']]);
 		
