@@ -51,7 +51,7 @@ class Auth implements Repository
 				'code'=>isset($data['invite_code'])?$data['invite_code']:'',
 				'openid'=>isset($data['openid'])?$data['openid']:'',
 			]);
-			Account::create(['name'=>$data['phone'],'type'=>1,'user_id'=>$user->id]);
+			Account::create(['name'=>$data['phone'],'type'=>1,'user_id'=>$user->id,'password'=>Hash::make($data["password"])]);
 		});
 		
 		return true;
