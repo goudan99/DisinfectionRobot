@@ -172,7 +172,7 @@ class AuthController extends Controller
             // throw ValidationException::withMessages([
               // "phone_code" => "验证码不正确",
             // ]);
-		}
+		//}
 		
 	    $this->getRepositories()->register($data,['form'=>['user'=>'']]);
 		
