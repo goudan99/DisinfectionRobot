@@ -26,10 +26,10 @@ class PublicController extends Controller
     {
 
 		$mobile=new Mobile();
-		
-		$type=$request->get("type");
+		$data=$request->all();
+		$type=$data("type");
 
-		$phone=$request->get("phone");
+		$phone=$data("phone");
 
 		if(Mobile::CHANGEPHONE==$type&&!$this->user){
 			return $this->error("没有登录");
