@@ -3,8 +3,8 @@ namespace App\Repositories;
 use App\Events\AccessRemoved;
 use App\Events\AccessStored;
 use App\Model\Access as AccessModel;
-use App\Exceptions\ValidationException;
-
+use App\Exceptions\AttachException;
+use Illuminate\Support\Facades\Cache;
 
 class Mobile
 {
@@ -20,10 +20,20 @@ class Mobile
 	public function code($phone,$code="",$type=0)
 	{
 		$code =  $code?$code:(int)rand(111111, 999999);
+		
 		//if(!(config("app")["env"]=="local"||config("app")["env"]=="testing")){
-			sendSms($phone,$this->tempid($type),$code);
+			$prefix="mobile_code_limt";
+			$count=Cache::get($prefix.$phone.date("Y.m.d"));
+			if($count<15){
+			  sendSms($phone,$this->tempid($type),$code);
+			  Cache::put($prefix.$phone.date("Y.m.d"),$count+1);
+			  return $code;
+			}else{
+			  throw new AttachException("手机号码发送次数超过限制",[],422);
+			}
+
 		//}
-		return $code;
+		
 	}
 	
 	private function tempid($type){
@@ -37,5 +47,4 @@ class Mobile
 		]; 
 		return $arr[$type];
 	}
-	
 }
