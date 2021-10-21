@@ -133,11 +133,7 @@ class AuthController extends Controller
     { 
 		$data = $request->all();
 		
-		if($data["code"]!=phonecode($data["phone"],Mobile::LOGIN)){
-            throw ValidationException::withMessages([
-              "code" => "验证码不正确",
-            ]);
-		}
+
 		
 		if(!$user = Account::where("name",$data["phone"])->where("type",1)->first()){
             throw ValidationException::withMessages([
