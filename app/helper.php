@@ -29,13 +29,11 @@ if (!function_exists('phonecode')) {
     {
 		$prefix="mobile_code";
 		
-		if($value===false){
-			
-          return Cache::get($prefix.$phone.$type);
-		  
-		}
+		$key=$prefix.$phone.$type;
+
+		if($value===false){ return Cache::get($key);}
 		
-		return Cache::put($prefix.$phone.$type,$value,15);
+		return Cache::put($key,$value);
     }
 }
 

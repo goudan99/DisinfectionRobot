@@ -18,6 +18,7 @@
         "overtrue/laravel-wechat": "^5.2",
         "php-amqplib/php-amqplib": "^3.0",
         "php-mqtt/client": "^0.3.0",
+        "predis/predis": "^1.1",
         "swooletw/laravel-swoole": "^2.9",
         "tencentcloud/tencentcloud-sdk-php": "^3.0",
         "tymon/jwt-auth": "^1.0"
