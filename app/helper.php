@@ -6,6 +6,9 @@ use TencentCloud\Common\Credential;
 use TencentCloud\Common\Profile\ClientProfile;
 use TencentCloud\Common\Profile\HttpProfile;
 use Illuminate\Support\Facades\Cache;
+use EasyWeChat\Factory;
+use App\Constant\Code;
+use App\Exceptions\AttachException;
 
 if (!function_exists('platform')) {
     /**
@@ -34,6 +37,33 @@ if (!function_exists('phonecode')) {
 		if($value===false){ return Cache::get($key);}
 		
 		return Cache::put($key,$value);
+    }
+}
+
+/*保存或读取code*/
+if (!function_exists('openid')) {
+    /**
+     * @return bool
+     */
+    function openid($code)
+    {
+		$config = config("robot")["miniProgram"];
+		
+		$app = Factory::miniProgram($config);
+		
+		$openid = "ofeYf1JTKjv6eutx_2lM8McRq3sw";
+		
+		$wedata = $app->auth->session($code);
+		
+		if(isset($wedata["errcode"])){
+			//throw new AttachException("wechat_code无效，重新获取",[],Code::VALIDATE);
+			return false;
+		}
+		
+		$openid = $wedata["openid"];
+		
+		return $openid;
+		
     }
 }
 
