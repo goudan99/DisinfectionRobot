@@ -28,7 +28,7 @@ class JobFactory extends Factory
 			'type_id' => $this->faker->numberBetween(1,5),
             'rate_type' => $this->faker->numberBetween(0,3),
 			'is_test' => $this->faker->numberBetween(0,1),
-			'status' => $this->faker->numberBetween(0,1),
+			'status' => $this->faker->numberBetween(0,5),
 			'start_at' => $this->faker->date('Y-m-d H:m:s','now'),
 			'end_at' => $this->faker->date('Y-m-d H:m:s','now')
         ];
