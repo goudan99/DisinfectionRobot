@@ -29,9 +29,10 @@ class Permit
 		$isPermit=true;
 		
         foreach ($guards as $guard) {
-			
-            if($user= $this->auth->guard($guard)->user()->user){
-			  $isPermit=$isPermit&&$user->check($request->route()->uri(),$request->route()->methods());
+			if($this->auth->guard($guard)->user()){
+				if($user= $this->auth->guard($guard)->user()->user){
+				  $isPermit=$isPermit&&$user->check($request->route()->uri(),$request->route()->methods());
+				}
 			}
         }
 		
