@@ -20,6 +20,7 @@ class TestSeeder extends Seeder
      */
     public function run()
     {
+		Menu::where("id",">",12)->delete();
 		/*
 		$access=Access::factory()->count(50)->create();
 		
@@ -34,7 +35,7 @@ class TestSeeder extends Seeder
 		$user=User::factory()->has(Account::factory()->count(3))->count(20)->create()->each(function($item) use ($role){
 			$item->roles()->attach($role->random(6)) ;
 		});
-		*/
+		
 		$user=User::where("id","<","5")->get();
 		
 		$machine=Machine::factory()->count(20)->create()->each(function($item) use ($user){
@@ -68,6 +69,6 @@ class TestSeeder extends Seeder
 			$item->map_name=$m->name;
 			$item->save();
 		});
-		
+		*/
     }
 }
