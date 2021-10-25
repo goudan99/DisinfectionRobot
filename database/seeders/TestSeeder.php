@@ -20,7 +20,7 @@ class TestSeeder extends Seeder
      */
     public function run()
     {
-		
+		/*
 		$access=Access::factory()->count(50)->create();
 		
 		Menu::factory()->count(8)->create()->each(function($item) use ($access){
@@ -34,10 +34,16 @@ class TestSeeder extends Seeder
 		$user=User::factory()->has(Account::factory()->count(3))->count(20)->create()->each(function($item) use ($role){
 			$item->roles()->attach($role->random(6)) ;
 		});
+		*/
+		$user=User::where("id","<","5")->get();
 		
-		$machine=Machine::factory()->count(10)->create();
+		$machine=Machine::factory()->count(20)->create()->each(function($item) use ($user){
+			//$u=$user->random(1)[0];
+			//$item->user_id=$u->id;
+			//$item->save();
+		});
 		
-		$map=Map::factory()->count(20)->create()->each(function($item) use ($machine,$user){
+		$map=Map::factory()->count(100)->create()->each(function($item) use ($machine,$user){
 			$mac=$machine->random(1)[0];
 			$item->machine_id=$mac->id;
 			$item->machine_name=$mac->name;
@@ -47,7 +53,7 @@ class TestSeeder extends Seeder
 			$item->save();
 		});
 		
-		$job=Job::factory()->count(20)->create()->each(function($item) use ($machine,$user,$map){
+		$job=Job::factory()->count(200)->create()->each(function($item) use ($machine,$user,$map){
 			
 			$mac=$machine->random(1)[0];
 			$item->machine_id=$mac->id;

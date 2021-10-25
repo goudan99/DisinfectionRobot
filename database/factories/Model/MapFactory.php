@@ -27,8 +27,8 @@ class MapFactory extends Factory
             'name' => Str::random(10),
             'area' => $this->faker->phoneNumber(),
             'image' => $this->faker->image(public_path("upload"),640,480),
-			'image_size' => $this->faker->numberBetween(0,1),
-			'file_size' => $this->faker->numberBetween(0,1),
+			'image_size' => $this->faker->numberBetween(100,1000),
+			'file_size' => $this->faker->numberBetween(20,100),
 			'status' => $this->faker->numberBetween(0,1),
         ];
     }
