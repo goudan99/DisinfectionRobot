@@ -20,10 +20,10 @@ class Mobile
 	public function code($phone,$code="",$type=0)
 	{
 		$code =  $code?$code:(int)rand(111111, 999999);
-		
-		//if(!(config("app")["env"]=="local"||config("app")["env"]=="testing")){
-			$prefix="mobile_code_limt";
-			$count=Cache::get($prefix.$phone.date("Y.m.d"));
+		$prefix="mobile_code_limt";
+		$count=Cache::get($prefix.$phone.date("Y.m.d"));
+		//正式的情况下发短信有发送次数限制
+		if(!(config("app")["env"]=="local"||config("app")["env"]=="testing")){
 			if($count<15){
 			  sendSms($phone,$this->tempid($type),$code);
 			  Cache::put($prefix.$phone.date("Y.m.d"),$count+1);
@@ -31,8 +31,9 @@ class Mobile
 			}else{
 			  throw new AttachException("手机号码发送次数超过限制",[],422);
 			}
-
-		//}
+		}
+		Cache::put($prefix.$phone.date("Y.m.d"),$count+1);
+		return $code;
 		
 	}
 	
