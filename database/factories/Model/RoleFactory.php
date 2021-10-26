@@ -27,7 +27,7 @@ class RoleFactory extends Factory
         return [
             'name' => $this->faker->userName,
             'desc' => $this->faker->text(200),
-			'is_system' => $this->faker->numberBetween(0,1)
+			'is_system' => 0
         ];
     }
 }
