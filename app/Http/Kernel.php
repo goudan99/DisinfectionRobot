@@ -41,7 +41,6 @@ class Kernel extends HttpKernel
 
         'api' => [
             'throttle:10000',
-			\App\Http\Middleware\TestRequire::class
             //\Illuminate\Routing\Middleware\SubstituteBindings::class,
 			//\Illuminate\Session\Middleware\StartSession::class,
         ],
