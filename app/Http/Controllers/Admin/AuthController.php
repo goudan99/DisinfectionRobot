@@ -16,6 +16,7 @@ use App\Http\Requests\PasswordRequest;
 use App\Http\Requests\LoginPhoneRequest;
 use App\Http\Requests\RegisterRequest;
 use EasyWeChat\Factory;
+use Hash;
 
 class AuthController extends Controller
 {
@@ -47,10 +48,15 @@ class AuthController extends Controller
 
 		if(!$user = Account::where("name",$data["name"])->first()){
             throw ValidationException::withMessages([
-              "code" => "验证码不正确",
+              "name" => "帐号密码不正确",
             ]);
 		}
-		
+		if(!Hash::check($data["password"], $user->password)){
+            throw ValidationException::withMessages([
+              "name" => "帐号密码不正确",
+            ]);
+		}
+		 
 		$token = auth()->login($user);
 		
         $data = [
