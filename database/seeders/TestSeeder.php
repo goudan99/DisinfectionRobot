@@ -20,7 +20,7 @@ class TestSeeder extends Seeder
      */
     public function run()
     {
-		Menu::where("id",">",12)->delete();
+		Role::where("id",">",3)->delete();
 		/*
 		$access=Access::factory()->count(50)->create();
 		
