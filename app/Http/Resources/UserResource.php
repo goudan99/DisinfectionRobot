@@ -15,9 +15,18 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
+		$name="";
+		
+		if($data=$this->accounts->where('type',0)->first()){
+			$name=$data->name;
+		}
+		if(!$name&&$data=$this->accounts->where('type',1)->first()){
+			$name=$data->name;
+		}
+		//$name=$this->accounts->where('type',0)->first()?$this->accounts->where('type',0)->first()->name:$this->accounts->where('type',1)->first()?$this->accounts->where('type',1)->first()->name:'';
 		 return [
            'id' => $this->id,
-           'name' => $this->name,
+           'name' => $name,
            'nickname' => $this->nickname,
            'phone' => $this->phone,	
            'avatar' => $this->avatar,
