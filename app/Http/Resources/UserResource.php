@@ -23,6 +23,7 @@ class UserResource extends JsonResource
 		if(!$name&&$data=$this->accounts->where('type',1)->first()){
 			$name=$data->name;
 		}
+		$this->nickname=$this->nickname?$this->nickname:$name;
 		//$name=$this->accounts->where('type',0)->first()?$this->accounts->where('type',0)->first()->name:$this->accounts->where('type',1)->first()?$this->accounts->where('type',1)->first()->name:'';
 		 return [
            'id' => $this->id,
