@@ -16,6 +16,12 @@ class Job implements Repository
 	/*保存机器*/
 	public function store($data,$notify){
 		
+		if(!isset($data["status"])){
+			$data["status"]=2;
+		}
+		if(!isset($data["type_id"])){
+			$data["type_id"]=1;
+		}
 		
         if($data["user_id"]){
 			if($user=User::where('id',$data["user_id"])->first()){
