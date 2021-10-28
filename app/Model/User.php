@@ -9,7 +9,7 @@ class User extends Model
 {
 	use Notifiable,HasFactory;
 	  
-	protected $fillable = ['nickname','avatar','phone','code','desc','passed','openid'];
+	protected $fillable = ['nickname','avatar','phone','code','desc','passed','openid','is_first'];
 	
 	public function accounts()
     {
