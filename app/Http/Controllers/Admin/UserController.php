@@ -25,14 +25,19 @@ class UserController extends Controller
     public function home(Request $request)
     {
 		$limit=$request->limit?$request->limit:10;
+		
 		$limit=$limit>0?$limit:10;
 		
 		$user = User::orderBy('id','desc');
 		
-	    $request->get('key') ? $user=$user->where('nickname','like','%'.trim($request->get('key')).'%'):'';
+	    $request->get('key') ? $user=$user->where(function($query) use($request){
+                $query->where('nickname','like','%'.trim($request->get('key')).'%')
+                      ->orWhere('phone','like','%'.trim($request->get('key')).'%');
+        }):'';
 
-	    if($request->get('status')&&$request->get('status')!=='-1'){
+	    if($request->get('status')!=='-1'){
 			$user=$user->where('passed',$request->get('status'));
+			
 		}
 		
 		return $this->success(new UserCollection($user->paginate($limit)));
@@ -45,10 +50,7 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-	   if(!$this->getRepositories()->store($request->all(),['form'=>['user'=>$this->user]])){
-			return $this->error('用户存在');
-	   }
-
+	  $this->getRepositories()->store($request->all(),['form'=>['user'=>$this->user]]);
 	   return $this->success([],"操作成功");
     }
     /**

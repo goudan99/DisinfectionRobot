@@ -25,23 +25,19 @@ class UserRequest extends Request
     {
         if(!$this->id){
 			
-            $rules = [            
-				'name'                  => 'required|min:4|max:20|unique:accounts,name',
+            $rules = [
+                'phone'                 => 'required|size:11|unique:accounts,name',
                 'password'              => 'required|min:6|max:16|regex:/^[a-zA-Z0-9~@#%_]{6,16}$/i',  //登录密码只能英文字母(a-zA-Z)、阿拉伯数字(0-9)、特殊符号(~@#%)
-                // 'password_confirmation' => 'required|same:password',
 				'code' 					=> 'required',				
                 'passed'                => 'required|boolean',
 				'nickname'              => 'min:1|max:10', 
-                'phone'                 => 'size:11|unique:accounts,name',
             ];
         }else{//store
             $rules = [
-                'name'                 => 'min:4|max:20',
-                'password'             => 'nullable|min:6|max:16|regex:/^[a-zA-Z0-9~@#%_]{6,16}$/i',  //登录密码只能英文字母(a-zA-Z)、阿拉伯数字(0-9)、特殊符号(~@#%)
-                // 'password_confirmation'=> 'same:password',			
+                'phone'                => 'size:11',
+                'password'             => 'nullable|min:6|max:16|regex:/^[a-zA-Z0-9~@#%_]{6,16}$/i',  //登录密码只能英文字母(a-zA-Z)、阿拉伯数字(0-9)、特殊符号(~@#%)		
 				'passed'               => 'required|boolean',
                 'nickname'             => 'min:1|max:10',
-                'phone'                => 'size:11',
             ];
         }
 		
@@ -60,13 +56,6 @@ class UserRequest extends Request
             'nickname.alpha_dash' => '昵称包含特殊字符',
             'nickname.min'        => '昵称过短，长度不得少于1',
             'nickname.max'        => '昵称过长，长度不得超出10',
-
-            'name.unique'        => '此登录名已存在，请尝试其它名字组合',
-            'name.required'      => '请填写登录名',
-            'name.max'           => '登录名过长，长度不得超出20',
-            'name.min'           => '登录名过短，长度不得少于4',
-            'name.eng_alpha_num' => '登录名只能阿拉伯数字与英文字母组合',
-            'name.unique'        => '此登录名已存在，请尝试其它名字组合',
 
             'password.required'              => '请填写登录密码',
             'password.min'                   => '密码长度不得少于6',

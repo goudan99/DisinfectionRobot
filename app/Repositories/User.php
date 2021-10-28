@@ -28,7 +28,6 @@ class User implements Repository
 	 */
 	public function store($data,$notify){
 		
-		
 		$data["roles"]= new Collection($data['roles']);
 		
 		if(!$roles=roleModel::whereIn('id',$data['roles'])->get('id')){
@@ -40,66 +39,31 @@ class User implements Repository
 		$data['password']?$data['password']=Hash::make($data['password']):'';
 
 		if(isset($data['id'])&&$data['id']){
-			
-
 			DB::transaction(function () use ($data,$notify){
 				
-				if(!$user=userModel::where("id",$data['id'])->first()){
-					throw new NotFoundException("用户不存在");
-				}
+				if(!$user=userModel::where("id",$data['id'])->first()){throw new NotFoundException("用户不存在");}
 				
-				unset($data['code']);//永远不有修改激活码
+				unset($data['code']);
 				
 				if(!$data['password']){unset($data['password']);}
 			
 				$user->update($data);
 				
-				if(!$user->is_system==1){
-					$user->roles()->sync($data['roles']);
-				}	
-				//name不为空时改帐号或创建一个帐号，
-				if(isset($data['name'])&&$account=accountModel::where('user_id',$data['id'])->where('type',0)->first()){
-					$account->name=$data['name'];
-					$account->update();
-				}else{
-					$acc=accountModel::where('user_id',$data['id'])->where('password','<>','')->first();
-					isset($data['name'])&&$data['name']?accountModel::create([
-						'name'=>$data['name'],
-						'user_id'=>$data['id'],
-						'type'=>0,
-						'password'=>$acc?$acc->password?$acc->password:'':''
-					]):'';
-				}
-				//phone不为空时改帐号或创建一个帐号，
+				if(!$user->is_system==1){$user->roles()->sync($data['roles']);}
+				
 				if(isset($data['phone'])&&$account=accountModel::where('user_id',$data['id'])->where('type',1)->first()){
 					$account->name=$data['phone'];
+					isset($data['password'])?$account->password=$data['password']:'';
 					$account->update();
-				}else{
-					$acc=accountModel::where('user_id',$data['id'])->where('password','<>','')->first();
-					isset($data['phone'])&&$data['phone']?accountModel::create([
-						'name'=>$data['phone'],
-						'user_id'=>$data['id'],
-						'type'=>1,
-						'password'=>$acc?$acc->password?$acc->password:'':''
-					]):'';
+					$notify["method"]="edit";					
+					event(new UserStored($user,$notify));
+					return true;
 				}
-				
-				if(!$data['password']){
-					accountModel::where('user_id',$data['id'])->update(["password"=>$data['password']]);
-				}
-				
-				$notify["method"]="edit";
-				
-				event(new UserStored($user,$notify));
 				
 			});
 			
 			return true ;
 		
-		}
-			
-		if(accountModel::where("name",$data['name'])->first()){
-            throw ValidationException::withMessages(["name" => "已存在同名用户"]);
 		}
 		
 		if(accountModel::where("name",$data['phone'])->first()){
@@ -113,22 +77,14 @@ class User implements Repository
 		DB::transaction(function () use ($data,$notify){
 			
 			$user=userModel::create($data);
-
+			
 			$account=accountModel::create([
-				"name"=>$data['name'],
+				"name"=>$data['phone'],
 				"password"=>$data['password'],
 				"user_id"=>$user->id,
-				"type"=>0
+				"type"=>1
 			]);
 			
-			if($data['phone']){
-				$account=accountModel::create([
-					"name"=>$data['phone'],
-					"password"=>$data['password'],
-					"user_id"=>$user->id,
-					"type"=>1
-				]);
-			}
 			if(!$user->is_system==1){
 			  $user->roles()->sync($data['roles']);
 			}
