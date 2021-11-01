@@ -40,17 +40,11 @@ class User implements Repository
 
 		if(isset($data['id'])&&$data['id']){
 			DB::transaction(function () use ($data,$notify){
-				
 				if(!$user=userModel::where("id",$data['id'])->first()){throw new NotFoundException("用户不存在");}
-				
 				unset($data['code']);
-				
 				if(!$data['password']){unset($data['password']);}
-			
 				$user->update($data);
-				
 				if(!$user->is_system==1){$user->roles()->sync($data['roles']);}
-				
 				if(isset($data['phone'])&&$account=accountModel::where('user_id',$data['id'])->where('type',1)->first()){
 					$account->name=$data['phone'];
 					isset($data['password'])?$account->password=$data['password']:'';

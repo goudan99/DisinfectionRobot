@@ -22,6 +22,17 @@ if (!function_exists('platform')) {
         return false;
     }
 }
+/*检查邀请码*/
+if (!function_exists('checkInvite')) {
+    /**
+     * @return bool
+     */
+    function checkInvite($code)
+    {
+		return true;
+		
+    }
+}
 
 /*保存或读取code*/
 if (!function_exists('phonecode')) {

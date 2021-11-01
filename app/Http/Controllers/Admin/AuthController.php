@@ -12,9 +12,10 @@ use Illuminate\Validation\ValidationException;
 use App\Repositories\Mobile;
 use App\Repositories\Auth;
 use App\Model\Account;
-use App\Http\Requests\PasswordRequest;
+use App\Http\Requests\LoginPasswordRequest;
 use App\Http\Requests\LoginPhoneRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\PasswordRequest;
 use EasyWeChat\Factory;
 use Hash;
 
@@ -27,139 +28,48 @@ class AuthController extends Controller
     }
 	
     /**
-     * Log the user out of the application.
+     * 用户手机号密码登录
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function login(Request $request)
+    public function login(LoginPasswordRequest $request)
     { 
         $data = request(['username', 'password']);
-		
-		$data = ["name"=>$request->username, 'password'=>$request->password];
-		
-		if(isset($data["wechat_code"])){
-			if($openid=openid($data["wechat_code"])){
-				$data['openid']=$openid;
-			}
-		}
-		
-		$this->validateLogin($request);
 
-		if(!$user = Account::where("name",$data["name"])->first()){
-            throw ValidationException::withMessages([
-              "name" => "帐号密码不正确",
-            ]);
-		}
-		if(!Hash::check($data["password"], $user->password)){
-            throw ValidationException::withMessages([
-              "name" => "帐号密码不正确",
-            ]);
-		}
-		 
-		$token = auth()->login($user);
-		
-        $data = [
-          'access_token' => $token,
-          'token_type' => 'bearer',
-          'expires_in' => auth()->factory()->getTTL() * 60
-		];
-		  
-        return $this->success($data);
-    }
-	
-    protected function validateLogin(Request $request)
-    {
-        $request->validate([
-            $this->username() => 'required|string',
-            'password' => 'required|min:6|max:16|regex:/^[a-zA-Z0-9~@#%_]{6,16}$/i',
-        ],[
-			$this->username().".required"=>"帐号必填",
-			$this->username().".string"=>"帐号必须字符串",
-			"password.required"=>"密码必填",
-			"password.min"=>"密码最短为6位",
-			"password.max"=>"密码不要超过16位",
-			"password.regex"=>"密码包含非法字符，只能为英文字母(a-zA-Z)、阿拉伯数字(0-9)与特殊符号(~@#%_)组合",
-		]);
-    }
-	
-    public function username()
-    {
-        return 'username';
-    }
-	
-    public function program(Request $request)
-    { 
-		$code = request("code");
-		
 		$config = config("robot")["miniProgram"];
 		
-		$app = Factory::miniProgram($config);
+		$data = ["name"=>$request->username, 'password'=>$request->password,"app_id"=>$config["app_id"]];
 		
-		$openid = "ofeYf1JTKjv6eutx_2lM8McRq3sw";
-		
-		$wedata = [];
-		
-		if(isset($data["wechat_code"])){
-			if($openid=openid($data["wechat_code"])){
-				$data['openid']=$openid;
-			}
-		}
-		
-		if(!(config("app")["env"]=="local"||config("app")["env"]=="testing")){
-			$wedata = $app->auth->session($code);
-			if(isset($wedata["errcode"])){
-				return $this->error("code无效，重新获取",[["code"=>$wedata["errmsg"]]],Code::VALIDATE);
-			}
-			$openid = $wedata["openid"];
-		}
+		if(isset($data["wechat_code"])&&$openid=openid($data["wechat_code"])){$data['openid']=$openid;}
 
-        if(config("app")["env"]=="testing"&&$code!="111"){
-			return $this->error("code无效，重新获取",["code"=>"无效的ode码"],Code::VALIDATE);
-	    }
-		
-		if(!$user = Account::where("name",$config["app_id"])->where("password",$openid)->where("type",2)->first()){
-			return $this->error("没有关联帐号，需要关键帐号");
-		}
-		
-		$token = auth()->login($user);
+		$token =$this->getRepositories()->login($data,$request);
 		
         $data = [
           'access_token' => $token,
           'token_type' => 'bearer',
-		  'session_key' => isset($wedata["session_key"])?$wedata["session_key"]:'',
           'expires_in' => auth()->factory()->getTTL() * 60
 		];
 		  
         return $this->success($data);
-		
     }
-	/*
-	  手机验证码登录
-	*/
+	
+	/**
+	 *  手机验证码登录
+	**/
     public function phone(LoginPhoneRequest $request)
     { 
-		$data = $request->all();
+		$config = config("robot")["miniProgram"];
 		
-		if(isset($data["wechat_code"])){
-			if($openid=openid($data["wechat_code"])){
-				$data['openid']=$openid;
-			}
-		}
+		$data["phone"]=$phone = request('phone');
 		
-		if($data["code"]!=phonecode($data["phone"],Mobile::LOGIN)){
-            throw ValidationException::withMessages([
-              "code" => "验证码不正确",
-            ]);
-		}
+		$code = request("phone_code")?request("phone_code"):request("code");
+				
+		if(isset($data["wechat_code"])&&$openid=openid($data["wechat_code"])){$data['openid']=$openid;}
 		
-		if(!$user = Account::where("name",$data["phone"])->where("type",1)->first()){
-            throw ValidationException::withMessages([
-              "code" => "验证码不正确",
-            ]);
-		}
+		if($code!=phonecode($data["phone"],Mobile::LOGIN)){ throw ValidationException::withMessages(["phone_code" => "验证码不正确"]);}
 		
-		$token = auth()->login($user);
+		$token = $this->getRepositories()->phone($data,$request);
 		
 		phonecode($data["phone"],Mobile::LOGIN,'');//修改完以后清掉这个session值
 		
@@ -172,32 +82,71 @@ class AuthController extends Controller
         return $this->success($data);
     }
 	
+    public function program(Request $request)
+    { 
+		$code = request("wechat_code")?request("wechat_code"):request("code");
+		
+		$config = config("robot")["miniProgram"];
+		
+		$app = Factory::miniProgram($config);
+		
+		$openid = "ofeYf1JTKjv6eutx_2lM8McRq3sw";
+		
+		$wedata = [];
+		
+        if(config("app")["env"]=="testing"&&$code!="111"){
+			return $this->error("wechat_code无效，重新获取",["code"=>"无效的wechat_code无效码"],Code::VALIDATE);
+	    }
+		
+		if(!(config("app")["env"]=="local"||config("app")["env"]=="testing")){
+			$wedata = $app->auth->session($code);
+			if(isset($wedata["errcode"])){
+				return $this->error("wechat_code无效无效，重新获取",[["code"=>$wedata["errmsg"]]],Code::VALIDATE);
+			}
+			$openid = $wedata["openid"];
+		}
+
+		$token = $this->getRepositories()->program(['name'=>$config["app_id"],'password'=>$openid],$request);
+		
+        $data = [
+          'access_token' => $token,
+          'token_type' => 'bearer',
+		  'session_key' => isset($wedata["session_key"])?$wedata["session_key"]:'',
+          'expires_in' => auth()->factory()->getTTL() * 60
+		];
+		  
+        return $this->success($data);
+		
+    }
+
+	
 	/**
-	  注册必须是
+	 * 用户注册
 	**/
     public function register(RegisterRequest $request)
     {
+		$config = config("robot")["miniProgram"];
+		
 		$data = $request->all();
 		
 		$data['openid']='123';
 		
-		if(isset($data["wechat_code"])){
-			if($openid=openid($data["wechat_code"])){
-				$data['openid']=$openid;
-			}
-		}
+		$data['app_id']=$config["app_id"];
+		
+		if(isset($data["wechat_code"])&&$openid=openid($data["wechat_code"])){$data['openid']=$openid;}
 		
 		/*验证验证码*/
 		if($data["phone_code"]!=phonecode($data["phone"],Mobile::REGISTER)){
-            throw ValidationException::withMessages([
-              "phone_code" => "验证码不正确",
-            ]);
+            throw ValidationException::withMessages(["phone_code" => "验证码不正确"]);
 		}
-		
+
+		/*验证邀请码*/
+		//if(!checkInvite($data["invite_code"])){throw ValidationException::withMessages(["invite_code" => "邀请码不正确"]);}
+
 	    $this->getRepositories()->register($data,['form'=>['user'=>'']]);
-		
+
 		phonecode($data["phone"],Mobile::REGISTER,'');
-		
+
 		return $this->success([],"注册成功");
 	}
 
@@ -217,15 +166,13 @@ class AuthController extends Controller
     { 
 		$data =$request->all();
 		
-		$auth=new Auth();
-		
 		if($data["code"]!=phonecode($data["phone"],Mobile::FIND)){
             throw ValidationException::withMessages([
               "code" => "验证码不正确",
             ]);
 		}
 		
-		$auth->change($data);
+		$this->getRepositories()->change($data);
 		
 		phonecode($data["phone"],Mobile::FIND,'');//修改完以后清掉这个session值
 		

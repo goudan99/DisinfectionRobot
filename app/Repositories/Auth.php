@@ -3,45 +3,129 @@ namespace App\Repositories;
 use App\Events\AccessRemoved;
 use App\Events\AccessStored;
 use App\Model\Access as AccessModel;
-use App\Exceptions\ValidationException;
 use App\Model\User;
 use App\Model\Account;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 use DB;
 
 class Auth implements Repository
 {
-	public function store($data,$notify){}
+	public function store($user,$notify)
+	{
+
+		$user->login_times=$user->login_times+1;
+		
+		if($user->is_first===0){
+			$user->is_first=1;
+		}
+		
+		if($user->is_first===1){
+			$user->is_first=2;
+		}
+		
+		$user->save();
+	}
 	
 	public function remove($id,$notify)	{}
 	
-	//发送验证码
-	public function change($data,$notify=[]){
+	
+	public function login($data,$request){
 		
-		DB::transaction(function () use ($data){
-			if($user=Account::where('name',$data['phone'])->first()){
-				$user->password=Hash::make($data["password"]);
-				$user->save();
-			}
-			if($user&&$account=Account::where('user_id',$user->user_id)->where('type',0)->first()){
-				$account->password=Hash::make($data["password"]);
-				$account->save();
-			}else{
-				return false;
-			}
-		});
+		if(!$account = Account::where("name",$data["name"])->first()){
+            throw ValidationException::withMessages(["name" => "帐号密码不正确"]);
+		}
+		if(!Hash::check($data["password"], $account->password)){
+            throw ValidationException::withMessages(["name" => "帐号密码不正确"]);
+		}
 		
-		return true;
+		if(isset($data["openid"])){
+			
+			if($u1=Account::where("name",$data["app_id"])->where("password",$data["openid"])->where("type",2)->first()&&$u1->user_id!==$account->user_id){
+				throw ValidationException::withMessages(["name" => "你必须使用之前的微信才能登录"]);
+			}
+
+			if(!$u1){
+				Account::create(['name'=>$data['app_id'],'password'=>$data['openid'],'type'=>2,'user_id'=>$account->user_id]);
+			}
+		}
+			
+		$token = auth("api")->login($account);
+
+		$notify["login"]="password";
+		
+		$user=$account->user;
+		
+		$user->last_ip=$request->ip();
+
+		$user->last_at=date('Y-m-d H:i:s', time());
+		
+		$this->store($user,$notify);
+		
+		return $token;
+		
+	}
+		
+	public function phone($data,$request){
+		
+		if(!$account = Account::where("name",$data["phone"])->where("type",1)->first()){
+            throw ValidationException::withMessages(["code" => "手机号没有注册"]);
+		}
+		
+		if(isset($data["openid"])){
+			
+			if($u1=Account::where("name",$data["app_id"])->where("password",$data["openid"])->where("type",2)->first()&&$u1->user_id!==$account->user_id){
+				throw ValidationException::withMessages(["name" => "你必须使用之前的微信才能登录"]);
+			}
+
+			if(!$u1){
+				Account::create(['name'=>$data['app_id'],'password'=>$data['openid'],'type'=>2,'user_id'=>$account->user_id]);
+			}
+		}
+		
+		$token = auth("api")->login($account);
+		
+		$notify["login"]="phone";
+		
+		$user=$account->user;
+		
+		$user->last_ip=$request->ip();
+
+		$user->last_at=date('Y-m-d H:i:s', time());
+		
+		$this->store($user,$notify);
+		
+		return $token;
 		
 	}
 	
-	//发送验证码
+	public function program($data,$request){
+		
+		if(!$account = Account::where("name",$data["name"])->where("password",$data["password"])->where("type",2)->first()){
+            throw ValidationException::withMessages(["wechat_code" => "你没有绑定",]);
+		}
+		
+		$token = auth("api")->login($account);
+		
+		$notify["login"]="program";
+		
+		$user=$account->user;
+		
+		$user->last_ip=$request->ip();
+
+		$user->last_at=date('Y-m-d H:i:s', time());
+		
+		$this->store($user,$notify);
+		
+		return $token;
+		
+	}
+	
+	//注册
 	public function register($data,$notify=[]){
 
 		if($account=Account::where('name',$data['phone'])->first()){
-            throw ValidationException::withMessages([
-              "phone" => "手机号已存在"
-            ]);
+            throw ValidationException::withMessages(["phone" => "手机号已存在"]);
 		}
 		
 		DB::transaction(function () use ($data){
@@ -52,6 +136,24 @@ class Auth implements Repository
 				'openid'=>isset($data['openid'])?$data['openid']:'',
 			]);
 			Account::create(['name'=>$data['phone'],'type'=>1,'user_id'=>$user->id,'password'=>Hash::make($data["password"])]);
+			
+			if(isset($data['openid'])){
+				Account::create(['name'=>$data['app_id'],'password'=>$data['openid'],'type'=>2,'user_id'=>$user->id]);
+			}
+		});
+		
+		return true;
+		
+	}
+	
+	//修改密码
+	public function change($data,$notify=[]){
+		
+		DB::transaction(function () use ($data){
+			if($user_id=Account::where('name',$data['phone'])->first()){
+				$user_id->password=Hash::make($data["password"]);
+				$user_id->save();
+			}
 		});
 		
 		return true;
