@@ -89,7 +89,7 @@ class AuthController extends Controller
 		$config = config("robot")["miniProgram"];
 		
 		$app = Factory::miniProgram($config);
-		
+		if(!$code){throw ValidationException::withMessages(["wechat_code" => "小程序code不能为空"]);}
 		$data['openid']=$openid=openid($code);
 
 		$token = $this->getRepositories()->program(['name'=>$openid,'password'=>$config["app_id"]],$request);
