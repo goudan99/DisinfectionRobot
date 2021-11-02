@@ -58,15 +58,15 @@ if (!function_exists('openid')) {
      */
     function openid($code)
     {
+		if(config("app")["env"]=="local"||config("app")["env"]=="testing"){return "test_openid";}
+		
 		$config = config("robot")["miniProgram"];
 		
 		$app = Factory::miniProgram($config);
 		
 		$wedata = $app->auth->session($code);
 		
-		if(isset($wedata["errcode"])){
-			throw new AttachException("wechat_code无效，重新获取",[],Code::VALIDATE);
-		}
+		if(isset($wedata["errcode"])){throw new AttachException("wechat_code无效，重新获取",[],Code::VALIDATE);}
 		
 		$openid = $wedata["openid"];
 		

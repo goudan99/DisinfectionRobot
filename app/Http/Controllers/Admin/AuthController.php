@@ -38,6 +38,7 @@ class AuthController extends Controller
         $data = request(['username', 'password']);
 
 		$config = config("robot")["miniProgram"];
+		
 		$data = ["name"=>$request->username, 'password'=>$request->password,"app_id"=>$config["app_id"]];
 		
 		if(isset($request->wechat_code)&&$openid=openid($request->wechat_code)){$data['openid']=$openid;}
@@ -89,9 +90,9 @@ class AuthController extends Controller
 		
 		$app = Factory::miniProgram($config);
 		
-		$data['openid']=openid($code);
+		$data['openid']=$openid=openid($code);
 
-		$token = $this->getRepositories()->program(['name'=>$config["app_id"],'password'=>$openid],$request);
+		$token = $this->getRepositories()->program(['name'=>$openid,'password'=>$config["app_id"]],$request);
 		
         $data = [
           'access_token' => $token,

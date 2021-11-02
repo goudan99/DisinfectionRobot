@@ -41,12 +41,12 @@ class Auth implements Repository
 		
 		if(isset($data["openid"])){
 			
-			if($u1=Account::where("name",$data["app_id"])->where("password",$data["openid"])->where("type",2)->first()&&$u1->user_id!==$account->user_id){
-				throw ValidationException::withMessages(["name" => "你必须使用之前的微信才能登录"]);
-			}
+			$u1=Account::where("name",$data["app_id"])->where("password",$data["openid"])->where("type",2)->first();
+
+			if($u1&&$u1->user_id!==$account->user_id){throw ValidationException::withMessages(["name" => "你必须使用之前的微信才能登录"]);}
 
 			if(!$u1){
-				Account::create(['name'=>$data['app_id'],'password'=>$data['openid'],'type'=>2,'user_id'=>$account->user_id]);
+				Account::create(['name'=>$data['openid'],'password'=>$data['app_id'],'type'=>2,'user_id'=>$account->user_id]);
 				$user->openid=$data['openid'];
 			}
 		}
@@ -75,12 +75,12 @@ class Auth implements Repository
 		
 		if(isset($data["openid"])){
 			
-			if($u1=Account::where("name",$data["app_id"])->where("password",$data["openid"])->where("type",2)->first()&&$u1->user_id!==$account->user_id){
+			if($u1=Account::where("name",$data["openid"])->where("password",$data["app_id"])->where("type",2)->first()&&$u1->user_id!==$account->user_id){
 				throw ValidationException::withMessages(["name" => "你必须使用之前的微信才能登录"]);
 			}
 
 			if(!$u1){
-				Account::create(['name'=>$data['app_id'],'password'=>$data['openid'],'type'=>2,'user_id'=>$account->user_id]);
+				Account::create(['name'=>$data['openid'],'password'=>$data['app_id'],'type'=>2,'user_id'=>$account->user_id]);
 				$user->openid=$data['openid'];
 			}
 		}
@@ -140,7 +140,7 @@ class Auth implements Repository
 			Account::create(['name'=>$data['phone'],'type'=>1,'user_id'=>$user->id,'password'=>Hash::make($data["password"])]);
 			
 			if(isset($data['openid'])){
-				Account::create(['name'=>$data['app_id'],'password'=>$data['openid'],'type'=>2,'user_id'=>$user->id]);
+				Account::create(['name'=>$data['openid'],'password'=>$data['app_id'],'type'=>2,'user_id'=>$user->id]);
 			}
 		});
 		
