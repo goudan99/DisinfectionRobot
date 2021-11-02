@@ -89,7 +89,9 @@ class AuthController extends Controller
 		$config = config("robot")["miniProgram"];
 		
 		$app = Factory::miniProgram($config);
+		
 		if(!$code){throw ValidationException::withMessages(["wechat_code" => "小程序code不能为空"]);}
+		
 		$data['openid']=$openid=openid($code);
 
 		$token = $this->getRepositories()->program(['name'=>$openid,'password'=>$config["app_id"]],$request);
@@ -119,16 +121,14 @@ class AuthController extends Controller
 		
 		$data['app_id']=$config["app_id"];
 		
-		if(isset($data["wechat_code"])&&$openid=openid($data["wechat_code"])){$data['openid']=$openid;}
-		
 		/*验证验证码*/
-		if($data["phone_code"]!=phonecode($data["phone"],Mobile::REGISTER)){
-            throw ValidationException::withMessages(["phone_code" => "验证码不正确"]);
-		}
+		if($data["phone_code"]!=phonecode($data["phone"],Mobile::REGISTER)){throw ValidationException::withMessages(["phone_code" => "验证码不正确"]);}
 
 		/*验证邀请码*/
 		if(!checkInvite($data["invite_code"])){throw ValidationException::withMessages(["invite_code" => "邀请码不正确"]);}
 
+		if(isset($data["wechat_code"])&&$openid=openid($data["wechat_code"])){$data['openid']=$openid;}
+		
 	    $this->getRepositories()->register($data,['form'=>['user'=>'']]);
 
 		phonecode($data["phone"],Mobile::REGISTER,'');
