@@ -116,9 +116,7 @@ class AuthController extends Controller
 		$config = config("robot")["miniProgram"];
 		
 		$data = $request->all();
-		
-		$data['openid']='123';
-		
+
 		$data['app_id']=$config["app_id"];
 		
 		/*验证验证码*/
