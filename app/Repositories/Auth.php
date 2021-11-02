@@ -18,9 +18,7 @@ class Auth implements Repository
 		
 		if($user->is_first===0){
 			$user->is_first=1;
-		}
-		
-		if($user->is_first===1){
+		}elseif($user->is_first===1){
 			$user->is_first=2;
 		}
 		
@@ -39,6 +37,8 @@ class Auth implements Repository
             throw ValidationException::withMessages(["name" => "帐号密码不正确"]);
 		}
 		
+		$user=$account->user;
+		
 		if(isset($data["openid"])){
 			
 			if($u1=Account::where("name",$data["app_id"])->where("password",$data["openid"])->where("type",2)->first()&&$u1->user_id!==$account->user_id){
@@ -47,14 +47,13 @@ class Auth implements Repository
 
 			if(!$u1){
 				Account::create(['name'=>$data['app_id'],'password'=>$data['openid'],'type'=>2,'user_id'=>$account->user_id]);
+				$user->openid=$data['openid'];
 			}
 		}
 			
 		$token = auth("api")->login($account);
 
 		$notify["login"]="password";
-		
-		$user=$account->user;
 		
 		$user->last_ip=$request->ip();
 
@@ -72,6 +71,8 @@ class Auth implements Repository
             throw ValidationException::withMessages(["code" => "手机号没有注册"]);
 		}
 		
+		$user=$account->user;
+		
 		if(isset($data["openid"])){
 			
 			if($u1=Account::where("name",$data["app_id"])->where("password",$data["openid"])->where("type",2)->first()&&$u1->user_id!==$account->user_id){
@@ -80,6 +81,7 @@ class Auth implements Repository
 
 			if(!$u1){
 				Account::create(['name'=>$data['app_id'],'password'=>$data['openid'],'type'=>2,'user_id'=>$account->user_id]);
+				$user->openid=$data['openid'];
 			}
 		}
 		

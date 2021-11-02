@@ -62,13 +62,10 @@ if (!function_exists('openid')) {
 		
 		$app = Factory::miniProgram($config);
 		
-		$openid = "ofeYf1JTKjv6eutx_2lM8McRq3sw";
-		
 		$wedata = $app->auth->session($code);
 		
 		if(isset($wedata["errcode"])){
-			//throw new AttachException("wechat_code无效，重新获取",[],Code::VALIDATE);
-			return false;
+			throw new AttachException("wechat_code无效，重新获取",[],Code::VALIDATE);
 		}
 		
 		$openid = $wedata["openid"];

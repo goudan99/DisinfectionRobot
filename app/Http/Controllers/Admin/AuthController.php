@@ -38,10 +38,9 @@ class AuthController extends Controller
         $data = request(['username', 'password']);
 
 		$config = config("robot")["miniProgram"];
-		
 		$data = ["name"=>$request->username, 'password'=>$request->password,"app_id"=>$config["app_id"]];
 		
-		if(isset($data["wechat_code"])&&$openid=openid($data["wechat_code"])){$data['openid']=$openid;}
+		if(isset($request->wechat_code)&&$openid=openid($request->wechat_code)){$data['openid']=$openid;}
 
 		$token =$this->getRepositories()->login($data,$request);
 		
@@ -65,7 +64,7 @@ class AuthController extends Controller
 		
 		$code = request("phone_code")?request("phone_code"):request("code");
 				
-		if(isset($data["wechat_code"])&&$openid=openid($data["wechat_code"])){$data['openid']=$openid;}
+		if(isset($request->wechat_code)&&$openid=openid($request->wechat_code)){$data['openid']=$openid;}
 		
 		if($code!=phonecode($data["phone"],Mobile::LOGIN)){ throw ValidationException::withMessages(["phone_code" => "验证码不正确"]);}
 		
@@ -90,21 +89,7 @@ class AuthController extends Controller
 		
 		$app = Factory::miniProgram($config);
 		
-		$openid = "ofeYf1JTKjv6eutx_2lM8McRq3sw";
-		
-		$wedata = [];
-		
-        if(config("app")["env"]=="testing"&&$code!="111"){
-			return $this->error("wechat_code无效，重新获取",["code"=>"无效的wechat_code无效码"],Code::VALIDATE);
-	    }
-		
-		if(!(config("app")["env"]=="local"||config("app")["env"]=="testing")){
-			$wedata = $app->auth->session($code);
-			if(isset($wedata["errcode"])){
-				return $this->error("wechat_code无效无效，重新获取",[["code"=>$wedata["errmsg"]]],Code::VALIDATE);
-			}
-			$openid = $wedata["openid"];
-		}
+		$data['openid']=openid($code);
 
 		$token = $this->getRepositories()->program(['name'=>$config["app_id"],'password'=>$openid],$request);
 		
@@ -141,7 +126,7 @@ class AuthController extends Controller
 		}
 
 		/*验证邀请码*/
-		//if(!checkInvite($data["invite_code"])){throw ValidationException::withMessages(["invite_code" => "邀请码不正确"]);}
+		if(!checkInvite($data["invite_code"])){throw ValidationException::withMessages(["invite_code" => "邀请码不正确"]);}
 
 	    $this->getRepositories()->register($data,['form'=>['user'=>'']]);
 
