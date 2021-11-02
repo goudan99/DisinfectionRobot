@@ -41,15 +41,15 @@ class Auth implements Repository
 		
 		if(isset($data["openid"])){
 			
-			$u1=Account::where("name",$data["app_id"])->where("password",$data["openid"])->where("type",2)->first();
-
-			//if(!($u1&&$u1->user_id==$account->user_id)){throw ValidationException::withMessages(["name" => "你必须使用之前的微信才能登录"]);}
-			if($u1){
-				if($u1->user_id!=$account->user_id){
+			$wechat_account=Account::where("user_id",$account->user_id)->where("type",2)->first();
+			
+			if($wechat_account){
+				if($wechat_account->user_id!=$data["openid"]){
 					throw ValidationException::withMessages(["name" => "你必须使用之前的微信才能登录"]);
 				}
 			}
-			if(!$u1){
+			//如果该帐号没有绑定openid 并且该openid没有绑定其他帐号则可以绑定
+			if(!$wechat_account&&!Account::where("name",$data["openid"])->where("password",$data["app_id"])->where("type",2)->first()){
 				Account::create(['name'=>$data['openid'],'password'=>$data['app_id'],'type'=>2,'user_id'=>$account->user_id]);
 				$user->openid=$data['openid'];
 			}
@@ -79,9 +79,15 @@ class Auth implements Repository
 		
 		if(isset($data["openid"])){
 			
-			if(!($u1&&$u1->user_id==$account->user_id)){throw ValidationException::withMessages(["name" => "你必须使用之前的微信才能登录"]);}
-
-			if(!$u1){
+			$wechat_account=Account::where("user_id",$account->user_id)->where("type",2)->first();
+			
+			if($wechat_account){
+				if($wechat_account->user_id!=$data["openid"]){
+					throw ValidationException::withMessages(["name" => "你必须使用之前的微信才能登录"]);
+				}
+			}
+			//如果该帐号没有绑定openid 并且该openid没有绑定其他帐号则可以绑定
+			if(!$wechat_account&&!Account::where("name",$data["openid"])->where("password",$data["app_id"])->where("type",2)->first()){
 				Account::create(['name'=>$data['openid'],'password'=>$data['app_id'],'type'=>2,'user_id'=>$account->user_id]);
 				$user->openid=$data['openid'];
 			}
@@ -130,6 +136,10 @@ class Auth implements Repository
 
 		if($account=Account::where('name',$data['phone'])->first()){
             throw ValidationException::withMessages(["phone" => "手机号已存在"]);
+		}
+		
+		if(isset($data['openid'])&&Account::where("name",$data["openid"])->where("password",$data["app_id"])->where("type",2)->first()){
+			throw ValidationException::withMessages(["phone" => "小程序已注册，请换个微信注册"]);	
 		}
 		
 		DB::transaction(function () use ($data){
