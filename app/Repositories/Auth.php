@@ -44,7 +44,7 @@ class Auth implements Repository
 			$wechat_account=Account::where("user_id",$account->user_id)->where("type",2)->first();
 			
 			if($wechat_account){
-				if($wechat_account->user_id!=$data["openid"]){
+				if($wechat_account->name!=$data["openid"]){
 					throw ValidationException::withMessages(["name" => "你必须使用之前的微信才能登录"]);
 				}
 			}
@@ -82,7 +82,7 @@ class Auth implements Repository
 			$wechat_account=Account::where("user_id",$account->user_id)->where("type",2)->first();
 			
 			if($wechat_account){
-				if($wechat_account->user_id!=$data["openid"]){
+				if($wechat_account->name!=$data["openid"]){
 					throw ValidationException::withMessages(["name" => "你必须使用之前的微信才能登录"]);
 				}
 			}
