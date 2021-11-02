@@ -43,8 +43,12 @@ class Auth implements Repository
 			
 			$u1=Account::where("name",$data["app_id"])->where("password",$data["openid"])->where("type",2)->first();
 
-			if(!($u1&&$u1->user_id==$account->user_id)){throw ValidationException::withMessages(["name" => "你必须使用之前的微信才能登录"]);}
-
+			//if(!($u1&&$u1->user_id==$account->user_id)){throw ValidationException::withMessages(["name" => "你必须使用之前的微信才能登录"]);}
+			if($u1){
+				if($u1->user_id!=$account->user_id){
+					throw ValidationException::withMessages(["name" => "你必须使用之前的微信才能登录"]);
+				}
+			}
 			if(!$u1){
 				Account::create(['name'=>$data['openid'],'password'=>$data['app_id'],'type'=>2,'user_id'=>$account->user_id]);
 				$user->openid=$data['openid'];
