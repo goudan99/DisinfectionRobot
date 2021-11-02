@@ -40,6 +40,7 @@ class UserResource extends JsonResource
            'passed' => $this->passed,
            'desc' => $this->desc,
 		   'is_system' => $this->is_system,
+		   'is_first' => $this->is_first,
            'created_at' => $this->created_at,
            'updated_at' => $this->updated_at
         ];
