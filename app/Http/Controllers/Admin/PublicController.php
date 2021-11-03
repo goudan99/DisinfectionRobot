@@ -9,6 +9,7 @@ use App\Repositories\Mobile;
 use Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use App\Model\Account;
 
 class PublicController extends Controller
 {
@@ -33,21 +34,15 @@ class PublicController extends Controller
 
 		$phone=isset($data["phone"])?$data["phone"]:'';
 
-		if(Mobile::CHANGEPHONE==$type&&!$this->user){
-			return $this->error("没有登录");
+		if(Mobile::VALIDATEPHONE==$type||Mobile::CHANGEPHONE==$type||Mobile::CHANGE==$type){//修改密码以及修改手机号时需要用户已经登录
+			if(!$this->user){
+				return $this->error("没有登录",[],401);
+			}
+			if(Mobile::CHANGEPHONE==$type||Mobile::CHANGE==$type){
+				$phone = $this->user->phone;//修改手机号时,旧手机就是自己现在绑定的手机号，更密码时的手机号就是现在用着的手机号
+			}
 		}
 		
-		if(Mobile::CHANGEPHONE==$type&&$this->user&&$this->user){
-			$phone = $this->user->phone;
-		}
-		if($type==2){
-			
-			if(!$user = Auth::user("api")){
-				return $this->error('需要登录',[], 401);
-			}
-			
-			$phone=$user->user->phone;
-		}
 		Validator::make(['phone'=>$phone,'type'=>$type], [
           'phone' => 'required|size:11',
           'type' => 'required',
@@ -56,6 +51,21 @@ class PublicController extends Controller
 			"phone.size"=>"手机必须11位",
 			"type.required"=>"类型必填"
 		])->validate();
+		
+		if(Mobile::REGISTER==$type&&Account::where('name',$phone)->first()){
+			return $this->error('验证不通过',["phone"=>"该手机号已注册"], 422);
+		}
+		
+		if(Mobile::FIND==$type&&!Account::where('name',$phone)->first()){
+			return $this->error('验证不通过',["phone"=>"该手机号未注册"], 422);
+		}
+		if(Mobile::LOGIN==$type&&!Account::where('name',$phone)->first()){
+			return $this->error('验证不通过',["phone"=>"该手机号未注册"], 422);
+		}
+		
+		if(Mobile::VALIDATEPHONE==$type&&Account::where('name',$phone)->first()){
+			return $this->error('验证不通过',["phone"=>"该手机号已注册"], 422);
+		}
 		
 		$code= $mobile->code($phone, '', $type);
 		
