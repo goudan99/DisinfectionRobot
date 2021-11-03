@@ -26,7 +26,7 @@ class RegisterRequest extends Request
             'phone'              			=> 'required|size:11|unique:accounts,name',						// 手机号
 			'phone_code' 					=> 'required',													// 手机验证码
 			'invite_code' 					=> 'required',													// 邀请码
-			//'mini_code' 					=> 'required',													// 小程序code码，用于获取用户openid
+			'wechat_code' 					=> 'required',													// 小程序code码，用于获取用户openid
             'password'              		=> 'required|min:6|max:16|regex:/^[a-zA-Z0-9~@#%_]{6,16}$/i',	// 登录密码只能英文字母(a-zA-Z)、阿拉伯数字(0-9)、特殊符号(~@#%)
             'password_confirmation' 		=> 'required|same:password',									// 确认密码
         ];

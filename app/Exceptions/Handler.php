@@ -65,7 +65,7 @@ class Handler extends ExceptionHandler
         return $request->expectsJson() ? 
 				response()->json([
 					'code' => 401,
-					'msg'  => $exception->getMessage(),
+					'msg'  => "用户未登录",
 					'data' => [],
 					'timestamp' => time()
 				], 200): 
@@ -89,5 +89,20 @@ class Handler extends ExceptionHandler
             'data' => [],
 			'timestamp' => time()
         ];
+    }
+	
+    protected function convertValidationExceptionToResponse(ValidationException $e, $request)
+    {
+        if ($e->response) {
+            return $e->response;
+        }
+
+        return $request->expectsJson()
+                    ?response()->json([
+						'code'=>$e->status,
+						'msg' => "验证不通过",
+						'data' => $e->errors(),
+						'timestamp' => time()
+					], 200): $this->invalid($request, $e);
     }
 }

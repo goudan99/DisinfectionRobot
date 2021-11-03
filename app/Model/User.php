@@ -21,6 +21,11 @@ class User extends Model
          return $this->belongsToMany('App\Model\Role');
     }
 	
+	public function machines()
+    {
+         return $this->belongsToMany('App\Model\Machine')->withPivot(['machine_name']);
+    }
+	
 	public function menus()
     {
 		if($this->id==1){
