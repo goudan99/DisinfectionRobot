@@ -16,12 +16,12 @@ class MapRequest extends Request
 			
             $rules = [            
 				'name'                  => 'required|min:4|max:20',		
-                'machine_id'            => 'required',  //机器				
+                'machine_id'            => 'required|numeric',  //机器			
             ];
         }else{//store
             $rules = [
 				'name'                  => 'required|min:4|max:20',
-                'machine_id'            => 'required',  //机器				
+                'machine_id'            => 'required|numeric',  //机器				
             ];
         }
 		
@@ -39,7 +39,8 @@ class MapRequest extends Request
             'name.required'     	=> '任务名不能为空',
             'name.max'          	=> '任务名过长，长度不得超出20',
             'name.min'           	=> '任务名过短，长度不得少于4',
-            'machine_id.required'   => '机器必须选'
+            'machine_id.required'   => '机器必须选',
+            'machine_id.numeric'   	=> '机器id必须为数字'
         ];
     }
 }

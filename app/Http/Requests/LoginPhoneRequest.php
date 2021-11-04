@@ -26,7 +26,7 @@ class LoginPhoneRequest extends Request
         $rules = [
             'phone'                 => 'required|size:11',
 			'code' 					=> '',
-			'phone_code' 			=> ''
+			'phone_code' 			=> 'required_without:code'
         ];
         return $rules;
     }
@@ -42,7 +42,7 @@ class LoginPhoneRequest extends Request
             'phone.required'              	=> '手机号必填',
             'password.size'                 => '手机长度11位',
             'code.required' 				=> '验证码必填',
-			'phone_code.required' 			=> '验证码必填'
+			'phone_code.required_without' 	=> '验证码必填'
         ];
     }
 }

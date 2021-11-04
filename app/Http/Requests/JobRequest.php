@@ -27,7 +27,7 @@ class JobRequest extends Request
 				'name'                  => 'required|min:2|max:100',
                 'map_id'              	=> 'required|numeric',  //地图必须选
                 'machine_id'            => 'required|numeric',  //机器				
-                'start_at'              => 'required|date|after:now()',
+                'start_at'              => 'required|date|after:now',
 				'rate_type'             => 'required|numeric',
                 'is_clean'             	=> 'boolean',
                 'is_test'             	=> 'boolean'
@@ -35,10 +35,10 @@ class JobRequest extends Request
         }else{//store
             $rules = [
 				'name'                  => 'required|min:4|max:100',
-                'map_id'              	=> 'required',  //地图必须选		
-                'machine_id'            => 'required',  //机器				
-                'start_at'              => 'required',
-				'rate_type'             => 'required',
+                'map_id'              	=> 'required|numeric',  //地图必须选
+                'machine_id'            => 'required|numeric',  //机器				
+                'start_at'              => 'required|date|after:now',
+				'rate_type'             => 'required|numeric',
                 'is_clean'             	=> 'boolean',
                 'is_test'             	=> 'boolean'
             ];
@@ -65,7 +65,7 @@ class JobRequest extends Request
             'machine_id.numeric'   	=> '机器id必须为数字',
             'start_at.required'     => '任务开始模式',
             'start_at.date'     	=> '必须为时间格式',
-            'start_at.aftr'     	=> '必须在当前时间之后',
+            'start_at.after'     	=> '必须在当前时间之后',
             'end_at.required'      	=> '任务结束模式',
             'rate_type.required'	=> '请选择执行频率',
             'rate_type.numeric'   	=> '执行频率必须为数字',
