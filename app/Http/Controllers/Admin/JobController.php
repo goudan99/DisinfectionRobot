@@ -64,7 +64,8 @@ class JobController extends Controller
     {
 	  if($this->user){
 		$request->merge([
-		  "user_id"=>$this->user->id
+		  "user_id"=>$this->user->id,
+		  "user_name"=>$this->user->phone
 		]);
 	  }
 
