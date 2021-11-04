@@ -30,14 +30,14 @@ class UserRequest extends Request
                 'password'              => 'required|min:6|max:16|regex:/^[a-zA-Z0-9~@#%_]{6,16}$/i',  //登录密码只能英文字母(a-zA-Z)、阿拉伯数字(0-9)、特殊符号(~@#%)
 				'code' 					=> 'required',				
                 'passed'                => 'required|boolean',
-				'nickname'              => 'min:1|max:10', 
+				'nickname'              => 'min:1|max:20', 
             ];
         }else{//store
             $rules = [
                 'phone'                => 'size:11',
                 'password'             => 'nullable|min:6|max:16|regex:/^[a-zA-Z0-9~@#%_]{6,16}$/i',  //登录密码只能英文字母(a-zA-Z)、阿拉伯数字(0-9)、特殊符号(~@#%)		
 				'passed'               => 'required|boolean',
-                'nickname'             => 'min:1|max:10',
+                'nickname'             => 'min:1|max:20',
             ];
         }
 		
