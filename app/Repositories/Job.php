@@ -37,9 +37,11 @@ class Job implements Repository
 			
 			$start=$data['start_at'];
 			
-			$end=date('Y-m-d H:i:s',strtotime("+2 hours",strtotime($data['start_at'])));
+			$start1=date('Y-m-d H:i:s',strtotime("-2 hours",strtotime($data['start_at'])));
+			
+			$start2=date('Y-m-d H:i:s',strtotime("+2 hours",strtotime($data['start_at'])));
 
-			if(JobModel::where("start_at",'>=',$start)->where("start_at",'<=',$end)->where("machine_id",$data["machine_id"])->where("status",2)->first()){
+			if(JobModel::where("start_at",'>',$start1)->where("start_at",'<',$start2)->where("machine_id",$data["machine_id"])->where("status",2)->first()){
 				throw ValidationException::withMessages(["start_at" => "在该时间段内有其人任务在执行"]);
 			}
 		}
