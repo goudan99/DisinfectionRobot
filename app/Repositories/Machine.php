@@ -17,27 +17,30 @@ class Machine implements Repository
 		
 		if(isset($data['id'])&&$data['id']){
 			
-			if(!$user=machineModel::where("id",$data['id'])->first()){
-				throw new NotFoundException("机器不存在");
-			}
+			if(!$machine=machineModel::where("id",$data['id'])->first()){throw new NotFoundException("机器不存在");}
 			
-			$user->update($data);
+			$machine->update($data);
 			
 			$notify["method"]="edit";
 			
-			event(new MachineStored($user,$notify));
+			event(new MachineStored($machine,$notify));
 			return true ;
 		}
 			
-		if(machineModel::where("sn",$data['sn'])->first()){
-			throw new UniqueException("该机器已经添加过了");
+		if($machine=machineModel::where("sn",$data['sn'])->first()){
+			
+			if(!$machine->users()->where("user_id",$notify["form"]["user"]->id)->first()){
+				$machine->users()->attach($notify["form"]["user"]->id,['machine_name' => $data['name']]);
+			}else{
+				throw new UniqueException("该机器已经添加过了");
+			}
+		}else{
+			$machine=machineModel::create($data);
+			$machine->users()->attach($notify["form"]["user"]->id,['machine_name' => $data['name']]);
 		}
-			
-		$user=machineModel::create($data);
-			
 		$notify["method"]="add";
 		
-		event(new MachineStored($user,$notify));
+		event(new MachineStored($machine,$notify));
 		
 		return true ;
 	}
@@ -45,12 +48,22 @@ class Machine implements Repository
 	/*删除用户*/
 	public function remove($data,$notify)
 	{
-		$users=machineModel::whereIn("id",$data)->get();
 		
-		machineModel::whereIn("id",$data)->delete();
+		$machines=machineModel::whereIn("id",$data)->get();
+
+		if($notify["form"]["user"]->id==1){
+			
+			machineModel::whereIn("id",$data)->delete();
+			
+			event(new MachineRemoved($users,$notify));
+			
+			return $users;
+		}
+
+		$notify["form"]["user"]->machines()->detach($data);
 		
-		event(new MachineRemoved($users,$notify));
+		event(new MachineRemoved($machines,$notify));
 		  
-		return $users;
+		return $machines;
 	}
 }

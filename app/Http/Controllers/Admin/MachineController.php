@@ -18,23 +18,28 @@ class MachineController extends Controller
         parent::__construct($repository);	
     }
     /**
-     * 显示所有后台用户
+     * 显示所有机器
      *
      * @return \Illuminate\Http\Response
      */
     public function home(Request $request)
     {
 		$limit=$request->limit?$request->limit:10;
-		
-		$machine = Machine::orderBy('id','desc');
-		
+				
+		if($this->user->roles->where("leve",1)->first()||$this->user->id==1){
+			$machine = Machine::orderBy('id','desc');
+		}else{
+			$machine = $this->user->machines()->orderBy('id','desc');
+		}
+
 	    $request->get('key') ? $machine=$machine->where('name','like','%'.trim($request->get('key')).'%'):'';
 		
 		return $this->success(new MachineCollection($machine->paginate($limit)));
     }
-
+	
+	
     /**
-     * 添加后台用户
+     * 添加机器
      *
      * @return \Illuminate\Http\Response
      */
@@ -51,7 +56,9 @@ class MachineController extends Controller
      */
     public function show(Request $request,$id)
     {
-		return $this->success([],"获取成功");
+		$machine=Machine::where("id",$id)->first();
+		$machine->users;
+		return $this->success($machine,"获取成功");
 	}
 	
     /**
