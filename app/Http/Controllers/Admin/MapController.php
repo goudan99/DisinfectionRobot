@@ -28,6 +28,12 @@ class MapController extends Controller
 		
 		$map=Map::orderby("id",'desc');
 		
+		$machines=[];
+		
+		foreach($this->user->machines()->get(["id"]) as $item){ array_push($machines,$item->id);}
+		
+		if($this->user->id!=1){$map=$map->whereIn('machine_id',$machines);}
+		
 		return $this->success(new MapCollection($map->paginate($limit)));
     }
 	

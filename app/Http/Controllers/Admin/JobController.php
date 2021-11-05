@@ -28,9 +28,19 @@ class JobController extends Controller
 
 		$job=Job::orderby("id",'desc');
 		
+		$machines=[];
+		
+		foreach($this->user->machines()->get(["id"]) as $item)
+		{
+		  array_push($machines,$item->id);	
+		}
+		
+		if($this->user->id!=1){
+			$job=$job->whereIn('machine_id',$machines);
+		}
 		$request->get('status') ? $job=$job->where('status',trim($request->get('status'))):'';
 		
-		$request->get('machie_id') ? $job=$job->where('machie_id',trim($request->get('machie_id'))):'';
+		$request->get('machine_id') ? $job=$job->where('machine_id',trim($request->get('machine_id'))):'';
 		
 		$request->get('type_id') ? $job=$job->where('type_id',trim($request->get('type_id'))):'';
 		
