@@ -83,6 +83,7 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'robot','middleware' => ['auth:
 	Route::post('/job',		'JobController@store');
 	Route::put('/job',		'JobController@store');
 	Route::delete('/job',	'JobController@remove');
+	Route::patch('/job',	'JobController@change');
 });
 
 /*配置模块-菜单配置,config配置*/
