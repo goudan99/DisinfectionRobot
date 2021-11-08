@@ -28,11 +28,15 @@ class MapController extends Controller
 		
 		$map=Map::orderby("id",'desc');
 		
-		$machines=[];
+		if(!($this->user->id==1||$this->user->roles()->where('level',1)->first())){
+			$machines=[];
+			
+			foreach($this->user->machines()->get(["id"]) as $item){ array_push($machines,$item->id);}
+			
+			$map=$map->whereIn('machine_id',$machines);
+		}
 		
-		foreach($this->user->machines()->get(["id"]) as $item){ array_push($machines,$item->id);}
-		
-		if($this->user->id!=1){$map=$map->whereIn('machine_id',$machines);}
+		$request->get('key') ? $map=$map->where('name','like','%'.trim($request->get('key')).'%'):'';
 		
 		return $this->success(new MapCollection($map->paginate($limit)));
     }
@@ -48,6 +52,12 @@ class MapController extends Controller
 		
 		$map=Map::where("id",$id);
 		
+		if(!($this->user->id==1||$this->user->roles()->where('level',1)->first())){
+			$machines=[];
+			foreach($this->user->machines()->get(["id"]) as $item){ array_push($machines,$item->id);}
+			$map=$map->whereIn('machine_id',$machines);
+		}
+		
 		return $this->success(new MapResource($map->first()));
     }
 	
@@ -58,14 +68,11 @@ class MapController extends Controller
      */
     public function store(MapRequest $request)
     {
-		if($this->user){
-			$request->merge(["user_id"=>$this->user->id]);
-		}
-	   if(!$this->getRepositories()->store($request->all(),['form'=>['user'=>$this->user]])){
-			return $this->error('未知错误');
-	   }
+	    if($this->user){$request->merge(["user_id"=>$this->user->id]);}
+		
+	    $this->getRepositories()->store($request->all(),['form'=>['user'=>$this->user]]);
 
-	   return $this->success([],"操作成功");
+	    return $this->success([],"保存成功");
 	}
 	
     /**
@@ -75,10 +82,8 @@ class MapController extends Controller
      */
     public function remove(Request $request)
     {
-	   if(!$this->getRepositories()->remove($request->all(),['form'=>['user'=>$this->user]])){
-			return $this->error('未知错误');
-	   }
+	  $this->getRepositories()->remove($request->all(),['form'=>['user'=>$this->user]])
 
-	   return $this->success([],"操作成功");
+	   return $this->success([],"删除成功");
 	}
 }

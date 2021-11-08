@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Model\Job as JobModel;
 use App\Events\JobStored;
 use App\Events\JobRemoved;
+use App\Events\JobChanaged;
 use App\Exceptions\AttachException;
 use App\Exceptions\UniqueException;
 use App\Exceptions\NotFoundException;
@@ -18,9 +19,8 @@ class Job implements Repository
 	/*保存机器*/
 	public function store($data,$notify){
 		
-		if(!isset($data["status"])){
-			$data["status"]=2;
-		}
+		if(!isset($data["status"])){$data["status"]=2;}
+		
 		if(!isset($data["type_id"])){$data["type_id"]=1;}
 		
         if($data["user_id"]){
@@ -85,12 +85,51 @@ class Job implements Repository
 	/*删除用户*/
 	public function remove($data,$notify)
 	{
-		$maps=JobModel::whereIn("id",$data)->get();
+
+		$jobs=JobModel::whereIn("id",$data);
+		
+		$user=$notify["form"]["user"];
+		
+		if(!($user->id==1||$user->roles()->where('level',1)->first())){
+			
+			$machines=[];
+			
+			foreach($user->machines()->get(["id"]) as $item){ array_push($machines,$item->id);}
+			
+			$jobs=$jobs->whereIn('machine_id',$machines);
+		}
+
+		if(!$jobs->get()->toArray()){throw ValidationException::withMessages(["machine_id" => "该任务不存在，或者你没有权限操控此任务"]);}
 		
 		JobModel::whereIn("id",$data)->delete();
 		
-		event(new JobRemoved($maps,$notify));
+		event(new JobRemoved($jobs,$notify));
 		  
-		return $maps;
+		return $jobs;
 	}
+	
+	/*改变任务状态*/
+	public function change($data,$notify)
+	{
+		$jobs=JobModel::whereIn("id",$data["id"]);
+
+		$user=$notify["form"]["user"];
+		
+		if(!($user->id==1||$user->roles()->where('level',1)->first())){
+			
+			$machines=[];
+			
+			foreach($user->machines()->get(["id"]) as $item){ array_push($machines,$item->id);}
+			
+			$jobs=$jobs->whereIn('machine_id',$machines);
+		}
+
+		if(!$jobs->get()->toArray()){throw ValidationException::withMessages(["machine_id" => "该任务不存在，或者你没有权限操控此任务"]);}
+
+		JobModel::whereIn("id",$data)->update(['status'=>$data["status"]]);
+		
+		event(new JobChanaged($jobs,$notify));
+		  
+		return $jobs;
+	}	
 }

@@ -9,6 +9,7 @@ use App\Repositories\Job as JobReposity;
 use App\Http\Resources\JobCollection;
 use App\Http\Resources\JobResource;
 use App\Http\Requests\JobRequest;
+use App\Http\Requests\JobChangeRequest;
 
 class JobController extends Controller
 {
@@ -28,23 +29,23 @@ class JobController extends Controller
 
 		$job=Job::orderby("id",'desc');
 		
-		$machines=[];
-		
-		foreach($this->user->machines()->get(["id"]) as $item)
-		{
-		  array_push($machines,$item->id);	
-		}
-		
-		if($this->user->id!=1){
+		if(!($this->user->id==1||$this->user->roles()->where('level',1)->first())){
+			$machines=[];
+			foreach($this->user->machines()->get(["id"]) as $item){ array_push($machines,$item->id);}
 			$job=$job->whereIn('machine_id',$machines);
 		}
+		
 		$request->get('status') ? $job=$job->where('status',trim($request->get('status'))):'';
 		
 		$request->get('machine_id') ? $job=$job->where('machine_id',trim($request->get('machine_id'))):'';
 		
 		$request->get('type_id') ? $job=$job->where('type_id',trim($request->get('type_id'))):'';
 		
-		$request->get('start_at') ? $job=$job->where('start_at',trim($request->get('start_at'))):'';
+		$request->get('start_at') ? $job=$job->where('start_at','>=',trim($request->get('start_at'))):'';
+		
+		$request->get('end_at') ? $job=$job->where('start_at','<=',trim($request->get('end_at'))):'';
+		
+		$request->get('key') ? $job=$job->where('name','like','%'.trim($request->get('key')).'%'):'';
 		
 		$job=$job->paginate($limit);
 		
@@ -58,9 +59,15 @@ class JobController extends Controller
      */
     public function show(Request $request,$id)
     {
-		$limit=$request->limit?$request->limit:10;
+		$job=Job::orderby("id",'desc');
 		
-		$job=Job::where("id",$id)->first();
+		if(!($this->user->id==1||$this->user->roles()->where('level',1)->first())){
+			$machines=[];
+			foreach($this->user->machines()->get(["id"]) as $item){ array_push($machines,$item->id);}
+			$job=$job->whereIn('machine_id',$machines);
+		}
+		
+		$job=$job->where("id",$id)->first();
 		
 		return $this->success(new JobResource($job));
     }
@@ -81,7 +88,7 @@ class JobController extends Controller
 
 	   $this->getRepositories()->store($request->all(),['form'=>['user'=>$this->user]]);
 
-	   return $this->success([],"操作成功");
+	   return $this->success([],"保存成功");
 	}
 	
     /**
@@ -91,10 +98,20 @@ class JobController extends Controller
      */
     public function remove(Request $request)
     {
-	   if(!$this->getRepositories()->remove($request->all(),['form'=>['user'=>$this->user]])){
-			return $this->error('未知错误');
-	   }
+	   $this->getRepositories()->remove($request->all(),['form'=>['user'=>$this->user]]);
 
-	   return $this->success([],"操作成功");
+	   return $this->success([],"删除成功");
+	}
+	
+    /**
+     * 修改状态
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function change(JobChangeRequest $request)
+    {
+	   $this->getRepositories()->change($request->all(),['form'=>['user'=>$this->user]]);
+
+	   return $this->success([],"状态改变在功");
 	}
 }

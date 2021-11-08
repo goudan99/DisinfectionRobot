@@ -55,7 +55,20 @@ class Map implements Repository
 	/*删除用户*/
 	public function remove($data,$notify)
 	{
-		$maps=MapModel::whereIn("id",$data)->get();
+		$maps=MapModel::whereIn("id",$data);
+		
+		$user=$notify["form"]["user"];
+		
+		if(!($user->id==1||$user->roles()->where('level',1)->first())){
+			
+			$machines=[];
+			
+			foreach($user->machines()->get(["id"]) as $item){ array_push($machines,$item->id);}
+			
+			$maps=$maps->whereIn('machine_id',$machines);
+		}
+
+		if(!$maps->get()->toArray()){throw ValidationException::withMessages(["machine_id" => "该任务不存在，或者你没有权限操控此任务"]);}
 		
 		MapModel::whereIn("id",$data)->delete();
 		
