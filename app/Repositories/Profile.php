@@ -6,6 +6,7 @@ use App\Events\UploadStored;
 use App\Events\NoticeChanged;
 use App\Model\User;
 use App\Model\Notice;
+use App\Model\Freedback;
 use Storage;
 use App\Exceptions\AttachException;
 use App\Exceptions\UniqueException;
@@ -74,7 +75,9 @@ class Profile implements Repository
 	  
 	  $path=$request->file->store('avatar',config("robot")["avatar"]);
 	  
-	  $url= url(Storage::disk(config("robot")["avatar"])->url($path));
+	  //$url= url(Storage::disk(config("robot")["avatar"])->url($path));
+
+	  $url= config("filesystems")["disks"][config("robot")["avatar"]]["url"]."/". $path;
 	  
 	  event(new UploadStored(["path"=>$path,"url"=>$url],$notify));
 
@@ -144,5 +147,36 @@ class Profile implements Repository
 	public function setUser($user)
 	{
 		$this->user=$user;
+	}
+	
+	/*上传反馈图片*/
+	public function upload($request,$notify)
+	{
+
+      if (!$request->hasFile('file')) {return false;}
+	  
+	  $path=$request->file->store('freeback',config("robot")["freedback"]);
+	  
+	  //$url= url(Storage::disk(config("robot")["freedback"])->url($path));
+
+	  $url= config("filesystems")["disks"][config("robot")["freedback"]]["url"]."/". $path;
+	  
+	  event(new UploadStored(["path"=>$path,"url"=>$url],$notify));
+
+	  return $url;
+	}
+	
+	/*标志已读通知*/
+	public function feedback($data,$notify)
+	{
+
+
+		$notice=Freedback::create($data);
+	
+		//$notify["method"]="send";
+		
+		//event(new NoticeChanged($notice,$notify));
+		
+		return $notice;
 	}
 }

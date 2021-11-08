@@ -3,6 +3,7 @@ return [
   //头像引存储位置(驱动)
   'avatar' => "public",//头像位置
   'system' => "public",//头像位置
+  'freedback' => "public",//头像位置
   //用于登录api的oauth
   'miniProgram' => [
     'app_id' => "wxbccd7a10c50cc27e",

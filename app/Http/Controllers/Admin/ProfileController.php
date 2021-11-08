@@ -200,4 +200,32 @@ class ProfileController extends Controller
     {
 		return $this->success(Notice::where("user_id",$this->user->id)->where("is_read",0)->count());
     }
+	
+    /**
+     * 消息反馈
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function feedback(Request $request)
+    {
+		$this->getRepositories()->feedback($request->all(),['form'=>['user'=>$this->user]]);
+		 
+		return $this->success("操作成功");
+    }
+	
+    /**
+     * 统计用户没有读的消息条数
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function upload(Request $request)
+    {
+		if (!$request->hasFile('file')) {
+			return $this->error('请上传图像');;
+        }
+		
+		$avatar=$this->getRepositories()->upload($request,['form'=>['user'=>$this->user]]);
+		
+		return $this->success($avatar,"操作成功");
+    }
 }

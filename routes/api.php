@@ -46,8 +46,21 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'profile','middleware' => ['aut
 	Route::put('/notice/{id?}','ProfileController@read');			//标志已读
 	Route::patch('/notice/{id?}','ProfileController@restore');		//恢复删除
 	Route::delete('/notice/{id?}','ProfileController@remove');		//删除
-});
+	
 
+	
+
+	 
+});
+Route::group(['namespace' =>"Admin", 'prefix' => 'me','middleware' => ['auth:api']], function () {
+	
+	Route::post('/feedback','ProfileController@feedback');		//信息反馈
+	Route::post('/feedback/upload','ProfileController@upload');	//上传图片
+	
+	Route::get('/share','ShareController@home');			//我的图库
+	Route::post('/share','ShareController@store');			//分享图库
+	Route::delete('/share','ShareController@remove');		//删除图库
+});
 /*权限管理模块*/
 Route::group(['namespace' =>"Admin", 'prefix' => 'member','middleware' => ['auth:api','permit:api']], function () {
 	Route::get('/user','UserController@home');
