@@ -11,6 +11,7 @@ use App\Constant\Code;
 use App\Repositories\Mobile;
 use App\Http\Requests\RestPasswordRequest;
 use App\Http\Requests\RestPhoneRequest;
+use App\Http\Requests\FreedbackRequest;
 
 class ProfileController extends Controller
 {
@@ -206,9 +207,15 @@ class ProfileController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function feedback(Request $request)
+    public function feedback(FreedbackRequest $request)
     {
-		$this->getRepositories()->feedback($request->all(),['form'=>['user'=>$this->user]]);
+		$data=$request->all();
+		
+		$data["user_id"]=$this->user->id;
+		
+		$data["user_name"]=$this->user->phone;
+		
+		$this->getRepositories()->feedback($data,['form'=>['user'=>$this->user]]);
 		 
 		return $this->success("操作成功");
     }
