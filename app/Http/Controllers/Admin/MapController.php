@@ -82,7 +82,7 @@ class MapController extends Controller
      */
     public function remove(Request $request)
     {
-	  $this->getRepositories()->remove($request->all(),['form'=>['user'=>$this->user]])
+	  $this->getRepositories()->remove($request->all(),['form'=>['user'=>$this->user]]);
 
 	   return $this->success([],"删除成功");
 	}
