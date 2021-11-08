@@ -20,7 +20,7 @@ class EditRobot3Table extends Migration
 		Schema::create('machine_user', function (Blueprint $table) {
 			$table->integer('user_id')->comment('用户id');
 			$table->integer('machine_id')->comment('设备id');
-			$table->string('machine_name',100)->unique()->comment('设备名称');
+			$table->string('machine_name',100)->nullable()->comment('设备名称');
 			$table->primary(['machine_id', 'user_id']);
 		});
     }
