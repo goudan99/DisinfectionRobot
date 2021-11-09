@@ -16,7 +16,7 @@ class Upload implements Repository
 		
 		$arr2=[];
 		
-		foreach(uploadModel::whereIn("id",$data["pics"])->get() as $item){array_push($arr2,["url"=>$item->url,"from_type"=>1,"from_id"=>$notify["form"]["user"]->id]);}
+		foreach(uploadModel::whereIn("id",$data["pics"])->where('user_id',$notify["form"]["user"]->id)->get() as $item){array_push($arr2,["url"=>$item->url,"from_type"=>1,"from_id"=>$notify["form"]["user"]->id]);}
 		
 		$collection = collect($arr1);
 
