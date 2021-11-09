@@ -28,7 +28,6 @@ class Machine implements Repository
 		}
 			
 		if($machine=machineModel::where("sn",$data['sn'])->first()){
-			
 			if(!$machine->users()->where("user_id",$notify["form"]["user"]->id)->first()){
 				$machine->users()->attach($notify["form"]["user"]->id,['machine_name' => $data['name']]);
 			}else{
@@ -38,6 +37,7 @@ class Machine implements Repository
 			$machine=machineModel::create($data);
 			$machine->users()->attach($notify["form"]["user"]->id,['machine_name' => $data['name']]);
 		}
+		
 		$notify["method"]="add";
 		
 		event(new MachineStored($machine,$notify));

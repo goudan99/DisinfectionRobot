@@ -26,6 +26,11 @@ class User extends Model
          return $this->belongsToMany('App\Model\Machine')->withPivot(['machine_name']);
     }
 	
+	public function uploads()
+    {
+         return $this->hasMany('App\Model\Upload');
+    }
+	
 	public function menus()
     {
 		if($this->id==1){

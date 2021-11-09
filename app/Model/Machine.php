@@ -13,4 +13,9 @@ class Machine extends Model
     {
         return $this->belongsToMany('App\Model\User');
     }
+	
+	public function uploads()
+    {
+         return $this->hasMany('App\Model\Upload');
+    }
 }
