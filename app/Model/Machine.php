@@ -7,7 +7,7 @@ class Machine extends Model
 {
 	use HasFactory;
 	
-	protected $fillable = ['sn','name','status'];
+	protected $fillable = ['sn','name','status','move_speed','power_setting'];
 	
     public function users()
     {
