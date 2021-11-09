@@ -14,8 +14,6 @@ class MachineRequest extends Request
     {
 			
         $rules = [            
-			'name'                  => 'required|min:1|max:255',		
-			'sn'            		=> 'required',  //机器
 			'power_setting'         => 'numeric',  //机器
 			'move_speed'            => 'numeric',  //机器
         ];
