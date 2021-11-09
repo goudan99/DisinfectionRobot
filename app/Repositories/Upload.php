@@ -2,6 +2,7 @@
 namespace App\Repositories;
 use App\Model\User as userModel;
 use App\Model\Upload as uploadModel;
+use App\Events\UploadShared;
 use collect;
 
 class Upload implements Repository
@@ -25,8 +26,11 @@ class Upload implements Repository
 		$arr=$matrix->map(function ($item) {return array_merge($item[0],$item[1]);})->toArray();
 
 		foreach($arr as $item){
-			uploadModel::create($item);
+			if(!uploadModel::where("user_id",$item->user_id)->where("url",$item->url)->first()){
+				uploadModel::create($item);
+			}
 		}
+		event(new UploadShared([$arr1,$arr2,$data['remark']],$notify));
 	}
 	
 	public function remove($data,$notify)	{

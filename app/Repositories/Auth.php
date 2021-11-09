@@ -38,11 +38,11 @@ class Auth implements Repository
 		}
 		
 		$user=$account->user;
-		
-		if($user->openid!=$data["openid"]){
-			throw ValidationException::withMessages(["name" => "你只能登自己号"]);
+		if(isset($data["openid"])){
+			if($user->openid!=$data["openid"]){
+				throw ValidationException::withMessages(["name" => "你只能登自己号"]);
+			}
 		}
-		
 		if(isset($data["openid"])){
 			
 			$wechat_account=Account::where("user_id",$account->user_id)->where("type",2)->first();
@@ -81,8 +81,10 @@ class Auth implements Repository
 		
 		$user=$account->user;
 		
-		if($user->openid!=$data["openid"]){
-			throw ValidationException::withMessages(["name" => "你只能登自己号"]);
+		if(isset($data["openid"])){
+			if($user->openid!=$data["openid"]){
+				throw ValidationException::withMessages(["name" => "你只能登自己号"]);
+			}
 		}
 		
 		if(isset($data["openid"])){
