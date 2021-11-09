@@ -26,6 +26,9 @@ class Machine implements Repository
 			event(new MachineStored($machine,$notify));
 			return true ;
 		}
+		if(!isset($data['sn'])){
+			throw ValidationException::withMessages(["sn" => "sn不能为空"]);
+		}
 			
 		if($machine=machineModel::where("sn",$data['sn'])->first()){
 			if(!$machine->users()->where("user_id",$notify["form"]["user"]->id)->first()){

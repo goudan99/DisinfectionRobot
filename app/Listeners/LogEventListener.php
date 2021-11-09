@@ -20,6 +20,8 @@ use App\Events\UploadStored;
 use App\Events\UserRemoved;
 use App\Events\UserStored;
 use App\Model\LoggerUser;
+use App\Events\UploadShared;
+use App\Model\Notice;
 
 class LogEventListener
 {	
@@ -46,6 +48,8 @@ class LogEventListener
 		$events->listen(UserRemoved::class,LogEventListener::class.'@onDataRemove');
 		//$events->listen(UserStored::class,LogEventListener::class.'@onStroeSuccess');
 		//$events->listen(UploadStored::class,LogEventListener::class.'@onStroeSuccess');
+		
+		$events->listen(UploadShared::class,LogEventListener::class.'@onUploadShare');
     }
 	
     /**
@@ -137,5 +141,23 @@ class LogEventListener
 		}
 		
 		LoggerUser::create($data);
+	}
+    /**
+     * Handle the event.
+     * 尝试成功
+     * @param  Login  $event
+     * @return void
+     */
+	public function onUploadShare($event)
+	{
+		if($user=$event->notify["form"]["user"]){
+			
+			$data["user_id"]=$user->id;
+			$data["user_name"]=$user->name;
+		}
+		print_r($event->data);
+		foreach($event->data["users"] as $item){
+			Notice::create('title'=>'图片分享','user_id'=>$item->user_id,'content'=>$event->data["remark"],'title'=>'图片分享',);
+		}
 	}
 }

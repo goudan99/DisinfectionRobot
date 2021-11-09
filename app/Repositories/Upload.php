@@ -24,9 +24,10 @@ class Upload implements Repository
 		$matrix = $collection->crossJoin($arr2);
 
 		$arr=$matrix->map(function ($item) {return array_merge($item[0],$item[1]);})->toArray();
-
+			
 		foreach($arr as $item){
-			if(!uploadModel::where("user_id",$item->user_id)->where("url",$item->url)->first()){
+			
+			if(!uploadModel::where("user_id",$item["user_id"])->where("url",$item["url"])->first()){
 				uploadModel::create($item);
 			}
 		}
