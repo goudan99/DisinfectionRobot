@@ -21,6 +21,7 @@ class MachineResource extends JsonResource
            'job_status' => $this->job_status,
            'job_progress' => $this->job_progress,
            'power_num' => $this->power_num,
+           'power_setting' => $this->power_setting,
            'machine_area' => $this->machine_area,
            'work_area' => $this->work_area,
            'work_time' => $this->work_time,
