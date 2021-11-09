@@ -26,7 +26,7 @@ class MachineController extends Controller
     {
 		$limit=$request->limit?$request->limit:10;
 				
-		if($this->user->roles->where("leve",1)->first()||$this->user->id==1){
+		if($this->user->roles()->where("level",1)->first()||$this->user->id==1){
 			$machine = Machine::orderBy('id','desc');
 		}else{
 			$machine = $this->user->machines()->orderBy('id','desc');
