@@ -12,7 +12,7 @@ class Upload implements Repository
 		
 		$arr1=[];
 		
-		foreach(userModel::whereIn("id",$data["users"])->get() as $item){array_push($arr1,["user_id"=>$item->id,"user_name"=>$item->phone,"remark"=>$data['remark']]);}
+		foreach(userModel::whereIn("id",$data["users"])->where("id",'<>',$notify["form"]["user"]->id)->get() as $item){array_push($arr1,["user_id"=>$item->id,"user_name"=>$item->phone,"remark"=>$data['remark']]);}
 		
 		$arr2=[];
 		
