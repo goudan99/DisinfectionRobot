@@ -217,7 +217,7 @@ class ProfileController extends Controller
 		
 		$this->getRepositories()->feedback($data,['form'=>['user'=>$this->user]]);
 		 
-		return $this->success("操作成功");
+		return $this->success("反馈成功");
     }
 	
     /**
