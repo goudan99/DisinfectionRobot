@@ -17,7 +17,7 @@ class JobResource extends JsonResource
            'id' => $this->id,
            'name' => $this->name,
            'user_id' => $this->user?$this->user->id:$this->user_id,
-           'user_name' => $this->user?$this->user->name:$this->user_name,
+           'user_name' => $this->user?$this->user->phone:$this->user_name,
            'machine_id' => $machine?$machine->id:$this->machine_id,
            'machine_sn' => $machine?$machine->sn:$this->machine_sn,
            'machine_name' => $machine?$machine->name:$this->machine_name,
