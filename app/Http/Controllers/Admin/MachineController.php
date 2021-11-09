@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Model\Machine;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\MachineCollection;
-use App\Http\Requests\UserRequest;
+use App\Http\Requests\MachineRequest;
 use App\Repositories\Machine as machineRepository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -43,7 +43,7 @@ class MachineController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(MachineRequest $request)
     {
 	   $this->getRepositories()->store($request->all(),['form'=>['user'=>$this->user]]);
 

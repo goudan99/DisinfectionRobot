@@ -13,4 +13,19 @@ class Job extends Model
         'map_area' => 'collection',
         'work' => 'collection'
     ];
+	
+    public function machine()
+    {
+        return $this->belongsTo('App\Model\Machine');
+    }
+
+    public function map()
+    {
+        return $this->belongsTo('App\Model\Map');
+    }
+	
+    public function user()
+    {
+        return $this->belongsTo('App\Model\User');
+    }
 }
