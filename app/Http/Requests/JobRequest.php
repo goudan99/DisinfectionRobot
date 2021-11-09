@@ -34,11 +34,11 @@ class JobRequest extends Request
             ];
         }else{//store
             $rules = [
-				'name'                  => 'required|min:4|max:100',
-                'map_id'              	=> 'required|numeric',  //地图必须选
-                'machine_id'            => 'required|numeric',  //机器				
-                'start_at'              => 'required|date|after:now',
-				'rate_type'             => 'required|numeric',
+				'name'                  => 'min:4|max:100',
+                'map_id'              	=> 'numeric',  //地图必须选
+                'machine_id'            => 'numeric',  //机器				
+                'start_at'              => 'date|after:now',
+				'rate_type'             => 'numeric',
                 'is_clean'             	=> 'boolean',
                 'is_test'             	=> 'boolean'
             ];
