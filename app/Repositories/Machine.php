@@ -55,9 +55,9 @@ class Machine implements Repository
 			
 			machineModel::whereIn("id",$data)->delete();
 			
-			event(new MachineRemoved($users,$notify));
+			event(new MachineRemoved($machines,$notify));
 			
-			return $users;
+			return $machines;
 		}
 
 		$notify["form"]["user"]->machines()->detach($data);
