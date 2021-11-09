@@ -49,10 +49,13 @@ class Job implements Repository
         if($data["machine_id"]){
 			
 			if($machine=Machine::where('id',$data["machine_id"])->first()){$data['machine_name']=$machine->sn;}
-			
-			if(!$notify["form"]["user"]->machines()->where("id",$data["machine_id"])->first()){
-				throw ValidationException::withMessages(["machine_id" => "该机器不存在，或者你没有权限操控此机器"]);
+
+			if(!($user->id==1||$user->roles()->where('level',1)->first())){
+				if(!$notify["form"]["user"]->machines()->where("id",$data["machine_id"])->first()){
+					throw ValidationException::withMessages(["machine_id" => "该机器不存在，或者你没有权限操控此机器"]);
+				}
 			}
+
 		}
 		
 		if(isset($data['id'])&&$data['id']){
