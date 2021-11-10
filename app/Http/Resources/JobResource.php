@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\Resource;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Model\Machine;
 
 class JobResource extends JsonResource
 {
