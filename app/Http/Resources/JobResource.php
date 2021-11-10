@@ -20,7 +20,7 @@ class JobResource extends JsonResource
            'user_name' => $this->user?$this->user->phone:$this->user_name,
            'machine_id' => $machine?$machine->id:$this->machine_id,
            'machine_sn' => $machine?$machine->sn:$this->machine_sn,
-           'machine_name' => $machine?$machine->name:$this->machine_name,
+           'machine_name' => $machine?$machine->pivot->machine_name:$this->machine_name,
            'map_id' => $this->map?$this->map->id: $this->map_id,
            'map_name' => $this->map?$this->map->name:$this->map_name,
            'map_area' => $this->map_area,
