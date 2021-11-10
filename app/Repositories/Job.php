@@ -23,13 +23,13 @@ class Job implements Repository
 		
 		if(!isset($data["type_id"])){$data["type_id"]=1;}
 		
-        if($data["user_id"]){
+        if(isset($data["user_id"])){
 			if($user=User::where('id',$data["user_id"])->first()){
 				$data['user_name']=$user->phone;
 			}
 		}
 		
-        if($data["map_id"]){
+        if(isset($data["map_id"])){
 			if($map=Map::where('id',$data["map_id"])->first()){$data['map_name']=$map->name;}
 		}
 		
@@ -46,7 +46,7 @@ class Job implements Repository
 			}
 		}
 
-        if($data["machine_id"]){
+        if(isset($data["machine_id"])){
 			
 			if($machine=Machine::where('id',$data["machine_id"])->first()){$data['machine_name']=$machine->sn;}
 
