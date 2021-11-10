@@ -12,7 +12,7 @@ class JobResource extends JsonResource
 		$user = $request->user("api");
 		$machine_name=$this->machine_name;
 		$machine_sn="";	
-		if($user->user->roles()->where("level",1)->first()||$user->user>user->id==1){
+		if($user->user->roles()->where("level",1)->first()||$user->user->id==1){
 			$machineobj = Machine::orderBy('id','desc');
 			$machine=$machineobj->where('id',$this->machine_id)->first();
 			if($machine){
