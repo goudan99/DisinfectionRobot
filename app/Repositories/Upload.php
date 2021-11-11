@@ -13,11 +13,11 @@ class Upload implements Repository
 		
 		$arr1=[];
 		
-		foreach(userModel::whereIn("id",$data["users"])->where("id",'<>',$notify["form"]["user"]->id)->get() as $item){array_push($arr1,["user_id"=>$item->id,"user_name"=>$item->phone,"remark"=>$data['remark']]);}
+		foreach(userModel::whereIn("id",$data["users"])->where("id",'<>',$notify["form"]["user"]->id)->get() as $item){array_push($arr1,["user_id"=>$item->id,"user_name"=>$item->phone]);}
 		
 		$arr2=[];
 		
-		foreach(uploadModel::whereIn("id",$data["pics"])->where('user_id',$notify["form"]["user"]->id)->get() as $item){array_push($arr2,["url"=>$item->url,"from_type"=>1,"from_id"=>$notify["form"]["user"]->id]);}
+		foreach(uploadModel::whereIn("id",$data["pics"])->where('user_id',$notify["form"]["user"]->id)->get() as $item){array_push($arr2,["url"=>$item->url,"from_type"=>1,"from_id"=>$notify["form"]["user"]->id,"company_id"=>$notify["form"]["user"]->company_id,"remark"=>$data['remark']]);}
 		
 		$collection = collect($arr1);
 
@@ -31,7 +31,7 @@ class Upload implements Repository
 				uploadModel::create($item);
 			}
 		}
-		event(new UploadShared([$arr1,$arr2,$data['remark']],$notify));
+		event(new UploadShared(["users"=>$arr1,"pics"=>$arr2,"remark"=>$data['remark']],$notify));
 	}
 	
 	public function remove($data,$notify)	{

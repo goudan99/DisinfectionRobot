@@ -154,6 +154,8 @@ class ProfileController extends Controller
 		
 		$data["user_id"]=$this->user->id;
 		
+		$data["company_id"]=$this->user->company_id;
+		
 		$this->getRepositories()->send($data,['form'=>['user'=>$this->user]]);
 		 
 		return $this->success("操作成功");
