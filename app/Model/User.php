@@ -9,7 +9,7 @@ class User extends Model
 {
 	use Notifiable,HasFactory;
 	  
-	protected $fillable = ['nickname','avatar','phone','code','desc','passed','openid','is_first'];
+	protected $fillable = ['nickname','avatar','phone','code','desc','passed','openid','is_first','company_id'];
 	
 	public function accounts()
     {
@@ -49,9 +49,7 @@ class User extends Model
 		if($this->id==1){
 			return Access::get();		
 		}elseif($this->roles){
-			foreach($this->roles as $item){
-				$arr=array_merge($arr,$item->access->toArray());
-			}
+			foreach($this->roles as $item){$arr=array_merge($arr,$item->access->toArray());}
 			return $arr;	
 		}else{
 			return $arr;
@@ -60,21 +58,15 @@ class User extends Model
 	
 	public function check($path,$method)
     {
-	  if($this->id==1){
-		return true; 
-	  }
-	  if(!$this->roles){
-		 return false;
-	  }
-	  
-	foreach($this->roles as $item){
-	  if($item->access->where('path',$path)->where('method',implode('|',$method))->toArray()){
-		 return true;
-	  }
-	}
-			
+		if($this->id==1){return true;}
 
-      return false; 
+		if(!$this->roles){return false;}
+
+		foreach($this->roles as $item){
+		  if($item->access->where('path',$path)->where('method',implode('|',$method))->toArray()){return true;}
+		}
+
+		return false; 
     }
-	
+
 }
