@@ -125,7 +125,7 @@ class AuthController extends Controller
 		/*验证邀请码*/
 		if(!$invote=checkInvite($data["invite_code"])){throw ValidationException::withMessages(["invite_code" => "邀请码不正确"]);}
 
-		//$data['company_id']=$invote->company_id;
+		$data['company_id']=$invote->company_id;
 		
 		if(isset($data["wechat_code"])&&$openid=openid($data["wechat_code"])){$data['openid']=$openid;}
 

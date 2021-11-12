@@ -8,6 +8,7 @@ use App\Model\Account;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use DB;
+use Illuminate\Auth\Events\Registered;
 
 class Auth implements Repository
 {
@@ -168,6 +169,8 @@ class Auth implements Repository
 			if(isset($data['openid'])){
 				Account::create(['name'=>$data['openid'],'password'=>$data['app_id'],'type'=>2,'user_id'=>$user->id]);
 			}
+			
+			event(new Registered($user));
 		});
 		
 		return true;
