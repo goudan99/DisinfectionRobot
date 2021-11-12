@@ -70,6 +70,8 @@ class User implements Repository
 		
 		DB::transaction(function () use ($data,$notify){
 			
+			$data['company_id']=$notify["form"]["user"]->company_id;
+			
 			$user=userModel::create($data);
 			
 			$account=accountModel::create([

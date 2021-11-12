@@ -121,9 +121,7 @@ class Auth implements Repository
 	
 	public function program($data,$request){
 		
-		if(!$account = Account::where("name",$data["name"])->where("password",$data["password"])->where("type",2)->first()){
-            throw ValidationException::withMessages(["wechat_code" => "你没有绑定",]);
-		}
+		if(!$account = Account::where("name",$data["name"])->where("password",$data["password"])->where("type",2)->first()){ throw ValidationException::withMessages(["wechat_code" => "你没有绑定",]);}
 		
 		$token = auth("api")->login($account);
 		
@@ -144,21 +142,20 @@ class Auth implements Repository
 	//注册
 	public function register($data,$notify=[]){
 
-		if($account=Account::where('name',$data['phone'])->first()){
-            throw ValidationException::withMessages(["phone" => "手机号已存在"]);
-		}
+		if($account=Account::where('name',$data['phone'])->first()){throw ValidationException::withMessages(["phone" => "手机号已存在"]);}
 		
-		if(isset($data['openid'])&&Account::where("name",$data["openid"])->where("password",$data["app_id"])->where("type",2)->first()){
-			throw ValidationException::withMessages(["phone" => "小程序已注册，请换个微信注册"]);	
-		}
+		if(isset($data['openid'])&&Account::where("name",$data["openid"])->where("password",$data["app_id"])->where("type",2)->first()){throw ValidationException::withMessages(["phone" => "小程序已注册，请换个微信注册"]);}
 		
 		DB::transaction(function () use ($data){
+
 			$user =User::create([
 				'phone'=>$data['phone'],
 				'nickname'=>isset($data['nickname'])?$data['nickname']:'',
 				'code'=>isset($data['invite_code'])?$data['invite_code']:'',
 				'openid'=>isset($data['openid'])?$data['openid']:'',
+				'company_id'=>isset($data['company_id'])?$data['company_id']:'',
 			]);
+
 			Account::create(['name'=>$data['phone'],'type'=>1,'user_id'=>$user->id,'password'=>Hash::make($data["password"])]);
 			
 			if(isset($data['openid'])){
