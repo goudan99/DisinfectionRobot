@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Cache;
 use EasyWeChat\Factory;
 use App\Constant\Code;
 use App\Exceptions\AttachException;
+use App\Model\Invite;
 
 if (!function_exists('platform')) {
     /**
@@ -29,8 +30,7 @@ if (!function_exists('checkInvite')) {
      */
     function checkInvite($code)
     {
-		return true;
-		
+		return Invite::where('code',$code)->first();
     }
 }
 

@@ -50,7 +50,7 @@ class AuthController extends Controller
           'token_type' => 'bearer',
           'expires_in' => auth()->factory()->getTTL() * 60
 		];
-		  
+
         return $this->success($data);
     }
 	
@@ -123,10 +123,12 @@ class AuthController extends Controller
 		if($data["phone_code"]!=phonecode($data["phone"],Mobile::REGISTER)){throw ValidationException::withMessages(["phone_code" => "验证码不正确"]);}
 
 		/*验证邀请码*/
-		if(!checkInvite($data["invite_code"])){throw ValidationException::withMessages(["invite_code" => "邀请码不正确"]);}
+		if(!$invote=checkInvite($data["invite_code"])){throw ValidationException::withMessages(["invite_code" => "邀请码不正确"]);}
 
-		if(isset($data["wechat_code"])&&$openid=openid($data["wechat_code"])){$data['openid']=$openid;}
+		//$data['company_id']=$invote->company_id;
 		
+		if(isset($data["wechat_code"])&&$openid=openid($data["wechat_code"])){$data['openid']=$openid;}
+
 	    $this->getRepositories()->register($data,['form'=>['user'=>'']]);
 
 		phonecode($data["phone"],Mobile::REGISTER,'');
@@ -138,8 +140,7 @@ class AuthController extends Controller
     { 
         return $this->success([],"成功退出");
 	}
-	
-	
+
     /**
      * Log the user out of the application.
      *
@@ -150,11 +151,9 @@ class AuthController extends Controller
     { 
 		$data =$request->all();
 		
-		if($data["code"]!=phonecode($data["phone"],Mobile::FIND)){
-            throw ValidationException::withMessages([
-              "code" => "验证码不正确",
-            ]);
-		}
+		$code = request("phone_code")?request("phone_code"):request("code");
+		
+		if($code!=phonecode($code,Mobile::FIND)){throw ValidationException::withMessages(["phone_code" => "验证码不正确",]);}
 		
 		$this->getRepositories()->change($data);
 		

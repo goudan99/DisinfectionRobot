@@ -26,6 +26,9 @@ class Machine implements Repository
 			event(new MachineStored($machine,$notify));
 			return true ;
 		}
+		if(!isset($data['sn'])){
+			throw ValidationException::withMessages(["sn" => "sn不能为空"]);
+		}
 			
 		if($machine=machineModel::where("sn",$data['sn'])->first()){
 			if(!$machine->users()->where("user_id",$notify["form"]["user"]->id)->first()){
@@ -51,8 +54,9 @@ class Machine implements Repository
 		
 		$machines=machineModel::whereIn("id",$data)->get();
 
-		if($notify["form"]["user"]->id==1){
-			
+		$user=$notify["form"]["user"];
+		
+		if($user->id==1||$user->roles()->where('level',1)->first()){	
 			machineModel::whereIn("id",$data)->delete();
 			
 			event(new MachineRemoved($machines,$notify));

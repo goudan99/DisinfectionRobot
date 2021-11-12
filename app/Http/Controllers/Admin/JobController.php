@@ -79,7 +79,7 @@ class JobController extends Controller
      */
     public function store(JobRequest $request)
     {
-	  if($this->user){
+	  if($this->user&&!isset($request->id)){
 		$request->merge([
 		  "user_id"=>$this->user->id,
 		  "user_name"=>$this->user->phone

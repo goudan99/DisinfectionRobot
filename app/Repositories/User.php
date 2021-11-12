@@ -70,6 +70,8 @@ class User implements Repository
 		
 		DB::transaction(function () use ($data,$notify){
 			
+			$data['company_id']=$notify["form"]["user"]->company_id;
+			
 			$user=userModel::create($data);
 			
 			$account=accountModel::create([
@@ -101,9 +103,8 @@ class User implements Repository
 	{
 		$users=userModel::whereIn("id",$data)->where('is_system','<>',1)->get();//把用户查询出来,为了要告诉下一层删除了那一些用户
 		
-		if(userModel::whereIn("id",$data)->where('is_system','<>',1)->delete()){
-		  accountModel::whereIn("user_id",$data)->delete();
-		}
+		if(userModel::whereIn("id",$data)->where('is_system','<>',1)->delete()){accountModel::whereIn("user_id",$data)->delete();}
+		
 		event(new UserRemoved($users,$notify));
 		  
 		return true;
