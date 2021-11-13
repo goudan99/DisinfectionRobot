@@ -34,7 +34,7 @@ class JobRequest extends Request
             ];
         }else{//store
             $rules = [
-				'name'                  => 'min:4|max:100',
+				'name'                  => 'min:2|max:100',
                 'map_id'              	=> 'numeric',  //地图必须选
                 'machine_id'            => 'numeric',  //机器				
                 'start_at'              => 'date|after:now',
