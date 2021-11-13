@@ -38,13 +38,14 @@ class Auth implements Repository
             throw ValidationException::withMessages(["name" => "帐号密码不正确"]);
 		}
 		
-		$user=$account->user;
+		$user=User::withoutGlobalScopes()->where("id",$account->user_id)->first();
 
 		if(isset($data["openid"])){
 			if($user->openid!=$data["openid"]){
 				throw ValidationException::withMessages(["name" => "你只能登自己号"]);
 			}
 		}
+
 		if($user->passed!=1){throw ValidationException::withMessages(["name" => "该号已被禁用,联系管理员开通"]);}
 		
 		if(isset($data["openid"])){
@@ -83,7 +84,7 @@ class Auth implements Repository
             throw ValidationException::withMessages(["code" => "手机号没有注册"]);
 		}
 		
-		$user=$account->user;
+		$user=User::withoutGlobalScopes()->where("id",$account->user_id)->first();
 		
 		if(isset($data["openid"])){
 			if($user->openid!=$data["openid"]){
@@ -129,7 +130,9 @@ class Auth implements Repository
 		
 		if(!$account = Account::where("name",$data["name"])->where("password",$data["password"])->where("type",2)->first()){ throw ValidationException::withMessages(["wechat_code" => "你没有绑定",]);}
 		
-		if($account->user->passed!=1){throw ValidationException::withMessages(["name" => "该号已被禁用,联系管理员开通"]);}
+		$user=User::withoutGlobalScopes()->where("id",$account->user_id)->first();
+		
+		if($user->passed!=1){throw ValidationException::withMessages(["name" => "该号已被禁用,联系管理员开通"]);}
 		
 		$token = auth("api")->login($account);
 		
@@ -181,7 +184,7 @@ class Auth implements Repository
 	public function change($data,$notify=[]){
 		
 		DB::transaction(function () use ($data){
-			if($user_id=Account::where('name',$data['phone'])->first()){
+			if($user_id=Account::where('name',$data['phone'])->where('type',1)->first()){
 				$user_id->password=Hash::make($data["password"]);
 				$user_id->save();
 			}
