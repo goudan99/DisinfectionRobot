@@ -166,7 +166,7 @@ class Profile implements Repository
 	  return $url;
 	}
 	
-	/*标志已读通知*/
+	/*用户反馈*/
 	public function feedback($data,$notify)
 	{
 
