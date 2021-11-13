@@ -31,7 +31,7 @@ class NoticeEventListener
 	{
 		$data=[];
 		
-		if($user=$event->notify["form"]["user"]){$data["form_id"]=$user->id;}
+		if($user=$event->notify["form"]["user"]){$data["form_id"]=$user->id;$data["company_id"]=$user->company_id;}
 		
 		$data["title"]=$event->data["remark"];
 		

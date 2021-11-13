@@ -13,7 +13,7 @@ class Upload implements Repository
 		
 		$arr1=[];
 		
-		foreach(userModel::whereIn("id",$data["users"])->where("id",'<>',$notify["form"]["user"]->id)->get() as $item){array_push($arr1,["user_id"=>$item->id,"user_name"=>$item->phone]);}
+		foreach(userModel::whereIn("id",$data["users"])->where("id",'<>',$notify["form"]["user"]->id)->get() as $item){array_push($arr1,["user_id"=>$item->id,"user_name"=>$item->phone,"company_id"=>$item->company_id]);}
 		
 		$arr2=[];
 		
@@ -26,7 +26,7 @@ class Upload implements Repository
 		$arr=$matrix->map(function ($item) {return array_merge($item[0],$item[1]);})->toArray();
 			
 		foreach($arr as $item){
-			
+
 			if(!uploadModel::where("user_id",$item["user_id"])->where("url",$item["url"])->first()){
 				uploadModel::create($item);
 			}

@@ -9,7 +9,7 @@ class Upload extends Model
 {
 	use Notifiable,HasFactory;
 	  
-	protected $fillable = ['user_id','user_name','url','from_type','from_id','remark'];
+	protected $fillable = ['user_id','user_name','url','from_type','from_id','remark','company_id'];
 	
     public function machine()
     {
