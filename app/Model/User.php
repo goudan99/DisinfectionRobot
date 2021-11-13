@@ -4,12 +4,23 @@ namespace App\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Scopes\CompanyScope;
 
 class User extends Model
 {
 	use Notifiable,HasFactory;
 	  
 	protected $fillable = ['nickname','avatar','phone','code','desc','passed','openid','is_first','company_id'];
+	
+    /**
+     * 模型的“启动”方法.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        static::addGlobalScope(new CompanyScope);
+    }
 	
 	public function accounts()
     {

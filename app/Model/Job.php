@@ -2,6 +2,7 @@
 namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Scopes\CompanyScope;
 
 class Job extends Model
 {
@@ -13,6 +14,16 @@ class Job extends Model
         'map_area' => 'collection',
         'work' => 'collection'
     ];
+	
+    /**
+     * 模型的“启动”方法.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        static::addGlobalScope(new CompanyScope);
+    }
 	
     public function machine()
     {
