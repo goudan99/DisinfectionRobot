@@ -31,9 +31,9 @@ if (!function_exists('checkInvite')) {
     function checkInvite($code,$company_id=0)
     {
 		if(!$company_id){
-			return Invite::where('code',$code)->first();
+			return Invite::where('code',$code)->where('status','<>',1)->first();
 		}
-		return Invite::where('code',$code)->where('company_id',$company_id)->first();
+		return Invite::where('code',$code)->where('company_id',$company_id)->where('status','<>',1)->first();
     }
 }
 
