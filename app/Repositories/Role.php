@@ -18,6 +18,7 @@ class Role implements Repository
 		$role_data=[
 			'name' => $data['name'],
 			'status' => $data['status'],
+			'level' => isset($data['level'])?$data['level']:0,
 			'desc' => isset($data['desc'])?$data['desc']:''
 		];
 		
