@@ -15,9 +15,17 @@ class Machine implements Repository
 	/*保存机器*/
 	public function store($data,$notify){
 		
+		$user=$notify["form"]["user"];
+		
 		if(isset($data['id'])&&$data['id']){
 			
-			if(!$machine=machineModel::where("id",$data['id'])->first()){throw new NotFoundException("机器不存在");}
+			if($user->id==1||$user->roles()->where('level',1)->first()){
+				$machine=machineModel::where("id",$data['id'])->first();
+			}else{
+				$machine=$user->machines()->where("id",$data['id'])->first();
+			}
+			
+			if(!$machine){throw new NotFoundException("机器不存在");}
 			
 			$machine->update($data);
 			
@@ -56,7 +64,7 @@ class Machine implements Repository
 
 		$user=$notify["form"]["user"];
 		
-		if($user->id==1||$user->roles()->where('level',1)->first()){	
+		if($user->id==1||$user->roles()->where('level',1)->first()){
 			machineModel::whereIn("id",$data)->delete();
 			
 			event(new MachineRemoved($machines,$notify));

@@ -153,7 +153,7 @@ class AuthController extends Controller
 		
 		$code = request("phone_code")?request("phone_code"):request("code");
 		
-		if($code!=phonecode($code,Mobile::FIND)){throw ValidationException::withMessages(["phone_code" => "验证码不正确",]);}
+		if($code!=phonecode($data["phone"],Mobile::FIND)){throw ValidationException::withMessages(["phone_code" => "验证码不正确",]);}
 		
 		$this->getRepositories()->change($data);
 		

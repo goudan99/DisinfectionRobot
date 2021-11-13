@@ -53,8 +53,11 @@ class MapController extends Controller
 		$map=Map::where("id",$id);
 		
 		if(!($this->user->id==1||$this->user->roles()->where('level',1)->first())){
+			
 			$machines=[];
+			
 			foreach($this->user->machines()->get(["id"]) as $item){ array_push($machines,$item->id);}
+			
 			$map=$map->whereIn('machine_id',$machines);
 		}
 		

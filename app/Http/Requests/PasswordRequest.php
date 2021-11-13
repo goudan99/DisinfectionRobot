@@ -27,7 +27,8 @@ class PasswordRequest extends Request
         $rules = [
             'password'              => 'required|min:6|max:16|regex:/^[a-zA-Z0-9~@#%_]{6,16}$/i',  //登录密码只能英文字母(a-zA-Z)、阿拉伯数字(0-9)、特殊符号(~@#%)
             'password_confirmation' => 'required|same:password',
-			'code' 					=> 'required',				
+			'code' 					=> '',
+			'phone_code' 			=> 'required_without:code',				
             'phone'                 => 'size:11',
         ];
 

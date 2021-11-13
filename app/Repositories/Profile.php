@@ -13,6 +13,9 @@ use App\Exceptions\UniqueException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\AuthException;
 
+use App\Events\FreedbackSended;
+use App\Events\NoticeSended;
+
 class Profile implements Repository
 {
 	private $user;
@@ -105,9 +108,9 @@ class Profile implements Repository
 
 		$notice=Notice::create($data);
 	
-		$notify["method"]="send";
+		$notify["method"]="add";
 		
-		//event(new NoticeChanged($notice,$notify));
+		event(new NoticeSended($notice,$notify));
 		
 		return $notice;
 	}
@@ -173,9 +176,9 @@ class Profile implements Repository
 
 		$notice=Freedback::create($data);
 	
-		//$notify["method"]="send";
+		$notify["method"]="add";
 		
-		//event(new NoticeChanged($notice,$notify));
+		event(new FreedbackSended($notice,$notify));
 		
 		return $notice;
 	}
