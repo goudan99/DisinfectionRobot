@@ -60,9 +60,9 @@ class Job implements Repository
 		
 		if(isset($data['id'])&&$data['id']){
 			
-			if(!$job=JobModel::where("id",$data['id'])->first()){
-				throw new NotFoundException("任务不存在");
-			}
+			unset($data['machine_id']);
+			
+			if(!$job=JobModel::where("id",$data['id'])->first()){throw new NotFoundException("任务不存在");}
 			
 			$job->update($data);
 			

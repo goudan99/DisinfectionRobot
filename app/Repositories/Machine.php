@@ -9,6 +9,7 @@ use App\Exceptions\AttachException;
 use App\Exceptions\UniqueException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\AuthException;
+use Illuminate\Validation\ValidationException;
 
 class Machine implements Repository
 {
