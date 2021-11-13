@@ -46,8 +46,9 @@ class Machine implements Repository
 				throw new UniqueException("该机器已经添加过了");
 			}
 		}else{
-			$machine=machineModel::create($data);
-			$machine->users()->attach($notify["form"]["user"]->id,['machine_name' => $data['name']]);
+			//$machine=machineModel::create($data);
+			//$machine->users()->attach($notify["form"]["user"]->id,['machine_name' => $data['name']]);
+			throw new UniqueException("该机器不存在");
 		}
 		
 		$notify["method"]="add";
