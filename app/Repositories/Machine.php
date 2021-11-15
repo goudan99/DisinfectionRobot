@@ -66,6 +66,8 @@ class Machine implements Repository
 
 		$user=$notify["form"]["user"];
 		
+		$notify["method"]="add";
+		
 		if($user->id==1||$user->roles()->where('level',1)->first()){
 			machineModel::whereIn("id",$data)->delete();
 			

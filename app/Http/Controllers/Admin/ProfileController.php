@@ -7,12 +7,10 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserRequest;
 use App\Repositories\Profile;
 use App\Model\Notice;
-use App\Model\Freedback;
 use App\Constant\Code;
 use App\Repositories\Mobile;
 use App\Http\Requests\RestPasswordRequest;
 use App\Http\Requests\RestPhoneRequest;
-use App\Http\Requests\FreedbackRequest;
 
 class ProfileController extends Controller
 {
@@ -66,7 +64,9 @@ class ProfileController extends Controller
     {
 		$data=$request->all();
 		
-		if($data["code"]!=phonecode($this->user->phone,Mobile::CHANGE)){
+		$code = request("phone_code")?request("phone_code"):request("code");
+		
+		if($code!=phonecode($this->user->phone,Mobile::CHANGE)){
             throw ValidationException::withMessages([
               "code" => "验证码不正确",
             ]);
@@ -88,13 +88,15 @@ class ProfileController extends Controller
     {
 
 		$data=$request->all();
-
+		
+		$code = request("phone_code")?request("phone_code"):request("code");
+		
 		if($data["oldcode"]!=$request->session()->get('mobile_code_'.Mobile::CHANGEPHONE)){
 			
 			return $this->error('验证码不正确'.$request->session()->get('mobile_code_'.Mobile::CHANGEPHONE),[], Code::VALIDATE);
 		}
 		
-		if($data["code"]!=$request->session()->get('mobile_code_'.$data["phone"].'_'.Mobile::VALIDATEPHONE)){
+		if($code!=$request->session()->get('mobile_code_'.$data["phone"].'_'.Mobile::VALIDATEPHONE)){
 			
 			return $this->error('新手机验证码不正确',[], Code::VALIDATE);
 		}
@@ -153,7 +155,7 @@ class ProfileController extends Controller
     {
 		$data=$request->all();
 		
-		$data["user_id"]=$this->user->id;
+		$data["form_id"]=$this->user->id;
 		
 		$this->getRepositories()->send($data,['form'=>['user'=>$this->user]]);
 		 
@@ -201,49 +203,5 @@ class ProfileController extends Controller
     public function unread(Request $request)
     {
 		return $this->success(Notice::where("user_id",$this->user->id)->where("is_read",0)->count());
-    }
-    /**
-     * 显示个人信息
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function feedbacks(Request $request)
-    {
-		
-		return $this->success(Freedback::get(),"获取成功");
-    }
-	
-    /**
-     * 消息反馈
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function feedback(FreedbackRequest $request)
-    {
-		$data=$request->all();
-		
-		$data["user_id"]=$this->user->id;
-		
-		$data["user_name"]=$this->user->phone;
-		
-		$this->getRepositories()->feedback($data,['form'=>['user'=>$this->user]]);
-		 
-		return $this->success("反馈成功");
-    }
-	
-    /**
-     * 统计用户没有读的消息条数
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function upload(Request $request)
-    {
-		if (!$request->hasFile('file')) {
-			return $this->error('请上传图像');;
-        }
-		
-		$avatar=$this->getRepositories()->upload($request,['form'=>['user'=>$this->user]]);
-		
-		return $this->success($avatar,"操作成功");
     }
 }

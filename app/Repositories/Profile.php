@@ -12,9 +12,9 @@ use App\Exceptions\AttachException;
 use App\Exceptions\UniqueException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\AuthException;
-
 use App\Events\FreedbackSended;
 use App\Events\NoticeSended;
+use Illuminate\Validation\ValidationException;
 
 class Profile implements Repository
 {
@@ -101,11 +101,14 @@ class Profile implements Repository
 		return $notice;
 	}
 	
-	/*标志已读通知*/
+	/*发送通知消息*/
 	public function send($data,$notify)
 	{
-
-
+		if($data["user_id"]){
+			if(!User::where("id",$data["user_id"])->first()){
+				throw ValidationException::withMessages(["user_id" => "用户不存在"]);
+			}
+		}
 		$notice=Notice::create($data);
 	
 		$notify["method"]="add";
@@ -123,6 +126,24 @@ class Profile implements Repository
 		}
 		
 		$notice->is_read=1;
+		
+		$notice->save();
+		
+		$notify["method"]="read";
+		
+		event(new NoticeChanged($notice,$notify));
+		
+		return $notice;
+	}
+	
+	/*标志已读通知*/
+	public function top($id,$notify)
+	{
+		if(!$notice=Notice::where("id",$id)->where("user_id",$this->user->id)->first()){
+			throw new NotFoundException("通知不存在");
+		}
+		
+		$notice->is_top=1;
 		
 		$notice->save();
 		
@@ -172,8 +193,6 @@ class Profile implements Repository
 	/*用户反馈*/
 	public function feedback($data,$notify)
 	{
-
-
 		$notice=Freedback::create($data);
 	
 		$notify["method"]="add";

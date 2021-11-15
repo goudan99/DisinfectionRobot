@@ -25,7 +25,8 @@ class RestPhoneRequest extends Request
     {
 			
         $rules = [
-			'code' 					=> 'required',
+			'code' 					=> '',
+			'phone_code' 			=> 'required_without:code'
 			'oldcode' 					=> 'required',
             'phone'                 => 'size:11|unique:users,phone',
         ];

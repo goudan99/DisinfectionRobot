@@ -12,7 +12,7 @@ class Notice extends Model
 	
     protected $table = 'notice';
 	
-	protected $fillable = ['title','content','user_id','company_id'];
+	protected $fillable = ['title','content','user_id','company_id','form_id','type'];
 	
     /**
      * 模型的“启动”方法.

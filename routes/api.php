@@ -49,9 +49,10 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'profile','middleware' => ['aut
 
 });
 Route::group(['namespace' =>"Admin", 'prefix' => 'me','middleware' => ['auth:api']], function () {
-	Route::get('/feedback','ProfileController@feedbacks');		//信息反馈
-	Route::post('/feedback','ProfileController@feedback');		//信息反馈
-	Route::post('/feedback/upload','ProfileController@upload');	//上传图片
+	Route::get('/feedback','FeedbacksController@home');		//信息反馈
+	Route::post('/feedback','FeedbacksController@store');		//信息反馈
+	Route::post('/feedback/upload','FeedbacksController@upload');	//上传图片
+	Route::delete('/feedback','FeedbacksController@remove');	//删除反馈
 	
 	Route::get('/upload','UploadController@home');			//我的图库
 	Route::post('/upload/share','UploadController@share');	//分享图库
