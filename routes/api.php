@@ -49,7 +49,7 @@ Route::group(['namespace' =>"Admin", 'prefix' => 'profile','middleware' => ['aut
 
 });
 Route::group(['namespace' =>"Admin", 'prefix' => 'me','middleware' => ['auth:api']], function () {
-	
+	Route::get('/feedback','ProfileController@feedbacks');		//信息反馈
 	Route::post('/feedback','ProfileController@feedback');		//信息反馈
 	Route::post('/feedback/upload','ProfileController@upload');	//上传图片
 	
