@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\UserRequest;
 use App\Repositories\Profile;
 use App\Model\Notice;
+use App\Model\Freedback;
 use App\Constant\Code;
 use App\Repositories\Mobile;
 use App\Http\Requests\RestPasswordRequest;
@@ -200,6 +201,16 @@ class ProfileController extends Controller
     public function unread(Request $request)
     {
 		return $this->success(Notice::where("user_id",$this->user->id)->where("is_read",0)->count());
+    }
+    /**
+     * 显示个人信息
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function feedbacks(Request $request)
+    {
+		
+		return $this->success(Freedback::get(),"获取成功");
     }
 	
     /**

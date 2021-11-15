@@ -46,6 +46,8 @@ class Auth implements Repository
 			}
 		}
 
+        if(!$user){throw ValidationException::withMessages(["name" => "该号已被禁用,联系管理员开通"]);}
+		
 		if($user->passed!=1){throw ValidationException::withMessages(["name" => "该号已被禁用,联系管理员开通"]);}
 		
 		if(isset($data["openid"])){

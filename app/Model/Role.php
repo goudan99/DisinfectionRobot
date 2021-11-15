@@ -9,7 +9,7 @@ class Role extends Model
 {
 	use HasFactory;
 	
-	protected $fillable = ['name','status','desc'];
+	protected $fillable = ['name','status','desc','level'];
 	
     /**
      * 模型的“启动”方法.
