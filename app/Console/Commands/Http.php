@@ -136,11 +136,11 @@ class Http extends HttpServerCommand
 				foreach (app(Server::class)->connections as $fd) {
 					//推送到websocket,//fd 是客户端号
 					if (app(Server::class)->isEstablished($fd)) {
-					  app(Server::class)->push($fd, "消息内容".$message->body);
-					  app(Server::class)->push($fd, "fd:".$fd);
+					  //app(Server::class)->push($fd, "消息内容".$message->body);
+					  app(Server::class)->push($fd, $message->body);
+					  //app(Server::class)->push($fd, "fd:".$fd);
 					}
 				}
-				
 				$message->ack();
 				
 				if ($message->body === 'quit') {
